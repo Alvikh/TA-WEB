@@ -1,0 +1,65 @@
+<aside class="w-64 bg-gradient-to-b from-blue-50 to-blue-100 border-r border-blue-200 flex-shrink-0 shadow-lg">
+    <div class="h-full flex flex-col">
+        <!-- Logo Section -->
+        <div class="px-6 py-5 flex items-center space-x-3 border-b border-blue-200">
+            <div class="p-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 shadow-md">
+                <img src="/images/LOGO.png" alt="Logo" class="w-6 h-6 object-contain" />
+            </div>
+            <div class="text-xl font-bold text-blue-800">PowerSmart<span class="text-blue-600">IQ</span></div>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="flex-1 px-4 py-6 space-y-1">
+            <!-- Dashboard -->
+            <a href="{{ route('admin.dashboard') }}" class="flex items-center px-4 py-3 rounded-lg transition-all duration-200 group
+                   {{ request()->routeIs('admin.dashboard') ? 'bg-blue-300 text-blue-900 font-semibold border-l-4 border-blue-600' : 'text-blue-800 hover:bg-blue-200 hover:text-blue-900' }}">
+                <span class="w-6 h-6 mr-3 flex items-center justify-center
+                    {{ request()->is('admin.dashboard') ? 'text-blue-900' : 'text-blue-600 group-hover:text-blue-800' }}">
+                    <i class="fas fa-chart-pie text-lg"></i>
+                </span>
+                <span class="font-medium">Dashboard</span>
+            </a>
+
+            <!-- User Management -->
+            <a href="{{ route('users.index') }}" class="flex items-center px-4 py-3 rounded-lg transition-all duration-200 group
+                   {{ request()->routeIs('users.index') ? 'bg-blue-300 text-blue-900 font-semibold border-l-4 border-blue-600' : 'text-blue-800 hover:bg-blue-200 hover:text-blue-900' }}">
+                <span class="w-6 h-6 mr-3 flex items-center justify-center
+                    {{ request()->routeIs('users.index') ? 'text-blue-900' : 'text-blue-600 group-hover:text-blue-800' }}">
+                    <i class="fas fa-user-circle text-lg"></i>
+                </span>
+                <span class="font-medium">User Management</span>
+            </a>
+
+            <!-- Device Management -->
+            <a href="{{ route('devices.index') }}" class="flex items-center px-4 py-3 rounded-lg transition-all duration-200 group
+                   {{ request()->routeIs('devices.index') ? 'bg-blue-300 text-blue-900 font-semibold border-l-4 border-blue-600' : 'text-blue-800 hover:bg-blue-200 hover:text-blue-900' }}">
+                <span class="w-6 h-6 mr-3 flex items-center justify-center
+                   {{ request()->routeIs('devices.index') ? 'text-blue-900' : 'text-blue-600 group-hover:text-blue-800' }}">
+                    <i class="fas fa-plug text-lg"></i>
+                </span>
+                <span class="font-medium">Device Management</span>
+            </a>
+
+            <!-- MQTT Broker -->
+            <a href="{{ route('devices.monitoring') }}" class="flex items-center px-4 py-3 rounded-lg transition-all duration-200 group
+                   {{ request()->routeIs('devices.monitoring') ? 'bg-blue-300 text-blue-900 font-semibold border-l-4 border-blue-600' : 'text-blue-800 hover:bg-blue-200 hover:text-blue-900' }}">
+                <span class="w-6 h-6 mr-3 flex items-center justify-center
+                   {{ request()->routeIs('devices.monitoring') ? 'text-blue-900' : 'text-blue-600 group-hover:text-blue-800' }}">
+                    <i class="fas fa-server text-lg"></i>
+                </span>
+                <span class="font-medium">MQTT Broker</span>
+            </a>
+
+            <!-- Energy Analytics -->
+            {{-- <a href="{{ route('monitoring.index') }}" class="flex items-center px-4 py-3 rounded-lg transition-all duration-200 group
+                   {{ request()->routeIs('monitoring.index') ? 'bg-blue-300 text-blue-900 font-semibold border-l-4 border-blue-600' : 'text-blue-800 hover:bg-blue-200 hover:text-blue-900' }}">
+                <span class="w-6 h-6 mr-3 flex items-center justify-center
+                   {{ request()->routeIs('monitoring.index') ? 'text-blue-900' : 'text-blue-600 group-hover:text-blue-800' }}">
+                    <i class="fas fa-bolt text-lg"></i>
+                </span>
+                <span class="font-medium">Energy Analytics</span>
+            </a> --}}
+
+        </nav>
+    </div>
+</aside>
