@@ -36,10 +36,10 @@ class User extends Authenticatable
 ];
 
     // Relasi many-to-many dengan buildings
-    public function buildings()
-    {
-        return $this->belongsToMany(Building::class);
-    }
+    // public function buildings()
+    // {
+    //     return $this->belongsToMany(Building::class);
+    // }
 
     // Helper methods untuk check role
     public function isAdmin(): bool
