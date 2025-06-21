@@ -116,7 +116,7 @@
                     </div>
                 </div>
                 <div class="lg:w-1/2" data-aos="fade-up">
-                    <img src="{{ asset('images/dashboard.png') }}" alt="PowerSmartIQ Dashboard" class="rounded-lg w-full">
+                    <img src="{{ asset('images/main.png') }}" alt="PowerSmartIQ Dashboard" class="rounded-lg w-full">
                 </div>
             </div>
         </div>
