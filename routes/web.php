@@ -24,6 +24,9 @@ use App\Http\Controllers\EnergyAnalyticsController;
 // });
 
 Route::get('/', function () {
+    return view('index');
+});
+Route::get('/admin', function () {
     return view('welcomePage');
 });
 Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
