@@ -450,7 +450,7 @@
                         </h3>
                         <span
                             class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-200 text-blue-800">
-                            <i class="fas fa-info-circle mr-1"></i> wss://broker.emqx.io:8084/mqtt
+                            <i class="fas fa-info-circle mr-1"></i> wss://broker.hivemq.io:8084/mqtt
                         </span>
                     </div>
                 </div>
@@ -536,7 +536,7 @@
 
             // Connect to MQTT
             connectBtn.addEventListener('click', function() {
-                client = mqtt.connect('wss://broker.emqx.io:8084/mqtt', options);
+                client = mqtt.connect('wss://broker.hivemq.io:8084/mqtt', options);
 
                 client.on('connect', function() {
                     connectionStatus.classList.remove('bg-gray-300', 'bg-red-500', 'bg-yellow-500');
