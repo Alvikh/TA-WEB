@@ -450,7 +450,7 @@
                         </h3>
                         <span
                             class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-200 text-blue-800">
-                            <i class="fas fa-info-circle mr-1"></i> wss://broker.hivemq.io:8084/mqtt
+                            <i class="fas fa-info-circle mr-1"></i> wss://broker.hivemq.com:8084/mqtt
                         </span>
                     </div>
                 </div>
@@ -462,7 +462,7 @@
                                 <li class="flex items-center">
                                     <i class="fas fa-globe text-blue-400 mr-2 w-5"></i>
                                     <span class="text-blue-600">Broker URL:</span>
-                                    <span class="ml-auto font-medium text-blue-800">wss://broker.emqx.io:8084/mqtt</span>
+                                    <span class="ml-auto font-medium text-blue-800">wss://broker.hivemq.com:8084/mqtt</span>
                                 </li>
                                 <li class="flex items-center">
                                     <i class="fas fa-user text-blue-400 mr-2 w-5"></i>
@@ -536,7 +536,7 @@
 
             // Connect to MQTT
             connectBtn.addEventListener('click', function() {
-                client = mqtt.connect('wss://broker.hivemq.io:8084/mqtt', options);
+                client = mqtt.connect('wss://broker.hivemq.com:8084/mqtt', options);
 
                 client.on('connect', function() {
                     connectionStatus.classList.remove('bg-gray-300', 'bg-red-500', 'bg-yellow-500');

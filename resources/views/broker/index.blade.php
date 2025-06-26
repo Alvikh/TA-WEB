@@ -206,7 +206,7 @@
 
         // Connect to MQTT
         connectBtn.addEventListener('click', function() {
-            client = mqtt.connect('wss://broker.hivemq.io:8084/mqtt', options);
+            client = mqtt.connect('wss://broker.hivemq.com:8084/mqtt', options);
 
             client.on('connect', function() {
                 connectionStatus.classList.remove('bg-gray-300', 'bg-red-500', 'bg-yellow-500');
