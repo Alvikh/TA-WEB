@@ -131,10 +131,10 @@ protected function getCpuLoad()
         return [0, 0, 0]; // Default fallback
     }
 
-    public function sendMqtt()
-    {
-        $mqtt = new MqttService();
-        $mqtt->publish('test/topic', 'Hello MQTT from Laravel!');
-        return 'Message sent!';
-    }
+    // public function sendMqtt()
+    // {
+    //     $mqtt = new MqttService();
+    //     $mqtt->publish('test/topic', 'Hello MQTT from Laravel!');
+    //     return 'Message sent!';
+    // }
 }
