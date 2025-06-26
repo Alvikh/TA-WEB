@@ -12,6 +12,7 @@ protected $primaryKey = 'id';
     protected $table = 'devices';
 
     protected $fillable = [
+        'owner_id',
         'name',
         'device_id',
         'type',

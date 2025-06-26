@@ -17,9 +17,6 @@ class DatabaseSeeder extends Seeder
         // Seed users
         $this->call(UserSeeder::class);
         
-        // Seed buildings
-        $this->call(BuildingSeeder::class);
-        
         // Seed devices
         $this->call(DeviceSeeder::class);
         
@@ -29,7 +26,5 @@ class DatabaseSeeder extends Seeder
         // Seed alerts
         $this->call(AlertSeeder::class);
         
-        // Assign buildings to users
-        $this->call(BuildingUserSeeder::class);
     }
 }

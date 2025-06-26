@@ -9,9 +9,13 @@
         "@tailwindcss/vite": "^4.1.8",
         "axios": "^1.7.4",
         "concurrently": "^9.0.1",
-        "laravel-vite-plugin": "^1.2.0",
+        "laravel-vite-plugin": "^1.3.0",
         "tailwindcss": "^4.0.0",
+<<<<<<< HEAD
         "vite": "^6.0.11"
+=======
+        "vite": "^6.3.5"
+>>>>>>> 13764b6 (new update)
     },
     "dependencies": {
         "@alpinejs/focus": "^3.14.9",

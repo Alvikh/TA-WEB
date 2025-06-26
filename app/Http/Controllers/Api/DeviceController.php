@@ -11,6 +11,24 @@ use Illuminate\Support\Facades\Validator;
 class DeviceController extends Controller
 {
     // Get all devices
+    public function me(Request $request)
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not authenticated',
+            ], 401);
+        }
+
+        $devices = $user->devices;
+
+        return response()->json([
+            'success' => true,
+            'data' => $devices
+        ]);
+    }
     public function index(Request $request)
     {
         $devices = Device::query();

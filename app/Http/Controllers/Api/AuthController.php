@@ -103,7 +103,9 @@ class AuthController extends Controller
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
-
+$user->update([
+            'last_login_at' => now(),
+        ]);
         return response()->json([
             'success' => true,
             'message' => 'Login berhasil',

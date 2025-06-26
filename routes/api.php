@@ -2,8 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\DeviceController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\EnergyMeasurementController;
 
@@ -23,7 +23,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/photo', [ProfileController::class, 'deletePhoto']);
     });
     Route::prefix('devices')->group(function () {
-        Route::get('/', [DeviceController::class, 'index']);
+        Route::get('/', [DeviceController::class, 'me']);
         Route::post('/', [DeviceController::class, 'store']);
         Route::get('/{id}', [DeviceController::class, 'show']);
         Route::put('/{id}', [DeviceController::class, 'update']);

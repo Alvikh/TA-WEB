@@ -11,42 +11,37 @@ class DeviceSeeder extends Seeder
     {
         // Device untuk Gedung 1
         Device::create([
-            'building_id' => 1,
+            'building' => "lab digital",
+            'owner_id' => 1,
             'name' => 'Smart Meter Lantai 1',
             'device_id' => 'SM-001-2023',
-            'type' => 'Smart Meter',
-            'manufacturer' => 'PowerTech',
-            'model' => 'PT-1000',
-            'firmware_version' => '2.3.4',
+            'type' => 'monitoring',
             'installation_date' => '2023-01-15',
             'status' => 'active',
         ]);
 
         Device::create([
-            'building_id' => 1,
+            'building' => "lab software engineering",
+            'owner_id' => 2,
             'name' => 'Environment Sensor Lantai 1',
             'device_id' => 'ES-001-2023',
-            'type' => 'Environment Sensor',
-            'manufacturer' => 'EnviroSense',
-            'model' => 'ES-200',
-            'firmware_version' => '1.2.1',
+            'type' => 'control',
             'installation_date' => '2023-01-20',
             'status' => 'active',
         ]);
 
         // Device untuk Gedung 2
         Device::create([
-            'building_id' => 2,
+            'owner_id'=> 2,
+            'building' => "lab rpl",
             'name' => 'Smart Meter Lantai 2',
             'device_id' => 'SM-002-2023',
-            'type' => 'Smart Meter',
-            'manufacturer' => 'PowerTech',
-            'model' => 'PT-1000',
-            'firmware_version' => '2.3.4',
+            'type' => 'monitoring',
             'installation_date' => '2023-02-10',
             'status' => 'active',
         ]);
+                Device::factory()->count(20)->create();
 
-        Device::factory()->count(7)->create();
+
     }
 }   

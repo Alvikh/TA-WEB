@@ -37,14 +37,13 @@ Route::post('/register', [AuthControllerWEB::class, 'register']);
 Route::post('/login', [AuthControllerWEB::class, 'login']);
 
 Route::resource('users', UserController::class);
-Route::get('/devices/monitor', [EnergyAnalyticsController::class, 'monitor'])->name('devices.monitor');
-Route::get('/devices/{id}', [EnergyAnalyticsController::class, 'show'])->name('devices.show');
-Route::get('/devices/{id}/consumption', [EnergyAnalyticsController::class, 'getConsumption']);
-Route::get('/devices/{id}/prediction', [EnergyAnalyticsController::class, 'getPrediction']);
-Route::resource('/devices/monitor', EnergyAnalyticsController::class);
+Route::get('/devices/analytics/monitor', [EnergyAnalyticsController::class, 'monitor'])->name('devices.monitor');
+Route::get('/devices/analytics/{id}', [EnergyAnalyticsController::class, 'show'])->name('devices.analytic.show');
+Route::get('/devices/analytics/{id}/consumption', [EnergyAnalyticsController::class, 'getConsumption']);
+Route::get('/devices/analytics/{id}/prediction', [EnergyAnalyticsController::class, 'getPrediction']);
+Route::resource('/devices/analytics/monitor', EnergyAnalyticsController::class);
 
 // Route::get('/devices/monitor/{id}', [EnergyAnalyticsController,'index'])->name('devices.monitor');
-Route::resource('devices', DeviceController::class);
 Route::patch('/{user}/activate', [UserController::class, 'activate'])->name('users.activate');
 Route::patch('/{user}/deactivate', [UserController::class, 'deactivate'])->name('users.deactivate');
 Route::patch('/{device}/activate', [UserController::class, 'activate'])->name('devices.activate');
@@ -53,6 +52,7 @@ Route::post('/monitoring', [BrokerController::class, 'store']);
 Route::get('/monitoring', [BrokerController::class, 'index'])->name('devices.monitoring');
 Route::get('/monitoring/energy', [MonitoringController::class, 'index'])->name('monitoring.index');
 
+Route::resource('devices', DeviceController::class);
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),

@@ -165,344 +165,350 @@
             </div>
         </div>
 
-        {{-- <!-- Chart Section -->
+        <!-- MQTT Monitoring Section -->
         <div class="bg-white rounded-2xl shadow-sm border border-blue-100 overflow-hidden">
-            <div class="bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-4">
+            <div class="bg-gradient-to-r from-blue-700 to-blue-600 px-6 py-4">
                 <div class="flex items-center justify-between">
                     <h3 class="text-lg font-semibold text-white">
-                        <i class="fas fa-bolt mr-2"></i> Electricity Consumption
+                        <i class="fas fa-chart-line mr-2"></i> Real-time Monitoring
                     </h3>
-                    <div class="flex space-x-2">
-                        <button class="px-3 py-1 bg-blue-400 bg-opacity-30 text-white text-xs rounded-lg hover:bg-opacity-50 transition">Day</button>
-                        <button class="px-3 py-1 bg-blue-400 bg-opacity-10 text-white text-xs rounded-lg hover:bg-opacity-30 transition">Week</button>
-                        <button class="px-3 py-1 bg-blue-400 bg-opacity-10 text-white text-xs rounded-lg hover:bg-opacity-30 transition">Month</button>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center">
+                            <span id="connection-status" class="w-3 h-3 rounded-full bg-gray-300 mr-2"></span>
+                            <span id="connection-text" class="text-sm text-white">Disconnected</span>
+                        </div>
+                        <button id="connect-btn" class="px-3 py-1 bg-white bg-opacity-20 text-white text-xs rounded-lg hover:bg-opacity-30 transition">
+                            <i class="fas fa-plug mr-1"></i> Connect
+                        </button>
+                        <button id="disconnect-btn" disabled class="px-3 py-1 bg-white bg-opacity-10 text-white text-xs rounded-lg hover:bg-opacity-20 transition">
+                            <i class="fas fa-power-off mr-1"></i> Disconnect
+                        </button>
                     </div>
                 </div>
             </div>
             <div class="p-6">
-                <div class="h-80">
-                    <canvas id="electricCurrentChart" class="w-full h-full"></canvas>
-                </div>
-                <div class="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div class="bg-blue-50 p-4 rounded-lg">
-                        <div class="flex items-center">
-                            <div class="p-2 rounded-full bg-blue-100 text-blue-600 mr-3">
-                                <i class="fas fa-bolt"></i>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Sensor Data -->
+                    <div class="lg:col-span-2">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Temperature -->
+                            <div class="bg-white border border-blue-100 rounded-lg p-4 shadow-sm">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="text-sm font-medium text-blue-500">Temperature</h4>
+                                        <p class="text-2xl font-bold text-blue-800"><span id="suhu-value">--</span> °C</p>
+                                    </div>
+                                    <div class="p-3 rounded-full bg-red-100 text-red-500">
+                                        <i class="fas fa-temperature-high text-xl"></i>
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <p class="text-xs text-blue-500">Current Usage</p>
-                                <p class="text-lg font-semibold text-blue-800">15.2 A</p>
+                            
+                            <!-- Humidity -->
+                            <div class="bg-white border border-blue-100 rounded-lg p-4 shadow-sm">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="text-sm font-medium text-blue-500">Humidity</h4>
+                                        <p class="text-2xl font-bold text-blue-800"><span id="kelembapan-value">--</span> %</p>
+                                    </div>
+                                    <div class="p-3 rounded-full bg-blue-100 text-blue-500">
+                                        <i class="fas fa-tint text-xl"></i>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="bg-green-50 p-4 rounded-lg">
-                        <div class="flex items-center">
-                            <div class="p-2 rounded-full bg-green-100 text-green-600 mr-3">
-                                <i class="fas fa-arrow-down"></i>
+                            
+                            <!-- Voltage -->
+                            <div class="bg-white border border-blue-100 rounded-lg p-4 shadow-sm">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="text-sm font-medium text-blue-500">Voltage</h4>
+                                        <p class="text-2xl font-bold text-blue-800"><span id="tegangan-value">--</span> V</p>
+                                    </div>
+                                    <div class="p-3 rounded-full bg-green-100 text-green-500">
+                                        <i class="fas fa-bolt text-xl"></i>
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <p class="text-xs text-green-500">Avg. Daily</p>
-                                <p class="text-lg font-semibold text-green-800">12.4 A</p>
+                            
+                            <!-- Current -->
+                            <div class="bg-white border border-blue-100 rounded-lg p-4 shadow-sm">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="text-sm font-medium text-blue-500">Current</h4>
+                                        <p class="text-2xl font-bold text-blue-800"><span id="arus-value">--</span> A</p>
+                                    </div>
+                                    <div class="p-3 rounded-full bg-yellow-100 text-yellow-500">
+                                        <i class="fas fa-bolt text-xl"></i>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="bg-amber-50 p-4 rounded-lg">
-                        <div class="flex items-center">
-                            <div class="p-2 rounded-full bg-amber-100 text-amber-600 mr-3">
-                                <i class="fas fa-arrow-up"></i>
+                            
+                            <!-- Power -->
+                            <div class="bg-white border border-blue-100 rounded-lg p-4 shadow-sm">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="text-sm font-medium text-blue-500">Power</h4>
+                                        <p class="text-2xl font-bold text-blue-800"><span id="daya-value">--</span> W</p>
+                                    </div>
+                                    <div class="p-3 rounded-full bg-purple-100 text-purple-500">
+                                        <i class="fas fa-charging-station text-xl"></i>
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <p class="text-xs text-amber-500">Peak Today</p>
-                                <p class="text-lg font-semibold text-amber-800">18.7 A</p>
+                            
+                            <!-- Energy -->
+                            <div class="bg-white border border-blue-100 rounded-lg p-4 shadow-sm">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="text-sm font-medium text-blue-500">Energy</h4>
+                                        <p class="text-2xl font-bold text-blue-800"><span id="energi-value">--</span> kWh</p>
+                                    </div>
+                                    <div class="p-3 rounded-full bg-indigo-100 text-indigo-500">
+                                        <i class="fas fa-battery-full text-xl"></i>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="bg-purple-50 p-4 rounded-lg">
-                        <div class="flex items-center">
-                            <div class="p-2 rounded-full bg-purple-100 text-purple-600 mr-3">
-                                <i class="fas fa-chart-line"></i>
-                            </div>
-                            <div>
-                                <p class="text-xs text-purple-500">Forecast</p>
-                                <p class="text-lg font-semibold text-purple-800">14.3 A</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> --}}
-
-        <!-- MQTT Broker Info -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="bg-white rounded-2xl shadow-sm border border-blue-100 overflow-hidden lg:col-span-2">
-                <div class="bg-gradient-to-r from-blue-700 to-blue-600 px-6 py-4">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-lg font-semibold text-white">
-                            <i class="fas fa-server mr-2"></i> MQTT Broker
-                        </h3>
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium {{ $mqttStatus ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800' }}">
-                            {{ $mqttStatus ? 'Connected' : 'Disconnected' }}
-                        </span>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                        <div class="bg-blue-50 p-4 rounded-lg">
-                            <h4 class="text-sm font-semibold text-blue-700 mb-3">Broker Details</h4>
-                            <ul class="space-y-2 text-sm">
-                                <li class="flex items-center">
-                                    <i class="fas fa-globe text-blue-400 mr-2 w-5"></i>
-                                    <span class="text-blue-600">Host:</span>
-                                    <span class="ml-auto font-medium text-blue-800">{{ config('mqtt.host') }}</span>
-                                </li>
-                                <li class="flex items-center">
-                                    <i class="fas fa-plug text-blue-400 mr-2 w-5"></i>
-                                    <span class="text-blue-600">Port:</span>
-                                    <span class="ml-auto font-medium text-blue-800">{{ config('mqtt.port') }}</span>
-                                </li>
-                                <li class="flex items-center">
-                                    <i class="fas fa-id-card text-blue-400 mr-2 w-5"></i>
-                                    <span class="text-blue-600">Client ID:</span>
-                                    <span class="ml-auto font-medium text-blue-800">{{ config('mqtt.client_id') }}</span>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="bg-blue-50 p-4 rounded-lg">
-                            <h4 class="text-sm font-semibold text-blue-700 mb-3">Activity</h4>
-                            <ul class="space-y-2 text-sm">
-                                <li class="flex items-center">
-                                    <i class="fas fa-list text-blue-400 mr-2 w-5"></i>
-                                    <span class="text-blue-600">Subscribed Topics:</span>
-                                    <span class="ml-auto font-medium text-blue-800">{{ $subscribedTopics }}</span>
-                                </li>
-                                <li class="flex items-center">
-                                    <i class="fas fa-envelope text-blue-400 mr-2 w-5"></i>
-                                    <span class="text-blue-600">Messages Today:</span>
-                                    <span class="ml-auto font-medium text-blue-800">{{ $messagesToday }}</span>
-                                </li>
-                                <li class="flex items-center">
-                                    <i class="fas fa-clock text-blue-400 mr-2 w-5"></i>
-                                    <span class="text-blue-600">Last Message:</span>
-                                    <span class="ml-auto font-medium text-blue-800">2 min ago</span>
-                                </li>
-                            </ul>
                         </div>
                     </div>
                     
-                    <h4 class="text-sm font-semibold text-blue-700 mb-3">Recent Messages</h4>
-                    <div class="border border-blue-100 rounded-lg overflow-hidden">
-                        @if(count($recentMessages) > 0)
-                            <table class="min-w-full divide-y divide-blue-100">
-                                <thead class="bg-blue-50">
-                                    <tr>
-                                        <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">Topic</th>
-                                        <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">Message</th>
-                                        <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">Time</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-blue-100">
-                                    @foreach($recentMessages as $message)
-                                    <tr class="hover:bg-blue-50 transition">
-                                        <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-blue-800">{{ $message->topic }}</td>
-                                        <td class="px-4 py-3 text-sm text-blue-600">{{ Str::limit($message->payload, 30) }}</td>
-                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-blue-500">{{ $message->created_at->diffForHumans() }}</td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        @else
-                            <div class="p-4 text-center text-sm text-blue-500">
-                                No recent messages available
-                            </div>
-                        @endif
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Quick Actions -->
-            <div class="bg-white rounded-2xl shadow-sm border border-blue-100 overflow-hidden">
-                <div class="bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-4">
-                    <h3 class="text-lg font-semibold text-white">
-                        <i class="fas fa-bolt mr-2"></i> Quick Actions
-                    </h3>
-                </div>
-                <div class="p-6">
-                    <div class="space-y-4">
-                        <button class="w-full flex items-center justify-between p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition">
-                            <div class="flex items-center">
-                                <div class="p-3 rounded-full bg-blue-100 text-blue-600 mr-4">
-                                    <i class="fas fa-plus"></i>
-                                </div>
-                                <span class="text-sm font-medium text-blue-800">Add New Device</span>
-                            </div>
-                            <i class="fas fa-chevron-right text-blue-400"></i>
-                        </button>
-                        
-                        <button class="w-full flex items-center justify-between p-4 bg-green-50 hover:bg-green-100 rounded-lg transition">
-                            <div class="flex items-center">
-                                <div class="p-3 rounded-full bg-green-100 text-green-600 mr-4">
-                                    <i class="fas fa-chart-bar"></i>
-                                </div>
-                                <span class="text-sm font-medium text-green-800">Generate Report</span>
-                            </div>
-                            <i class="fas fa-chevron-right text-green-400"></i>
-                        </button>
-                        
-                        <button class="w-full flex items-center justify-between p-4 bg-purple-50 hover:bg-purple-100 rounded-lg transition">
-                            <div class="flex items-center">
-                                <div class="p-3 rounded-full bg-purple-100 text-purple-600 mr-4">
-                                    <i class="fas fa-cog"></i>
-                                </div>
-                                <span class="text-sm font-medium text-purple-800">System Settings</span>
-                            </div>
-                            <i class="fas fa-chevron-right text-purple-400"></i>
-                        </button>
-                        
-                        <button class="w-full flex items-center justify-between p-4 bg-amber-50 hover:bg-amber-100 rounded-lg transition">
-                            <div class="flex items-center">
-                                <div class="p-3 rounded-full bg-amber-100 text-amber-600 mr-4">
-                                    <i class="fas fa-bell"></i>
-                                </div>
-                                <span class="text-sm font-medium text-amber-800">View Alerts</span>
-                            </div>
-                            <i class="fas fa-chevron-right text-amber-400"></i>
-                        </button>
-                    </div>
-                    
-                    <div class="mt-6 border-t border-blue-100 pt-6">
-                        <h4 class="text-sm font-semibold text-blue-700 mb-3">System Status</h4>
-                        <div class="space-y-3">
-                            <div>
-                                <div class="flex justify-between text-sm mb-1">
-                                    <span class="text-blue-600">Storage</span>
-                                    <span class="font-medium text-blue-800">65% used</span>
-                                </div>
-                                <div class="w-full bg-blue-100 rounded-full h-2">
-                                    <div class="bg-blue-500 h-2 rounded-full" style="width: 65%"></div>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="flex justify-between text-sm mb-1">
-                                    <span class="text-blue-600">Memory</span>
-                                    <span class="font-medium text-blue-800">42% used</span>
-                                </div>
-                                <div class="w-full bg-blue-100 rounded-full h-2">
-                                    <div class="bg-blue-500 h-2 rounded-full" style="width: 42%"></div>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="flex justify-between text-sm mb-1">
-                                    <span class="text-blue-600">CPU Load</span>
-                                    <span class="font-medium text-blue-800">28% used</span>
-                                </div>
-                                <div class="w-full bg-blue-100 rounded-full h-2">
-                                    <div class="bg-blue-500 h-2 rounded-full" style="width: 28%"></div>
-                                </div>
-                            </div>
+                    <!-- Message Log -->
+                    <div class="bg-white border border-blue-100 rounded-lg shadow-sm">
+                        <div class="bg-blue-50 px-4 py-3 border-b border-blue-100 flex justify-between items-center">
+                            <h4 class="text-sm font-medium text-blue-700">MQTT Message Log</h4>
+                            <button id="clear-log" class="text-xs text-blue-500 hover:text-blue-700">
+                                <i class="fas fa-trash-alt mr-1"></i> Clear
+                            </button>
+                        </div>
+                        <div id="message-log" class="h-64 overflow-y-auto p-3 text-sm">
+                            <div class="text-gray-400 italic">No messages received yet</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- MQTT Broker Info -->
+        <div class="bg-white rounded-2xl shadow-sm border border-blue-100 overflow-hidden">
+            <div class="bg-gradient-to-r from-blue-700 to-blue-600 px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-semibold text-white">
+                        <i class="fas fa-server mr-2"></i> MQTT Broker Configuration
+                    </h3>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-200 text-blue-800">
+                        <i class="fas fa-info-circle mr-1"></i> wss://broker.emqx.io:8084/mqtt
+                    </span>
+                </div>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h4 class="text-sm font-semibold text-blue-700 mb-3">Connection Settings</h4>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-center">
+                                <i class="fas fa-globe text-blue-400 mr-2 w-5"></i>
+                                <span class="text-blue-600">Broker URL:</span>
+                                <span class="ml-auto font-medium text-blue-800">wss://broker.emqx.io:8084/mqtt</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-user text-blue-400 mr-2 w-5"></i>
+                                <span class="text-blue-600">Username:</span>
+                                <span class="ml-auto font-medium text-blue-800">Alvi</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-key text-blue-400 mr-2 w-5"></i>
+                                <span class="text-blue-600">Password:</span>
+                                <span class="ml-auto font-medium text-blue-800">Not required</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h4 class="text-sm font-semibold text-blue-700 mb-3">Monitoring Topics</h4>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-center">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 mr-2">
+                                    <i class="fas fa-chart-line mr-1"></i> iot/monitoring
+                                </span>
+                                <span class="ml-auto text-blue-600">Primary data channel</span>
+                            </li>
+                            <li class="flex items-center">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 mr-2">
+                                    <i class="fas fa-cog mr-1"></i> iot/controlling
+                                </span>
+                                <span class="ml-auto text-blue-600">Device control channel</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+    
 </div>
 
-{{-- <!-- Chart.js Script -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- MQTT.js Library -->
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+
+<!-- MQTT Monitoring Script -->
 <script>
-    const ctx = document.getElementById('electricCurrentChart').getContext('2d');
-    const electricCurrentChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: {!! json_encode($electricCurrentLabels ?? ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '23:59']) !!},
-            datasets: [
-                {
-                    label: 'Current (A)',
-                    data: {!! json_encode($electricCurrentData ?? [8.2, 7.5, 12.4, 15.7, 18.2, 14.5, 9.8]) !!},
-                    borderColor: 'rgba(59, 130, 246, 1)',
-                    backgroundColor: 'rgba(59, 130, 246, 0.05)',
-                    borderWidth: 2,
-                    tension: 0.4,
-                    fill: true,
-                    pointBackgroundColor: 'white',
-                    pointBorderColor: 'rgba(59, 130, 246, 1)',
-                    pointBorderWidth: 2,
-                    pointRadius: 4,
-                    pointHoverRadius: 6
-                },
-                {
-                    label: 'Forecast (A)',
-                    data: {!! json_encode($electricForecastData ?? [7.8, 8.1, 11.9, 16.2, 17.8, 15.1, 10.2]) !!},
-                    borderColor: 'rgba(139, 92, 246, 1)',
-                    backgroundColor: 'rgba(139, 92, 246, 0.05)',
-                    borderWidth: 2,
-                    borderDash: [5, 5],
-                    tension: 0.4,
-                    fill: false,
-                    pointBackgroundColor: 'white',
-                    pointBorderColor: 'rgba(139, 92, 246, 1)',
-                    pointBorderWidth: 2,
-                    pointRadius: 4,
-                    pointHoverRadius: 6
+document.addEventListener('DOMContentLoaded', function() {
+    const clientId = 'monitoring_' + Math.random().toString(16).substr(2, 8);
+    const options = {
+        username: 'Alvi',
+        clientId: clientId,
+        clean: true,
+        connectTimeout: 4000,
+        reconnectPeriod: 1000,
+    };
+
+    let client = null;
+    const topic = 'iot/monitoring';
+
+    // DOM Elements
+    const connectBtn = document.getElementById('connect-btn');
+    const disconnectBtn = document.getElementById('disconnect-btn');
+    const connectionStatus = document.getElementById('connection-status');
+    const connectionText = document.getElementById('connection-text');
+    const messageLog = document.getElementById('message-log');
+    const clearLogBtn = document.getElementById('clear-log');
+
+    // Clear log button
+    clearLogBtn.addEventListener('click', function() {
+        messageLog.innerHTML = '<div class="text-gray-400 italic">Log cleared</div>';
+    });
+
+    // Connect to MQTT
+    connectBtn.addEventListener('click', function() {
+        client = mqtt.connect('wss://broker.emqx.io:8084/mqtt', options);
+
+        client.on('connect', function() {
+            connectionStatus.classList.remove('bg-gray-300', 'bg-red-500', 'bg-yellow-500');
+            connectionStatus.classList.add('bg-green-500');
+            connectionText.textContent = 'Connected';
+            connectBtn.disabled = true;
+            disconnectBtn.disabled = false;
+
+            client.subscribe(topic, { qos: 0 }, function(err) {
+                if (!err) {
+                    addToLog('Successfully subscribed to: ' + topic, 'success');
+                } else {
+                    addToLog('Subscription error: ' + err.message, 'error');
                 }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'top',
-                    labels: {
-                        usePointStyle: true,
-                        padding: 20
-                    }
-                },
-                tooltip: {
-                    mode: 'index',
-                    intersect: false,
-                    backgroundColor: 'rgba(30, 58, 138, 0.9)',
-                    titleFont: { size: 14, weight: 'bold' },
-                    bodyFont: { size: 12 },
-                    padding: 12,
-                    cornerRadius: 8
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: false,
-                    grid: {
-                        color: 'rgba(219, 234, 254, 1)'
+            });
+        });
+
+        client.on('message', function(topic, message) {
+            try {
+                const timestamp = new Date().toLocaleTimeString();
+                const data = JSON.parse(message.toString());
+                
+                // Update UI with sensor data
+                updateSensorData(data);
+                
+                // Log the message
+                addToLog(`[${timestamp}] ${topic}: ${message.toString()}`, 'message');
+                
+                // Send to Laravel backend
+                fetch('/monitoring', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                     },
-                    ticks: {
-                        color: 'rgba(30, 64, 175, 0.8)'
-                    },
-                    title: {
-                        display: true,
-                        text: 'Ampere (A)',
-                        color: 'rgba(30, 64, 175, 0.8)'
-                    }
-                },
-                x: {
-                    grid: {
-                        color: 'rgba(219, 234, 254, 1)'
-                    },
-                    ticks: {
-                        color: 'rgba(30, 64, 175, 0.8)'
-                    },
-                    title: {
-                        display: true,
-                        text: 'Time',
-                        color: 'rgba(30, 64, 175, 0.8)'
-                    }
-                }
-            },
-            interaction: {
-                mode: 'nearest',
-                axis: 'x',
-                intersect: false
+                    body: JSON.stringify({
+                        device_id: 1,
+                        voltage: data.tegangan,
+                        current: data.arus,
+                        power: data.daya,
+                        energy: data.energi,
+                        temperature: data.suhu,
+                        humidity: data.kelembapan,
+                        measured_at: `${data.tanggal} ${data.waktu}`
+                    })
+                })
+                .then(response => response.json())
+                .then(data => console.log('Measurement stored:', data))
+                .catch(error => console.error('Error storing measurement:', error));
+
+            } catch (e) {
+                addToLog('Error parsing message: ' + e.message, 'error');
             }
+        });
+
+        client.on('error', function(err) {
+            connectionStatus.classList.remove('bg-green-500', 'bg-gray-300');
+            connectionStatus.classList.add('bg-red-500');
+            connectionText.textContent = 'Connection error';
+            addToLog('Error: ' + err.message, 'error');
+        });
+
+        client.on('close', function() {
+            connectionStatus.classList.remove('bg-green-500', 'bg-red-500', 'bg-yellow-500');
+            connectionStatus.classList.add('bg-gray-300');
+            connectionText.textContent = 'Disconnected';
+            connectBtn.disabled = false;
+            disconnectBtn.disabled = true;
+            addToLog('Disconnected from broker', 'warning');
+        });
+
+        client.on('reconnect', function() {
+            connectionStatus.classList.remove('bg-gray-300');
+            connectionStatus.classList.add('bg-yellow-500');
+            connectionText.textContent = 'Reconnecting...';
+            addToLog('Attempting to reconnect...', 'warning');
+        });
+    });
+
+    // Disconnect from MQTT
+    disconnectBtn.addEventListener('click', function() {
+        if (client) {
+            client.end();
         }
     });
-</script> --}}
+
+    // Update sensor data display
+    function updateSensorData(data) {
+        const updateValue = (id, value) => {
+            const el = document.getElementById(id);
+            if (el && value !== undefined) {
+                el.textContent = value;
+                // Add animation effect
+                el.classList.add('animate-pulse');
+                setTimeout(() => el.classList.remove('animate-pulse'), 500);
+            }
+        };
+
+        updateValue('suhu-value', data.suhu ?? '--');
+        updateValue('kelembapan-value', data.kelembapan ?? '--');
+        updateValue('tegangan-value', data.tegangan ?? '--');
+        updateValue('arus-value', data.arus ?? '--');
+        updateValue('daya-value', data.daya ?? '--');
+        updateValue('energi-value', data.energi ?? '--');
+    }
+
+    // Add message to log with different types
+    function addToLog(message, type = 'info') {
+        const logEntry = document.createElement('div');
+        const timestamp = new Date().toLocaleTimeString();
+        
+        // Remove initial placeholder if exists
+        if (messageLog.firstChild?.classList?.contains('italic')) {
+            messageLog.removeChild(messageLog.firstChild);
+        }
+        
+        // Set styling based on message type
+        let textColor = 'text-gray-700';
+        if (type === 'error') textColor = 'text-red-600';
+        if (type === 'success') textColor = 'text-green-600';
+        if (type === 'warning') textColor = 'text-yellow-600';
+        if (type === 'message') textColor = 'text-blue-600';
+        
+        logEntry.className = `${textColor} py-1 border-b border-gray-100 last:border-0`;
+        logEntry.innerHTML = `<span class="text-gray-500 text-xs">[${timestamp}]</span> ${message}`;
+        
+        messageLog.prepend(logEntry);
+        messageLog.scrollTop = 0;
+    }
+});
+</script>
 @endsection
