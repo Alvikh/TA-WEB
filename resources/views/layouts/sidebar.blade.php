@@ -53,9 +53,21 @@
                 <span
                     class="w-6 h-6 mr-3 flex items-center justify-center
                    {{ request()->routeIs('devices.monitoring') ? 'text-blue-900' : 'text-blue-600 group-hover:text-blue-800' }}">
-                    <i class="fas fa-server text-lg"></i>
+                    <i class="fas fa-microchip text-lg"></i>
                 </span>
                 <span class="font-medium">MQTT Broker</span>
+            </a>
+
+            <!-- MQTT Broker -->
+            <a href="{{ route('admin.server.monitoring') }}"
+                class="flex items-center px-4 py-3 rounded-lg transition-all duration-200 group
+                   {{ request()->routeIs('admin.server.monitoring') ? 'bg-blue-300 text-blue-900 font-semibold border-l-4 border-blue-600' : 'text-blue-800 hover:bg-blue-200 hover:text-blue-900' }}">
+                <span
+                    class="w-6 h-6 mr-3 flex items-center justify-center
+                   {{ request()->routeIs('admin.server.monitoring') ? 'text-blue-900' : 'text-blue-600 group-hover:text-blue-800' }}">
+                    <i class="fas fa-server text-lg"></i>
+                </span>
+                <span class="font-medium">Server Monitoring</span>
             </a>
 
             <!-- Report -->
