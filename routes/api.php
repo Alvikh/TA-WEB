@@ -34,7 +34,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/building/{building}', [DeviceController::class, 'byBuilding']);
         Route::get('/status/{status}', [DeviceController::class, 'byStatus']);
     });
-    Route::prefix('energy-measurements')->group(function () {
+   
+});
+
+Route::get('/test-api', function () {
+    return response()->json(['message' => 'API works!']);
+});
+ Route::prefix('energy-measurements')->group(function () {
         Route::get('/', [EnergyMeasurementController::class, 'index']);
         Route::post('/', [EnergyMeasurementController::class, 'store']);
         Route::get('/{id}', [EnergyMeasurementController::class, 'show']);
@@ -43,8 +49,3 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/device/{deviceId}/latest', [EnergyMeasurementController::class, 'latest']);
         Route::get('/device/{deviceId}/statistics', [EnergyMeasurementController::class, 'statistics']);
     });
-});
-
-Route::get('/test-api', function () {
-    return response()->json(['message' => 'API works!']);
-});

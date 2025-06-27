@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
         $this->call(DeviceSeeder::class);
         
         // Seed energy measurements
-        $this->call(EnergyMeasurementSeeder::class);
+        // $this->call(EnergyMeasurementSeeder::class);
         
         // Seed alerts
         $this->call(AlertSeeder::class);

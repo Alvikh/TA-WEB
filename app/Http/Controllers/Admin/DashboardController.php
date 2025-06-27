@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Device;
@@ -36,6 +37,10 @@ class DashboardController extends Controller
         $serverStats = $this->getServerStats();
 $totalMemory = $this->getMemoryTotal();
         return view('admin.dashboard', array_merge([
+        // Server statistics
+        $serverStats = $this->getServerStats();
+$totalMemory = $this->getMemoryTotal();
+        return view('admin.dashboard', array_merge([
             'totalUsers' => $totalUsers,
             'activeUsersToday' => $activeUsersToday,
             'newUsersThisWeek' => $newUsersThisWeek,
@@ -46,6 +51,7 @@ $totalMemory = $this->getMemoryTotal();
             'mqttStatus' => $mqttStatus,
             'subscribedTopics' => $subscribedTopics,
             'messagesToday' => $messagesToday,
+            'memory_total'=> $this->formatBytes($totalMemory),
             'memory_total'=> $this->formatBytes($totalMemory),
             'recentMessages' => $recentMessages,
             'memory_usage_percentage' => $totalMemory > 0

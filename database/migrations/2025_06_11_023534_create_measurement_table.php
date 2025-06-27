@@ -10,7 +10,16 @@ return new class extends Migration
     {
         Schema::create('energy_measurements', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('device_id')->constrained('devices')->onDelete('cascade');
+            // Kolom device_id sebagai string (sesuai dengan tipe di tabel devices)
+            $table->string('device_id');
+            
+            // Definisi foreign key ke devices.device_id (bukan devices.id)
+            $table->foreign('device_id')
+                  ->references('device_id')
+                  ->on('devices')
+                  ->onDelete('cascade');
+            
+            // Kolom-kolom lainnya
             $table->decimal('voltage', 8, 2);        // Volt
             $table->decimal('current', 8, 2);        // Ampere
             $table->decimal('power', 8, 2);          // Watt
