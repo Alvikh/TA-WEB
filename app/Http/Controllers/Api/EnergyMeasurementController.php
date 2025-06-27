@@ -40,21 +40,57 @@ class EnergyMeasurementController extends Controller
         ]);
     }
 
-    // Store a new measurement
     public function store(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'device_id' => 'required|exists:devices,id',
-            'voltage' => 'required|numeric',
-            'current' => 'required|numeric',
-            'power' => 'required|numeric',
-            'energy' => 'required|numeric',
-            'frequency' => 'sometimes|numeric|nullable',
-            'power_factor' => 'sometimes|numeric|nullable|between:0,1',
-            'temperature' => 'sometimes|numeric|nullable',
-            'humidity' => 'sometimes|numeric|nullable|between:0,100',
-            'measured_at' => 'sometimes|date'
-        ]);
+{
+    $data = $request->all();
+
+    // Cek apakah request berupa array (multiple entries)
+    $isBatch = is_array($data) && isset($data[0]);
+
+    $rules = [
+        'device_id' => 'required|exists:devices,device_id', // disesuaikan dengan field device_id di tabel
+        'voltage' => 'required|numeric',
+        'current' => 'required|numeric',
+        'power' => 'required|numeric',
+        'energy' => 'required|numeric',
+        'frequency' => 'sometimes|numeric|nullable',
+        'power_factor' => 'sometimes|numeric|nullable|between:0,1',
+        'temperature' => 'sometimes|numeric|nullable',
+        'humidity' => 'sometimes|numeric|nullable|between:0,100',
+        'measured_at' => 'sometimes|date_format:d-m-Y H:i:s'
+    ];
+
+    if ($isBatch) {
+        $validatedData = [];
+        foreach ($data as $index => $item) {
+            $validator = Validator::make($item, $rules);
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Row $index: " . $validator->errors()->first()
+                ], 400);
+            }
+
+            // Ubah format tanggal jika perlu
+            if (!isset($item['measured_at'])) {
+                $item['measured_at'] = now();
+            } else {
+                $item['measured_at'] = \Carbon\Carbon::createFromFormat('d-m-Y H:i:s', $item['measured_at']);
+            }
+
+            $validatedData[] = $item;
+        }
+
+        // Simpan semua data
+        EnergyMeasurement::insert($validatedData);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Batch energy measurements stored successfully.',
+        ], 201);
+    } else {
+        // Single data
+        $validator = Validator::make($data, $rules);
 
         if ($validator->fails()) {
             return response()->json([
@@ -63,10 +99,10 @@ class EnergyMeasurementController extends Controller
             ], 400);
         }
 
-        // Set default measured_at to now if not provided
-        $data = $request->all();
         if (!isset($data['measured_at'])) {
             $data['measured_at'] = now();
+        } else {
+            $data['measured_at'] = \Carbon\Carbon::createFromFormat('d-m-Y H:i:s', $data['measured_at']);
         }
 
         $measurement = EnergyMeasurement::create($data);
@@ -77,6 +113,8 @@ class EnergyMeasurementController extends Controller
             'data' => $measurement->load('device')
         ], 201);
     }
+}
+
 
     // Get single measurement
     public function show($id)
