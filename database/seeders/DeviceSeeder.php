@@ -35,12 +35,12 @@ class DeviceSeeder extends Seeder
             'owner_id'=> 2,
             'building' => "lab rpl",
             'name' => 'Smart Meter Lantai 2',
-            'device_id' => 'SM-002-2023',
+            'device_id' => '8C4F0010FF80',
             'type' => 'monitoring',
             'installation_date' => '2023-02-10',
             'status' => 'active',
         ]);
-                Device::factory()->count(20)->create();
+                // Device::factory()->count(20)->create();
 
 
     }

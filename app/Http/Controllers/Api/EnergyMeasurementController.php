@@ -48,7 +48,7 @@ class EnergyMeasurementController extends Controller
     $isBatch = is_array($data) && isset($data[0]);
 
     $rules = [
-        'device_id' => 'required|exists:devices,device_id', // disesuaikan dengan field device_id di tabel
+        'device_id' => 'required|exists:devices,device_id',
         'voltage' => 'required|numeric',
         'current' => 'required|numeric',
         'power' => 'required|numeric',
