@@ -42,7 +42,7 @@ Route::get('/test-api', function () {
 });
  Route::prefix('energy-measurements')->group(function () {
      Route::post('/', [EnergyMeasurementController::class, 'store']);
-        // Route::get('/', [EnergyMeasurementController::class, 'index']);
+        Route::get('/', [EnergyMeasurementController::class, 'store']);
         Route::get('/{id}', [EnergyMeasurementController::class, 'show']);
         Route::put('/{id}', [EnergyMeasurementController::class, 'update']);
         Route::delete('/{id}', [EnergyMeasurementController::class, 'destroy']);
