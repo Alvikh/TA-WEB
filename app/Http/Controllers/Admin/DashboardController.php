@@ -36,10 +36,7 @@ class DashboardController extends Controller
         // Server statistics
         $serverStats = $this->getServerStats();
 $totalMemory = $this->getMemoryTotal();
-        return view('admin.dashboard', array_merge([
-        // Server statistics
-        $serverStats = $this->getServerStats();
-$totalMemory = $this->getMemoryTotal();
+        
         return view('admin.dashboard', array_merge([
             'totalUsers' => $totalUsers,
             'activeUsersToday' => $activeUsersToday,
@@ -139,8 +136,8 @@ protected function getCpuLoad()
 
     public function sendMqtt()
     {
-        $mqtt = new MqttService();
-        $mqtt->publish('test/topic', 'Hello MQTT from Laravel!');
-        return 'Message sent!';
+        // $mqtt = new MqttService();
+        // $mqtt->publish('test/topic', 'Hello MQTT from Laravel!');
+        // return 'Message sent!';
     }
 }
