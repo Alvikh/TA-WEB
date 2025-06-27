@@ -42,6 +42,26 @@ class EnergyMeasurementController extends Controller
 
     public function store(Request $request)
 {
+    $debugData = [
+        'request_all' => $request->all(),
+        'request_content' => $request->getContent(),
+        'headers' => $request->headers->all(),
+        'content_type' => $request->header('Content-Type'),
+        'is_json' => $request->isJson(),
+    ];
+    
+    // Debug 2: Log raw input
+    Log::info('Energy Measurement Request:', $debugData);
+    
+    // Debug 3: Return response untuk inspeksi
+    return response()->json([
+        'success' => false, // Sementara false untuk debugging
+        'debug_data' => $debugData,
+        'message' => 'Debug mode - check request data'
+    ], 400);
+
+
+
     $data = $request->all();
 
     // Cek apakah request berupa array (multiple entries)
