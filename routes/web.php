@@ -9,6 +9,8 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\MonitoringController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\EnergyAnalyticsController;
+use App\Http\Controllers\Admin\ServerMonitoringControllers;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -20,7 +22,7 @@ use App\Http\Controllers\EnergyAnalyticsController;
 |
 */
 // Route::get('/test-api', function () {
-//     return response()->json(['message' => 'API works!']);
+    //     return response()->json(['message' => 'API works!']);
 // });
 
 Route::get('/', function () {
@@ -31,6 +33,7 @@ Route::get('/admin', function () {
 });
 Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/server', [ServerMonitoringControllers::class, 'index'])->name('admin.server.monitoring');
 });
 
 Route::post('/register', [AuthControllerWEB::class, 'register']);
@@ -60,4 +63,3 @@ Route::middleware([
     ])->group(function () {
     // Route::get('/dashboard', [DashboardController::class,"index"])->name('dashboard');
 });
-

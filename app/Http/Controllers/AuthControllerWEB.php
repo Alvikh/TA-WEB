@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\LoginAttempt;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use App\Http\Controllers\Controller;
@@ -30,6 +31,13 @@ return redirect()->route('login')->with('success', 'akun berhasil dibuat!');
 
 public function login(Request $request)
 {
+    $attempt = LoginAttempt::create([
+        'email' => $request->email,
+        'ip_address' => $request->ip(),
+        'successful' => false,
+        'user_id' => null
+    ]);
+
     // Validasi
     $request->validate([
         'email' => 'required|email',
@@ -41,12 +49,15 @@ public function login(Request $request)
         return redirect()->route('login')->with('error', 'password salah!');
 
     }
-
-    $user = Auth::user();
-    $token = $user->createToken('token-name')->plainTextToken;
-$user->update([
-    'last_login_at' => Carbon::now(),
-]);
+ $attempt->update([
+            'successful' => true,
+            'user_id' => Auth::id()
+        ]);
+$user = Auth::user();
+if ($user instanceof \App\Models\User) {
+    $user->last_login_at = now();
+    $user->save();
+}
     return redirect()->route('admin.dashboard')->with('success', 'login berhasil');
 }
 
