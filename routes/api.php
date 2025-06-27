@@ -41,8 +41,8 @@ Route::get('/test-api', function () {
     return response()->json(['message' => 'API works!']);
 });
  Route::prefix('energy-measurements')->group(function () {
-        Route::get('/', [EnergyMeasurementController::class, 'index']);
-        Route::post('/', [EnergyMeasurementController::class, 'store']);
+     Route::post('/', [EnergyMeasurementController::class, 'store']);
+        // Route::get('/', [EnergyMeasurementController::class, 'index']);
         Route::get('/{id}', [EnergyMeasurementController::class, 'show']);
         Route::put('/{id}', [EnergyMeasurementController::class, 'update']);
         Route::delete('/{id}', [EnergyMeasurementController::class, 'destroy']);
