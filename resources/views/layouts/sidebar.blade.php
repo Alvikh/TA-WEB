@@ -71,10 +71,10 @@
             <!-- Report -->
             <a href=""
                 class="flex items-center px-4 py-3 rounded-lg transition-all duration-200 group
-                   {{ request()->routeIs('devices.monitoring') ? 'bg-blue-300 text-blue-900 font-semibold border-l-4 border-blue-600' : 'text-blue-800 hover:bg-blue-200 hover:text-blue-900' }}">
+                   {{ request()->routeIs('#') ? 'bg-blue-300 text-blue-900 font-semibold border-l-4 border-blue-600' : 'text-blue-800 hover:bg-blue-200 hover:text-blue-900' }}">
                 <span
                     class="w-6 h-6 mr-3 flex items-center justify-center
-                   {{ request()->routeIs('devices.monitoring') ? 'text-blue-900' : 'text-blue-600 group-hover:text-blue-800' }}">
+                   {{ request()->routeIs('#') ? 'text-blue-900' : 'text-blue-600 group-hover:text-blue-800' }}">
                     <i class="fas fa-book text-lg"></i>
                 </span>
                 <span class="font-medium">Report Management</span>
