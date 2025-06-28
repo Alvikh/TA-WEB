@@ -44,20 +44,20 @@ class EnergyMeasurementController extends Controller
 {
     $jsonData = json_decode(file_get_contents('php://input'), true);
     
-    if (json_last_error() !== JSON_ERROR_NONE) {
-        Log::error('Invalid JSON', [
-            'raw_input' => file_get_contents('php://input'),
+    Log::error('Invalid JSON', [
+        'raw_input' => file_get_contents('php://input'),
+        'headers' => $request->headers->all()
+    ]);
+    
+    return response()->json([
+        'success' => false,
+        'message' => 'Invalid JSON format',
+        'debug' => [
+            'php_input' => file_get_contents('php://input'),
             'headers' => $request->headers->all()
-        ]);
-        
-        return response()->json([
-            'success' => false,
-            'message' => 'Invalid JSON format',
-            'debug' => [
-                'php_input' => file_get_contents('php://input'),
-                'headers' => $request->headers->all()
-            ]
-        ], 400);
+        ]
+    ], 400);
+    if (json_last_error() !== JSON_ERROR_NONE) {
     }
 
 

@@ -181,7 +181,6 @@
     document.addEventListener('DOMContentLoaded', function() {
         const clientId = 'monitoring_' + Math.random().toString(16).substr(2, 8);
         const options = {
-            username: 'Alvi',
             clientId: clientId,
             clean: true,
             connectTimeout: 4000,
@@ -206,7 +205,7 @@
 
         // Connect to MQTT
         connectBtn.addEventListener('click', function() {
-            client = mqtt.connect('mqtt://broker.hivemq.com:1883/mqtt', options);
+            client = mqtt.connect('mqtt://broker.hivemq.com:1883', options);
 
             client.on('connect', function() {
                 connectionStatus.classList.remove('bg-gray-300', 'bg-red-500', 'bg-yellow-500');
