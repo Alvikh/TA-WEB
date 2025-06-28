@@ -1,12 +1,10 @@
 <aside class="w-64 bg-gradient-to-b from-blue-50 to-blue-100 border-r border-blue-200 flex-shrink-0 shadow-lg">
     <div class="h-full flex flex-col">
-        <!-- Logo Section -->
-        <div class="px-6 py-5 flex items-center space-x-3 border-b border-blue-200">
-            <div class="p-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 shadow-md">
-                <img src="/images/LOGO.png" alt="Logo" class="w-6 h-6 object-contain" />
-            </div>
-            <div class="text-xl font-bold text-blue-800">PowerSmart<span class="text-blue-600">IQ</span></div>
-        </div>
+<!-- Logo Section -->
+<div class="px-6 py-5 flex justify-center border-b border-blue-200">
+    <img src="/images/LOGO3.png" alt="Logo" class="w-20 h-20 object-contain" />
+</div>
+
 
         <!-- Navigation Menu -->
         <nav class="flex-1 px-4 py-6 space-y-1">
