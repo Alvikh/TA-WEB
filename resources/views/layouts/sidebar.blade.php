@@ -57,7 +57,7 @@
                 <span class="font-medium">Server Monitoring</span>
             </a>
 
-            <!-- Report -->
+            {{-- <!-- Report -->
             <a href="" class="flex items-center px-4 py-3 rounded-lg transition-all duration-200 group
                    {{ request()->routeIs('#') ? 'bg-blue-300 text-blue-900 font-semibold border-l-4 border-blue-600' : 'text-blue-800 hover:bg-blue-200 hover:text-blue-900' }}">
                 <span class="w-6 h-6 mr-3 flex items-center justify-center
@@ -65,7 +65,7 @@
                     <i class="fas fa-book text-lg"></i>
                 </span>
                 <span class="font-medium">Report Management</span>
-            </a>
+            </a> --}}
 
             <!-- Logout -->
             <form method="POST" action="{{ route('logout') }}">
