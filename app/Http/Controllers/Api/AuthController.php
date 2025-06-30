@@ -13,6 +13,17 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
+    protected function createRefreshToken(User $user)
+    {
+        // Delete old refresh tokens
+        $user->refreshTokens()->delete();
+
+        // Create new refresh token
+        return $user->refreshTokens()->create([
+            'token' => Str::random(60),
+            'expires_at' => now()->addDays(7)
+        ]);
+    }
     // Tahap 1: Register dengan email dan password
     public function register(Request $request)
     {
@@ -104,7 +115,8 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $token = $user->createToken('auth_token', ['*'], now()->addDay(7))->plainTextToken;
+        $this->createRefreshToken($user);
 $user->update([
             'last_login_at' => now(),
         ]);
@@ -135,17 +147,7 @@ $user->update([
             'user'    => $request->user(),
         ]);
     }
-    protected function createRefreshToken(User $user)
-    {
-        // Delete old refresh tokens
-        $user->refreshTokens()->delete();
-
-        // Create new refresh token
-        return $user->refreshTokens()->create([
-            'token' => Str::random(60),
-            'expires_at' => now()->addDays(7)
-        ]);
-    }
+    
 
     public function refreshToken(Request $request)
     {
@@ -170,7 +172,7 @@ $user->update([
         $user->tokens()->delete();
 
         // Create new access token
-        $token = $user->createToken('auth_token', ['*'], now()->addMinutes(15))->plainTextToken;
+        $token = $user->createToken('auth_token', ['*'], now()->addDay(7))->plainTextToken;
 
         // Create new refresh token (optional: rotate refresh token)
         $newRefreshToken = $this->createRefreshToken($user);
