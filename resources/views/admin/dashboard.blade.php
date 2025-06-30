@@ -155,7 +155,7 @@
             </div>
         </div>
 
-        <!-- Server Stats Grid -->
+        {{-- <!-- Server Stats Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <!-- Server Disk Usage Card -->
             <div class="bg-white rounded-xl shadow-sm border border-purple-100 overflow-hidden">
@@ -298,7 +298,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
 
         <!-- MQTT Monitoring Section -->
         <div class="bg-white rounded-2xl shadow-sm border border-blue-100 overflow-hidden">

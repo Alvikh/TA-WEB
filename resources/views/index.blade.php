@@ -122,7 +122,7 @@
         </nav>
 
         <!-- Hero Section -->
-        <section id="home" class="pt-32 pb-20 px-4">
+        <section id="home" class="pt-32 pb-20 px-2">
         <div class="container mx-auto" data-aos="fade-up">
                 <div class="flex flex-col lg:flex-row items-center">
                     <div class="lg:w-1/2 mb-12 lg:mb-0">
