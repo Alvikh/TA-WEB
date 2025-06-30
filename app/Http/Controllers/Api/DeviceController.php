@@ -6,6 +6,7 @@ use App\Models\Device;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class DeviceController extends Controller
@@ -75,7 +76,15 @@ class DeviceController extends Controller
             ], 400);
         }
 
-        $device = Device::create($request->all());
+        $device = Device::create([
+            'name' => $request->name,
+            'device_id' => $request->device_id,
+            'type' => $request->type,
+            'building' => $request->building,
+            'installation_date' => $request->installation_date,
+            'status' => $request->status,
+            'owner_id' => Auth::user()->id,
+        ]);
 
         return response()->json([
             'success' => true,
