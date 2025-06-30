@@ -63,3 +63,13 @@ Route::middleware([
     ])->group(function () {
     // Route::get('/dashboard', [DashboardController::class,"index"])->name('dashboard');
 });
+
+Route::get('/devices/export/pdf', [DeviceController::class, 'exportPdf'])->name('devices.export.pdf');
+Route::get('/devices/export/excel', [DeviceController::class, 'exportExcel'])->name('devices.export.excel');
+Route::get('/devices/{device}/export-pdf', [DeviceController::class, 'exportDetailPdf'])->name('devices.export.detail');
+Route::get('/users/export/pdf', [UserController::class, 'exportPdf'])->name('users.export.pdf');
+Route::get('/users/export/excel', [UserController::class, 'exportExcel'])->name('users.export.excel');
+Route::get('/users/{user}/export-pdf', [UserController::class, 'exportDetailPdf'])->name('users.export.detail');
+Route::get('/admin/server-monitoring/export-pdf', [ServerMonitoringControllers::class, 'exportPDF'])->name('admin.server.export');
+
+

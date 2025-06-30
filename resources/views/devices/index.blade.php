@@ -9,12 +9,26 @@
                 <h1 class="text-2xl md:text-3xl font-bold text-blue-600">Device Management</h1>
                 <p class="mt-1 text-sm text-blue-600">Manage all devices in the system</p>
             </div>
-            <a href="{{ route('devices.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
-                </svg>
-                Create New Device
-            </a>
+            <div class="flex flex-wrap gap-2 mt-4 sm:mt-0">
+                <a href="{{ route('devices.export.pdf') }}" class="inline-flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M6 2a1 1 0 00-1 1v2h10V3a1 1 0 00-1-1H6zM4 6v10a2 2 0 002 2h8a2 2 0 002-2V6H4zm4 2h4v2H8V8zm0 4h4v2H8v-2z" />
+                    </svg>
+                    Export PDF
+                </a>
+                <a href="{{ route('devices.export.excel') }}" class="inline-flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M4 3a2 2 0 00-2 2v1h16V5a2 2 0 00-2-2H4zm14 4H2v8a2 2 0 002 2h12a2 2 0 002-2V7zM7.707 9.293a1 1 0 00-1.414 0L5 10.586 3.707 9.293a1 1 0 00-1.414 1.414L3.586 12l-1.293 1.293a1 1 0 001.414 1.414L5 13.414l1.293 1.293a1 1 0 001.414-1.414L6.414 12l1.293-1.293a1 1 0 000-1.414z" />
+                    </svg>
+                    Export Excel
+                </a>
+                <a href="{{ route('devices.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                    </svg>
+                    Create New Device
+                </a>
+            </div>
         </div>
 
         <!-- Success Message -->

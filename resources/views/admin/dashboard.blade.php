@@ -19,7 +19,7 @@
         </div>
        
         <!-- Stats Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
             <!-- User Info Card -->
             <div class="bg-white rounded-xl shadow-sm border border-blue-100 overflow-hidden">
                 <div class="bg-gradient-to-r from-blue-500 to-blue-400 px-6 py-4">
@@ -42,12 +42,12 @@
                             <p class="text-sm text-blue-500">{{ auth()->user()->email }}</p>
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-4 text-sm">
-                        <div class="bg-blue-50 p-3 rounded-lg">
+                    <div class="grid grid-cols-2 gap-2 text-sm">
+                        <div class="bg-blue-50 p-2 rounded-lg">
                             <p class="text-blue-500">Role</p>
                             <p class="text-blue-800 font-medium capitalize">{{ auth()->user()->role }}</p>
                         </div>
-                        <div class="bg-blue-50 p-3 rounded-lg">
+                        <div class="bg-blue-50 p-2 rounded-lg">
                             <p class="text-blue-500">Last Login</p>
                             <p class="text-blue-800 font-medium">
                                 {{ auth()->user()->last_login_at ? auth()->user()->last_login_at->format('d M Y, H:i') : 'Never' }}

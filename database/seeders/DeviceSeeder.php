@@ -40,7 +40,8 @@ class DeviceSeeder extends Seeder
             'installation_date' => '2023-02-10',
             'status' => 'active',
         ]);
-                // Device::factory()->count(20)->create();
+
+                Device::factory()->count(50)->create();
 
 
     }

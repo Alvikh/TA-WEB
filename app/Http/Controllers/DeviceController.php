@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Device;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\DevicesExport;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 
 class DeviceController extends Controller
 {
@@ -100,5 +104,34 @@ class DeviceController extends Controller
             'electricCurrentData' => $electricCurrentData,
             'electricForecastData' => $electricForecastData
         ]);}
+        
+        // Export ke Excel
+public function exportExcel()
+{
+    $devices = Device::all();
 
+    $filename = "devices.xls";
+    $headers = [
+        "Content-type" => "application/vnd.ms-excel",
+        "Content-Disposition" => "attachment; filename=$filename"
+    ];
+
+    $content = view('exports.devices_excel', compact('devices'))->render();
+
+    return response($content, 200, $headers);
+}
+
+// Export ke PDF
+public function exportPdf()
+{
+    $devices = Device::all();
+    $pdf = Pdf::loadView('exports.devices_pdf', compact('devices'));
+    return $pdf->download('devices.pdf');
+}
+
+public function exportDetailPdf(Device $device)
+{
+    $pdf = Pdf::loadView('exports.devices_detail_pdf', compact('device'));
+    return $pdf->download('device_detail_' . $device->id . '.pdf');
+}
 }
