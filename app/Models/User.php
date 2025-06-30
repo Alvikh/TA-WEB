@@ -60,5 +60,9 @@ class User extends Authenticatable
 {
     return $this->hasMany(Device::class, 'owner_id');
 }
+public function refreshTokens()
+    {
+        return $this->hasMany(RefreshToken::class);
+    }
 
 }

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\User;
+use Illuminate\Support\Str;
+use App\Models\RefreshToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
@@ -131,6 +133,52 @@ $user->update([
         return response()->json([
             'success' => true,
             'user'    => $request->user(),
+        ]);
+    }
+    protected function createRefreshToken(User $user)
+    {
+        // Delete old refresh tokens
+        $user->refreshTokens()->delete();
+
+        // Create new refresh token
+        return $user->refreshTokens()->create([
+            'token' => Str::random(60),
+            'expires_at' => now()->addDays(7)
+        ]);
+    }
+
+    public function refreshToken(Request $request)
+    {
+        $request->validate([
+            'refresh_token' => 'required'
+        ]);
+
+        $refreshToken = RefreshToken::where('token', $request->refresh_token)
+            ->where('expires_at', '>', now())
+            ->first();
+
+        if (!$refreshToken) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Refresh token tidak valid atau sudah kadaluarsa'
+            ], 401);
+        }
+
+        $user = $refreshToken->user;
+
+        // Revoke all old access tokens
+        $user->tokens()->delete();
+
+        // Create new access token
+        $token = $user->createToken('auth_token', ['*'], now()->addMinutes(15))->plainTextToken;
+
+        // Create new refresh token (optional: rotate refresh token)
+        $newRefreshToken = $this->createRefreshToken($user);
+
+        return response()->json([
+            'success' => true,
+            'token' => $token,
+            'refresh_token' => $newRefreshToken->token
         ]);
     }
 }
