@@ -56,4 +56,9 @@ class User extends Authenticatable
     {
         return $this->role === 'user';
     }
+    public function devices()
+{
+    return $this->hasMany(Device::class, 'owner_id');
+}
+
 }
