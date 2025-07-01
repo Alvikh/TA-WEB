@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\DevicesExport;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class UserController extends Controller
 {
@@ -120,5 +123,36 @@ public function deactivate(User $user)
 {
     $user->update(['status' => 'inactive']);
     return redirect()->route('users.show', $user)->with('success', 'User deactivated successfully');
+}
+
+       // Export ke Excel
+public function exportExcel()
+{
+    $users = User::all();
+
+    $filename = "users.xls";
+    $headers = [
+        "Content-type" => "application/vnd.ms-excel",
+        "Content-Disposition" => "attachment; filename=$filename"
+    ];
+
+    $content = view('exports.users_excel', compact('users'))->render();
+
+    return response($content, 200, $headers);
+}
+
+
+// Export ke PDF
+public function exportPdf()
+{
+    $users = User::all();
+    $pdf = Pdf::loadView('exports.users_pdf', compact('users'));
+    return $pdf->download('users.pdf');
+}
+
+public function exportDetailPdf(User $user)
+{
+    $pdf = Pdf::loadView('exports.export_detail_pdf', compact('user'));
+    return $pdf->download('user_detail_' . $user->id . '.pdf');
 }
 }

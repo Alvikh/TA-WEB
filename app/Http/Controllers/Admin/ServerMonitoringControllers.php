@@ -5,6 +5,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 
 class ServerMonitoringControllers extends Controller
 {
@@ -240,13 +242,30 @@ class ServerMonitoringControllers extends Controller
         return round($usage, 2);
     }
 
-    private function formatBytes($bytes, $precision = 2)
+    public static function formatBytes($bytes, $precision = 2)
     {
         $units = ['B', 'KB', 'MB', 'GB', 'TB'];
         $bytes = max($bytes, 0);
         $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
         $pow = min($pow, count($units) - 1);
         $bytes /= pow(1024, $pow);
+
         return round($bytes, $precision) . ' ' . $units[$pow];
     }
+
+    public function exportPDF()
+{
+    $data = [
+        'system' => $this->getSystemMetrics(),
+        'web_server' => $this->getWebServerMetrics(),
+        'database' => $this->getDatabaseMetrics(),
+        'application' => $this->getApplicationMetrics(),
+        'errors' => $this->getErrorMetrics(),
+        'timestamp' => now()->toDateTimeString()
+    ];
+
+    $pdf = Pdf::loadView('exports.server_pdf', compact('data'))->setPaper('a4', 'portrait');
+    return $pdf->stream('server-monitoring-' . now()->format('Ymd_His') . '.pdf');
+}
+
 }

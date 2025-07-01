@@ -16,6 +16,7 @@
                     Last updated: {{ now()->format('H:i:s') }}
                 </p>
             </div>
+
             <div class="flex items-center space-x-4">
                 <span class="text-sm text-gray-500">
                     <i class="fas fa-circle text-green-500 mr-1"></i> System Operational
@@ -23,11 +24,17 @@
                 <button class="inline-flex items-center px-3 py-1 bg-white text-blue-600 border border-blue-200 text-sm font-semibold rounded-lg hover:bg-blue-50 transition duration-200 shadow-sm">
                     <i class="fas fa-sync-alt mr-2"></i> Refresh
                 </button>
+                <a href="{{ route('admin.server.export') }}" class="inline-flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M6 2a1 1 0 00-1 1v2h10V3a1 1 0 00-1-1H6zM4 6v10a2 2 0 002 2h8a2 2 0 002-2V6H4zm4 2h4v2H8V8zm0 4h4v2H8v-2z" />
+                    </svg>
+                    Export PDF
+                </a>
             </div>
         </div>
 
         <!-- System Health Row -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 mb-8">
             <!-- CPU Card -->
             <div class="bg-white rounded-xl shadow-sm border border-blue-100 overflow-hidden">
                 <div class="bg-gradient-to-r from-blue-500 to-blue-400 px-6 py-4">
@@ -46,14 +53,11 @@
                             <svg class="w-full h-full" viewBox="0 0 36 36">
                                 <path d="M18 2.0845
                                     a 15.9155 15.9155 0 0 1 0 31.831
-                                    a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#e6e6e6" stroke-width="3"
-                                    stroke-dasharray="100, 100" />
+                                    a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#e6e6e6" stroke-width="3" stroke-dasharray="100, 100" />
                                 <path d="M18 2.0845
                                     a 15.9155 15.9155 0 0 1 0 31.831
-                                    a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#3b82f6" stroke-width="3"
-                                    stroke-dasharray="{{ $data['system']['cpu']['usage_percent'] ?? 0 }}, 100" />
-                                <text x="18" y="20.5" text-anchor="middle" font-size="10" fill="#3b82f6"
-                                    font-weight="bold">{{ $data['system']['cpu']['usage_percent'] ?? 0 }}%</text>
+                                    a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#3b82f6" stroke-width="3" stroke-dasharray="{{ $data['system']['cpu']['usage_percent'] ?? 0 }}, 100" />
+                                <text x="18" y="20.5" text-anchor="middle" font-size="10" fill="#3b82f6" font-weight="bold">{{ $data['system']['cpu']['usage_percent'] ?? 0 }}%</text>
                             </svg>
                         </div>
                         <h4 class="text-lg font-semibold text-blue-800">CPU Load</h4>
@@ -90,23 +94,20 @@
                 </div>
                 <div class="p-6">
                     @php
-                        $totalMem = $data['system']['memory']['total_mb'] ?? 0;
-                        $usedMem = $data['system']['memory']['used_mb'] ?? 0;
-                        $memPercent = ($totalMem > 0) ? round(($usedMem / $totalMem) * 100) : 0;
+                    $totalMem = $data['system']['memory']['total_mb'] ?? 0;
+                    $usedMem = $data['system']['memory']['used_mb'] ?? 0;
+                    $memPercent = ($totalMem > 0) ? round(($usedMem / $totalMem) * 100) : 0;
                     @endphp
                     <div class="text-center mb-4">
                         <div class="relative w-24 h-24 mx-auto mb-3">
                             <svg class="w-full h-full" viewBox="0 0 36 36">
                                 <path d="M18 2.0845
                                     a 15.9155 15.9155 0 0 1 0 31.831
-                                    a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#e6e6e6" stroke-width="3"
-                                    stroke-dasharray="100, 100" />
+                                    a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#e6e6e6" stroke-width="3" stroke-dasharray="100, 100" />
                                 <path d="M18 2.0845
                                     a 15.9155 15.9155 0 0 1 0 31.831
-                                    a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#f59e0b" stroke-width="3"
-                                    stroke-dasharray="{{ $memPercent }}, 100" />
-                                <text x="18" y="20.5" text-anchor="middle" font-size="10" fill="#f59e0b"
-                                    font-weight="bold">{{ $memPercent }}%</text>
+                                    a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#f59e0b" stroke-width="3" stroke-dasharray="{{ $memPercent }}, 100" />
+                                <text x="18" y="20.5" text-anchor="middle" font-size="10" fill="#f59e0b" font-weight="bold">{{ $memPercent }}%</text>
                             </svg>
                         </div>
                         <h4 class="text-lg font-semibold text-amber-800">RAM Usage</h4>
@@ -139,27 +140,26 @@
                 </div>
                 <div class="p-6">
                     @if(isset($data['system']['disk']) && count($data['system']['disk']) > 0)
-                        @foreach($data['system']['disk'] as $disk)
-                        <div class="mb-4">
-                            <div class="flex justify-between text-sm mb-1">
-                                <span class="text-gray-600">{{ $disk['filesystem'] ?? 'Unknown' }}</span>
-                                <span class="font-medium">{{ $disk['use_percent'] ?? 0 }}%</span>
-                            </div>
-                            <div class="progress-bar bg-gray-200">
-                                <div class="progress-bar-fill 
-                                    {{ ($disk['use_percent'] ?? 0) > 90 ? 'bg-red-500' : 'bg-purple-500' }}" 
-                                    style="width: {{ $disk['use_percent'] ?? 0 }}%"></div>
-                            </div>
-                            <div class="flex justify-between text-xs text-gray-500 mt-1">
-                                <span>{{ $disk['available'] ?? 'N/A' }} free</span>
-                                <span>{{ $disk['used'] ?? 'N/A' }} of {{ $disk['size'] ?? 'N/A' }}</span>
-                            </div>
+                    @foreach($data['system']['disk'] as $disk)
+                    <div class="mb-4">
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="text-gray-600">{{ $disk['filesystem'] ?? 'Unknown' }}</span>
+                            <span class="font-medium">{{ $disk['use_percent'] ?? 0 }}%</span>
                         </div>
-                        @endforeach
+                        <div class="progress-bar bg-gray-200">
+                            <div class="progress-bar-fill 
+                                    {{ ($disk['use_percent'] ?? 0) > 90 ? 'bg-red-500' : 'bg-purple-500' }}" style="width: {{ $disk['use_percent'] ?? 0 }}%"></div>
+                        </div>
+                        <div class="flex justify-between text-xs text-gray-500 mt-1">
+                            <span>{{ $disk['available'] ?? 'N/A' }} free</span>
+                            <span>{{ $disk['used'] ?? 'N/A' }} of {{ $disk['size'] ?? 'N/A' }}</span>
+                        </div>
+                    </div>
+                    @endforeach
                     @else
-                        <div class="text-center py-4 text-gray-500">
-                            <i class="fas fa-exclamation-circle mr-2"></i> No disk information available
-                        </div>
+                    <div class="text-center py-4 text-gray-500">
+                        <i class="fas fa-exclamation-circle mr-2"></i> No disk information available
+                    </div>
                     @endif
                 </div>
             </div>
@@ -368,6 +368,7 @@
     setTimeout(function() {
         window.location.reload();
     }, 60000);
+
 </script>
 @endpush
 
