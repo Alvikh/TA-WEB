@@ -6,6 +6,7 @@ use App\Models\Device;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -14,7 +15,7 @@ class DeviceController extends Controller
     // Get all devices
     public function me(Request $request)
     {
-        $user = $request->user();
+        $user = User::find($request->user()->id);
 
         if (!$user) {
             return response()->json([
