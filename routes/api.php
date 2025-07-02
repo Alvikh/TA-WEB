@@ -12,9 +12,10 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/refresh', [AuthController::class, 'refreshToken']);
 // Route::prefix('monitoring')->group(function () {
-//     Route::get('dashboard', [ServerMonitoringController::class, 'getDashboardData']);
-// });
-Route::middleware('auth:sanctum')->group(function () {
+    //     Route::get('dashboard', [ServerMonitoringController::class, 'getDashboardData']);
+    // });
+    Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/refresh', [AuthController::class, 'refresh']);
     Route::get('/user', [AuthController::class, 'user']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/complete-profile', [AuthController::class, 'completeProfile']);

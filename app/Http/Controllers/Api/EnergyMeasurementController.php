@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\EnergyMeasurement;
 use App\Models\Device;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use App\Models\EnergyMeasurement;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
@@ -95,7 +96,7 @@ class EnergyMeasurementController extends Controller
             if (!isset($item['measured_at'])) {
                 $item['measured_at'] = now();
             } else {
-                $item['measured_at'] = \Carbon\Carbon::createFromFormat('d-m-Y H:i:s', $item['measured_at']);
+                $item['measured_at'] = Carbon::createFromFormat('d-m-Y H:i:s', $item['measured_at']);
             }
 
             $validatedData[] = $item;

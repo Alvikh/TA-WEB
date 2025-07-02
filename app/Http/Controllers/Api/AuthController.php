@@ -6,8 +6,10 @@ use App\Models\User;
 use Illuminate\Support\Str;
 use App\Models\RefreshToken;
 use Illuminate\Http\Request;
+use Symfony\Component\Clock\now;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Illuminate\Container\Attributes\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -21,7 +23,7 @@ class AuthController extends Controller
         // Create new refresh token
         return $user->refreshTokens()->create([
             'token' => Str::random(60),
-            'expires_at' => now()->addDays(7)
+            'expires_at' => now()->addDays(7),
         ]);
     }
     // Tahap 1: Register dengan email dan password
@@ -90,7 +92,22 @@ class AuthController extends Controller
             'user'=>$user
         ]);
     }
+public function refresh(Request $request)
+    {
+        $user = $request->user();
 
+        $token = $user->createToken('auth_token', ['*'], now()->addDay(7))->plainTextToken;
+        $this->createRefreshToken($user);
+$user->update([
+            'last_login_at' => now(),
+        ]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Login berhasil',
+            'token'   => $token,
+            'user'=>$user
+        ]);
+    }
     // Login
     public function login(Request $request)
     {
@@ -144,7 +161,7 @@ $user->update([
     {
         return response()->json([
             'success' => true,
-            'user'    => $request->user(),
+            'user'    => $request->user()->with('devices'),
         ]);
     }
     
