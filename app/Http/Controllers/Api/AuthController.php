@@ -110,40 +110,43 @@ $user->update([
     }
     // Login
     public function login(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'email'    => 'required|email',
-            'password' => 'required',
-        ]);
+{
+    $validator = Validator::make($request->all(), [
+        'email'    => 'required|email',
+        'password' => 'required',
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => $validator->errors()->first(),
-            ], 400);
-        }
-
-        $user = User::where('email', $request->email)->with('devices')->first();
-
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Email atau password salah',
-            ], 401);
-        }
-
-        $token = $user->createToken('auth_token', ['*'], now()->addDay(7))->plainTextToken;
-        $this->createRefreshToken($user);
-$user->update([
-            'last_login_at' => now(),
-        ]);
+    if ($validator->fails()) {
         return response()->json([
-            'success' => true,
-            'message' => 'Login berhasil',
-            'token'   => $token,
-            'user'=>$user
-        ]);
+            'success' => false,
+            'message' => $validator->errors()->first(),
+        ], 400);
     }
+
+    $user = User::where('email', $request->email)->with('devices')->first();
+
+    if (!$user || !Hash::check($request->password, $user->password)) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Email atau password salah',
+        ], 401);
+    }
+
+    $token = $user->createToken('auth_token', ['*'], now()->addDay(7))->plainTextToken;
+    $refreshToken = $this->createRefreshToken($user);
+    
+    $user->update([
+        'last_login_at' => now(),
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Login berhasil',
+        'token'   => $token,
+        'refresh_token' => $refreshToken->token, // Add this line
+        'user' => $user
+    ]);
+}
 
     // Logout
     public function logout(Request $request)
