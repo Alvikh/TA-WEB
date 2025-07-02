@@ -16,7 +16,7 @@ Route::post('/refresh', [AuthController::class, 'refreshToken']);
     // });
     Route::middleware('auth:sanctum')->group(function () {
     Route::post('/refresh', [AuthController::class, 'refresh']);
-    Route::get('/user', [AuthController::class, 'user']);
+    Route::post('/user', [AuthController::class, 'user']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/complete-profile', [AuthController::class, 'completeProfile']);
 
