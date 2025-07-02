@@ -162,9 +162,22 @@ $user->update([
     // Get user info
     public function user(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first(),
+            ], 400);
+        }
+
+        $user = User::with('devices')->find($request->user_id);
+
         return response()->json([
             'success' => true,
-            'user'    => $request->user()->with('devices'),
+            'user'    => $user,
         ]);
     }
     
@@ -172,6 +185,7 @@ $user->update([
     public function refreshToken(Request $request)
     {
         $request->validate([
+            
             'refresh_token' => 'required'
         ]);
 
