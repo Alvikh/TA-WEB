@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\User;
+use Illuminate\Support\Str;
+use App\Models\RefreshToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
@@ -11,6 +13,17 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
+    protected function createRefreshToken(User $user)
+    {
+        // Delete old refresh tokens
+        $user->refreshTokens()->delete();
+
+        // Create new refresh token
+        return $user->refreshTokens()->create([
+            'token' => Str::random(60),
+            'expires_at' => now()->addDays(7)
+        ]);
+    }
     // Tahap 1: Register dengan email dan password
     public function register(Request $request)
     {
@@ -93,7 +106,7 @@ class AuthController extends Controller
             ], 400);
         }
 
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('email', $request->email)->with('devices')->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
@@ -102,7 +115,8 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $token = $user->createToken('auth_token', ['*'], now()->addDay(7))->plainTextToken;
+        $this->createRefreshToken($user);
 $user->update([
             'last_login_at' => now(),
         ]);
@@ -131,6 +145,42 @@ $user->update([
         return response()->json([
             'success' => true,
             'user'    => $request->user(),
+        ]);
+    }
+    
+
+    public function refreshToken(Request $request)
+    {
+        $request->validate([
+            'refresh_token' => 'required'
+        ]);
+
+        $refreshToken = RefreshToken::where('token', $request->refresh_token)
+            ->where('expires_at', '>', now())
+            ->first();
+
+        if (!$refreshToken) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Refresh token tidak valid atau sudah kadaluarsa'
+            ], 401);
+        }
+
+        $user = $refreshToken->user;
+
+        // Revoke all old access tokens
+        $user->tokens()->delete();
+
+        // Create new access token
+        $token = $user->createToken('auth_token', ['*'], now()->addDay(7))->plainTextToken;
+
+        // Create new refresh token (optional: rotate refresh token)
+        $newRefreshToken = $this->createRefreshToken($user);
+
+        return response()->json([
+            'success' => true,
+            'token' => $token,
+            'refresh_token' => $newRefreshToken->token
         ]);
     }
 }

@@ -42,23 +42,23 @@ class EnergyMeasurementController extends Controller
 
     public function store(Request $request)
 {
-    $jsonData = json_decode(file_get_contents('php://input'), true);
+    // $jsonData = json_decode(file_get_contents('php://input'), true);
     
-    Log::error('Invalid JSON', [
-        'raw_input' => file_get_contents('php://input'),
-        'headers' => $request->headers->all()
-    ]);
+    // Log::error('Invalid JSON', [
+    //     'raw_input' => file_get_contents('php://input'),
+    //     'headers' => $request->headers->all()
+    // ]);
     
-    return response()->json([
-        'success' => false,
-        'message' => 'Invalid JSON format',
-        'debug' => [
-            'php_input' => file_get_contents('php://input'),
-            'headers' => $request->headers->all()
-        ]
-    ], 400);
-    if (json_last_error() !== JSON_ERROR_NONE) {
-    }
+    // return response()->json([
+    //     'success' => false,
+    //     'message' => 'Invalid JSON format',
+    //     'debug' => [
+    //         'php_input' => file_get_contents('php://input'),
+    //         'headers' => $request->headers->all()
+    //     ]
+    // ], 400);
+    // if (json_last_error() !== JSON_ERROR_NONE) {
+    // }
 
 
 
