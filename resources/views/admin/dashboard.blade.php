@@ -155,151 +155,6 @@
             </div>
         </div>
 
-        {{-- <!-- Server Stats Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <!-- Server Disk Usage Card -->
-            <div class="bg-white rounded-xl shadow-sm border border-purple-100 overflow-hidden">
-                <div class="bg-gradient-to-r from-purple-500 to-purple-400 px-6 py-4">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-lg font-semibold text-white">
-                            <i class="fas fa-hdd mr-2"></i> Disk Usage
-                        </h3>
-                        <div class="p-2 rounded-full bg-purple-300 bg-opacity-30">
-                            <i class="fas fa-database text-white"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <div class="text-center mb-4">
-                        <div class="relative w-24 h-24 mx-auto mb-3">
-                            <svg class="w-full h-full" viewBox="0 0 36 36">
-                                <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" 
-                                      fill="none" stroke="#e6e6e6" stroke-width="3" stroke-dasharray="100, 100" />
-                                <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" 
-                                      fill="none" stroke="#8b5cf6" stroke-width="3" stroke-dasharray="{{ $disk_usage_percentage }}, 100" />
-                                <text x="18" y="20.5" text-anchor="middle" font-size="10" fill="#8b5cf6" font-weight="bold">
-                                    {{ $disk_usage_percentage }}%
-                                </text>
-                            </svg>
-                        </div>
-                        <h4 class="text-lg font-semibold text-purple-800">Storage</h4>
-                        <p class="text-sm text-purple-600">{{ $disk_used }} of {{ $disk_total }} used</p>
-                    </div>
-                    <div class="bg-purple-50 p-3 rounded-lg text-center">
-                        <p class="text-purple-800 font-medium">{{ $disk_free }} available</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Server Memory Usage Card -->
-            <div class="bg-white rounded-xl shadow-sm border border-amber-100 overflow-hidden">
-                <div class="bg-gradient-to-r from-amber-500 to-amber-400 px-6 py-4">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-lg font-semibold text-white">
-                            <i class="fas fa-memory mr-2"></i> Memory
-                        </h3>
-                        <div class="p-2 rounded-full bg-amber-300 bg-opacity-30">
-                            <i class="fas fa-microchip text-white"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <div class="text-center mb-4">
-                        <div class="relative w-24 h-24 mx-auto mb-3">
-                            <svg class="w-full h-full" viewBox="0 0 36 36">
-                                <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" 
-                                      fill="none" stroke="#e6e6e6" stroke-width="3" stroke-dasharray="100, 100" />
-                                <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" 
-                                      fill="none" stroke="#f59e0b" stroke-width="3" stroke-dasharray="{{ $memory_usage_percentage }}, 100" />
-                                <text x="18" y="20.5" text-anchor="middle" font-size="10" fill="#f59e0b" font-weight="bold">
-                                    {{ $memory_usage_percentage }}%
-                                </text>
-                            </svg>
-                        </div>
-                        <h4 class="text-lg font-semibold text-amber-800">RAM Usage</h4>
-                        <p class="text-sm text-amber-600">{{ $memory_usage }} of {{ $memory_total }}</p>
-                    </div>
-                    <div class="grid grid-cols-2 gap-3 text-sm">
-                        <div class="bg-amber-50 p-2 rounded-lg text-center">
-                            <p class="text-amber-800 font-semibold">{{ $memory_usage }}</p>
-                            <p class="text-amber-600 text-xs">Current</p>
-                        </div>
-                        <div class="bg-amber-50 p-2 rounded-lg text-center">
-                            <p class="text-amber-800 font-semibold">{{ $memory_peak }}</p>
-                            <p class="text-amber-600 text-xs">Peak</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- CPU Load Card -->
-            <div class="bg-white rounded-xl shadow-sm border border-red-100 overflow-hidden">
-                <div class="bg-gradient-to-r from-red-500 to-red-400 px-6 py-4">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-lg font-semibold text-white">
-                            <i class="fas fa-tachometer-alt mr-2"></i> CPU Load
-                        </h3>
-                        <div class="p-2 rounded-full bg-red-300 bg-opacity-30">
-                            <i class="fas fa-cog text-white"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <div class="text-center mb-4">
-                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 text-red-600 mb-3">
-                            <i class="fas fa-brain text-2xl"></i>
-                        </div>
-                        <h4 class="text-3xl font-bold text-red-800">{{ number_format($cpu_load_1min, 2) }}</h4>
-                        <p class="text-sm text-red-600">1-minute average</p>
-                    </div>
-                    <div class="grid grid-cols-2 gap-3 text-sm">
-                        <div class="bg-red-50 p-2 rounded-lg text-center">
-                            <p class="text-red-800 font-semibold">{{ number_format($cpu_load_5min, 2) }}</p>
-                            <p class="text-red-600 text-xs">5-minute</p>
-                        </div>
-                        <div class="bg-red-50 p-2 rounded-lg text-center">
-                            <p class="text-red-800 font-semibold">{{ number_format($cpu_load_15min, 2) }}</p>
-                            <p class="text-red-600 text-xs">15-minute</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- System Status Card -->
-            <div class="bg-white rounded-xl shadow-sm border border-emerald-100 overflow-hidden">
-                <div class="bg-gradient-to-r from-emerald-500 to-emerald-400 px-6 py-4">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-lg font-semibold text-white">
-                            <i class="fas fa-server mr-2"></i> System Status
-                        </h3>
-                        <div class="p-2 rounded-full bg-emerald-300 bg-opacity-30">
-                            <i class="fas fa-heartbeat text-white"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <div class="space-y-4">
-                        <div class="flex items-center justify-between">
-                            <span class="text-emerald-800 font-medium">Uptime</span>
-                            <span class="text-emerald-600">{{ exec('uptime -p') ?: 'N/A' }}</span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-emerald-800 font-medium">PHP Version</span>
-                            <span class="text-emerald-600">{{ phpversion() }}</span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-emerald-800 font-medium">Laravel</span>
-                            <span class="text-emerald-600">{{ app()->version() }}</span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-emerald-800 font-medium">OS</span>
-                            <span class="text-emerald-600">{{ php_uname('s') }} {{ php_uname('r') }}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> --}}
-
         <!-- MQTT Monitoring Section -->
         <div class="bg-white rounded-2xl shadow-sm border border-blue-100 overflow-hidden">
             <div class="bg-gradient-to-r from-blue-700 to-blue-600 px-6 py-4">
@@ -482,25 +337,21 @@
     </div>
 </div>
 
-<!-- MQTT.js Library -->
 <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
-
-<!-- MQTT Monitoring Script -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const clientId = 'monitoring_' + Math.random().toString(16).substr(2, 8);
         const options = {
-            // HiveMQ is public and doesn't require credentials
             clientId: clientId,
             clean: true,
             connectTimeout: 4000,
             reconnectPeriod: 1000,
+            protocol: 'wss'
         };
 
         let client = null;
         const topic = 'iot/monitoring';
 
-        // DOM Elements
         const connectBtn = document.getElementById('connect-btn');
         const disconnectBtn = document.getElementById('disconnect-btn');
         const connectionStatus = document.getElementById('connection-status');
@@ -508,12 +359,10 @@
         const messageLog = document.getElementById('message-log');
         const clearLogBtn = document.getElementById('clear-log');
 
-        // Clear log button
         clearLogBtn.addEventListener('click', function() {
             messageLog.innerHTML = '<div class="text-gray-400 italic">Log cleared</div>';
         });
 
-        // Connect to MQTT
         connectBtn.addEventListener('click', function() {
             client = mqtt.connect('wss://broker.hivemq.com:8884/mqtt', options);
 
@@ -524,9 +373,7 @@
                 connectBtn.disabled = true;
                 disconnectBtn.disabled = false;
 
-                client.subscribe(topic, {
-                    qos: 0
-                }, function(err) {
+                client.subscribe(topic, { qos: 0 }, function(err) {
                     if (!err) {
                         addToLog('Successfully subscribed to: ' + topic, 'success');
                     } else {
@@ -540,33 +387,30 @@
                     const timestamp = new Date().toLocaleTimeString();
                     const data = JSON.parse(message.toString());
 
-                    // Update UI with sensor data
                     updateSensorData(data);
 
-                    // Log the message
                     addToLog(`[${timestamp}] ${topic}: ${message.toString()}`, 'message');
 
-                    // Send to Laravel backend
                     fetch('/monitoring', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                            },
-                            body: JSON.stringify({
-                                device_id: 1,
-                                voltage: data.tegangan,
-                                current: data.arus,
-                                power: data.daya,
-                                energy: data.energi,
-                                temperature: data.suhu,
-                                humidity: data.kelembapan,
-                                measured_at: `${data.tanggal} ${data.waktu}`
-                            })
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                        },
+                        body: JSON.stringify({
+                            device_id: 1,
+                            voltage: data.voltage,
+                            current: data.current,
+                            power: data.power,
+                            energy: data.energy,
+                            temperature: data.temperature,
+                            humidity: data.humidity,
+                            measured_at: data.measured_at
                         })
-                        .then(response => response.json())
-                        .then(data => console.log('Measurement stored:', data))
-                        .catch(error => console.error('Error storing measurement:', error));
+                    })
+                    .then(response => response.json())
+                    .then(data => console.log('Measurement stored:', data))
+                    .catch(error => console.error('Error storing measurement:', error));
 
                 } catch (e) {
                     addToLog('Error parsing message: ' + e.message, 'error');
@@ -574,7 +418,7 @@
             });
 
             client.on('error', function(err) {
-                connectionStatus.classList.remove('bg-green-500', 'bg-gray-300');
+                connectionStatus.classList.remove('bg-green-500');
                 connectionStatus.classList.add('bg-red-500');
                 connectionText.textContent = 'Connection error';
                 addToLog('Error: ' + err.message, 'error');
@@ -597,44 +441,40 @@
             });
         });
 
-        // Disconnect from MQTT
         disconnectBtn.addEventListener('click', function() {
             if (client) {
                 client.end();
+                addToLog('Manual disconnect triggered', 'warning');
             }
         });
 
-        // Update sensor data display
         function updateSensorData(data) {
             const updateValue = (id, value) => {
                 const el = document.getElementById(id);
                 if (el && value !== undefined) {
-                    el.textContent = value;
-                    // Add animation effect
+                    const val = typeof value === 'number' ? value.toFixed(2) : value;
+                    el.textContent = val;
                     el.classList.add('animate-pulse');
                     setTimeout(() => el.classList.remove('animate-pulse'), 500);
                 }
             };
 
-            updateValue('suhu-value', data.suhu ?? '--');
-            updateValue('kelembapan-value', data.kelembapan ?? '--');
-            updateValue('tegangan-value', data.tegangan ?? '--');
-            updateValue('arus-value', data.arus ?? '--');
-            updateValue('daya-value', data.daya ?? '--');
-            updateValue('energi-value', data.energi ?? '--');
+            updateValue('suhu-value', data.temperature ?? '--');
+            updateValue('kelembapan-value', data.humidity ?? '--');
+            updateValue('tegangan-value', data.voltage ?? '--');
+            updateValue('arus-value', data.current ?? '--');
+            updateValue('daya-value', data.power ?? '--');
+            updateValue('energi-value', data.energy ?? '--');
         }
 
-        // Add message to log with different types
         function addToLog(message, type = 'info') {
             const logEntry = document.createElement('div');
             const timestamp = new Date().toLocaleTimeString();
 
-            // Remove initial placeholder if exists
             if (messageLog.firstChild?.classList?.contains('italic')) {
                 messageLog.removeChild(messageLog.firstChild);
             }
 
-            // Set styling based on message type
             let textColor = 'text-gray-700';
             if (type === 'error') textColor = 'text-red-600';
             if (type === 'success') textColor = 'text-green-600';
@@ -647,6 +487,10 @@
             messageLog.prepend(logEntry);
             messageLog.scrollTop = 0;
         }
+
+        // ✅ Auto-connect saat halaman dimuat
+        addToLog('Auto connecting to MQTT broker...', 'info');
+        connectBtn.click();
     });
 </script>
 @endsection
