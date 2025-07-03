@@ -179,6 +179,37 @@
                 </div>
             </div>
             <div class="p-6">
+
+                <!-- Device ID Card -->
+<div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+    <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-medium text-blue-800 flex items-center">
+            <i class="fas fa-id-card-alt text-blue-500 mr-2"></i> Device Information
+        </h3>
+        <!-- Tombol Show Device -->
+        <a href="{{ route('monitor.show', $device->id) }}"
+           class="inline-flex items-center px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md transition-colors">
+            <i class="fas fa-eye mr-2"></i> Show Device
+        </a>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <div class="bg-blue-50 p-4 rounded-lg border border-blue-100 transition-all hover:shadow-md">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-medium text-blue-500 uppercase tracking-wider">Device ID</p>
+                    <p class="text-2xl font-semibold text-blue-800 mt-1">
+                        <span id="device-id-value">--</span>
+                    </p>
+                </div>
+                <div class="p-2 rounded-full bg-blue-100 text-blue-600">
+                    <i class="fas fa-fingerprint"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="p-6">
+
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <!-- Sensor Data -->
                     <div class="lg:col-span-2">
@@ -278,6 +309,7 @@
                 </div>
             </div>
         </div>
+        <div class="p-6">
 
         <!-- MQTT Broker Info -->
         <div class="bg-white rounded-2xl shadow-sm border border-blue-100 overflow-hidden">
@@ -459,6 +491,7 @@
                 }
             };
 
+            updateValue('device-id-value', data.id ?? '--');
             updateValue('suhu-value', data.temperature ?? '--');
             updateValue('kelembapan-value', data.humidity ?? '--');
             updateValue('tegangan-value', data.voltage ?? '--');
