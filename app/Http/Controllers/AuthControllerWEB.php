@@ -31,34 +31,38 @@ return redirect()->route('login')->with('success', 'akun berhasil dibuat!');
 
 public function login(Request $request)
 {
-    $attempt = LoginAttempt::create([
-        'email' => $request->email,
-        'ip_address' => $request->ip(),
-        'successful' => false,
-        'user_id' => null
-    ]);
-
-    // Validasi
+    // Validasi form input terlebih dahulu
     $request->validate([
         'email' => 'required|email',
         'password' => 'required',
     ]);
 
-    // Cek user
-    if (!Auth::attempt($request->only('email', 'password'))) {
-        return redirect()->route('login')->with('error', 'password salah!');
+    // Catat percobaan login awal
+    $attempt = LoginAttempt::create([
+        'email' => $request->email,
+        'ip_address' => $request->ip(),
+        'successful' => false,
+        'user_id' => null,
+    ]);
 
+    // Coba autentikasi
+    if (!Auth::attempt($request->only('email', 'password'))) {
+        return back()->withInput()->with('error', 'Email atau password salah!');
     }
- $attempt->update([
-            'successful' => true,
-            'user_id' => Auth::id()
-        ]);
-$user = Auth::user();
-if ($user instanceof \App\Models\User) {
-    $user->last_login_at = now();
-    $user->save();
-}
-    return redirect()->route('admin.dashboard')->with('success', 'login berhasil');
+
+    // Jika sukses, update login attempt dan last_login_at
+    $attempt->update([
+        'successful' => true,
+        'user_id' => Auth::id(),
+    ]);
+
+    $user = Auth::user();
+    if ($user instanceof \App\Models\User) {
+        $user->last_login_at = now();
+        $user->save();
+    }
+
+    return redirect()->route('admin.dashboard')->with('success', 'Login berhasil.');
 }
 
     public function user(Request $request)
