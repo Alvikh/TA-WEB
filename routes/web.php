@@ -22,7 +22,7 @@ use App\Http\Controllers\Admin\ServerMonitoringControllers;
 |
 */
 // Route::get('/test-api', function () {
-    //     return response()->json(['message' => 'API works!']);
+//     return response()->json(['message' => 'API works!']);
 // });
 
 Route::get('/', function () {
@@ -60,7 +60,7 @@ Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified'
-    ])->group(function () {
+])->group(function () {
     // Route::get('/dashboard', [DashboardController::class,"index"])->name('dashboard');
 });
 
@@ -71,5 +71,3 @@ Route::get('/users/export/pdf', [UserController::class, 'exportPdf'])->name('use
 Route::get('/users/export/excel', [UserController::class, 'exportExcel'])->name('users.export.excel');
 Route::get('/users/{user}/export-pdf', [UserController::class, 'exportDetailPdf'])->name('users.export.detail');
 Route::get('/admin/server-monitoring/export-pdf', [ServerMonitoringControllers::class, 'exportPDF'])->name('admin.server.export');
-
-

@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PredictController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DeviceController;
 use App\Http\Controllers\Api\ProfileController;
@@ -36,12 +37,13 @@ Route::post('/refresh', [AuthController::class, 'refreshToken']);
         Route::get('/building/{building}', [DeviceController::class, 'byBuilding']);
         Route::get('/status/{status}', [DeviceController::class, 'byStatus']);
     });
-   
+   Route::post('/predict-future', [PredictController::class, 'predictFuture']);
 });
 
 Route::get('/test-api', function () {
     return response()->json(['message' => 'API works!']);
 });
+
  Route::prefix('energy-measurements')->group(function () {
      Route::post('/', [EnergyMeasurementController::class, 'store']);
         Route::get('/', [EnergyMeasurementController::class, 'store']);
