@@ -9,7 +9,7 @@
             <td style="padding: 25px 30px; text-align: center; background-color: #1e40af; border-top-left-radius: 8px; border-top-right-radius: 8px;">
                 <!-- Logo with fallback text -->
                 <a href="https://pey.my.id" style="text-decoration: none;">
-                    <img src="https://pey.my.id/images/ICON.png" 
+                    <img src="https://pey.my.id/images/LOGO.png" 
                          alt="Smart Power Management Logo" 
                          width="150" 
                          height="50" 
