@@ -187,7 +187,7 @@
             <i class="fas fa-id-card-alt text-blue-500 mr-2"></i> Device Information
         </h3>
         <!-- Tombol Show Device -->
-        <a href="{{ route('monitor.show', $device->id) }}"
+        <a href="#"
            class="inline-flex items-center px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md transition-colors">
             <i class="fas fa-eye mr-2"></i> Show Device
         </a>
