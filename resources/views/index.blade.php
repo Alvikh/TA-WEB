@@ -1,3 +1,4 @@
+<link rel="shortcut icon" href="{{ asset('images/LOGO.png') }}" type="image/png" />
 @include('layouts.header')
 <body class="text-white">
     <!-- Navigation -->

@@ -49,7 +49,7 @@
                 </div>
                 <div class="p-6">
                     <div class="text-center mb-4">
-                        <div class="relative w-24 h-24 mx-auto mb-3">
+                        <div class="relative w-25 h-25 mx-auto mb-3">
                             <svg class="w-full h-full" viewBox="0 0 36 36">
                                 <path d="M18 2.0845
                                     a 15.9155 15.9155 0 0 1 0 31.831
@@ -57,7 +57,7 @@
                                 <path d="M18 2.0845
                                     a 15.9155 15.9155 0 0 1 0 31.831
                                     a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#3b82f6" stroke-width="3" stroke-dasharray="{{ $data['system']['cpu']['usage_percent'] ?? 0 }}, 100" />
-                                <text x="18" y="20.5" text-anchor="middle" font-size="10" fill="#3b82f6" font-weight="bold">{{ $data['system']['cpu']['usage_percent'] ?? 0 }}%</text>
+                                <text x="18" y="20.5" text-anchor="middle" font-size="8" fill="#3b82f6" font-weight="bold">{{ $data['system']['cpu']['usage_percent'] ?? 0 }}%</text>
                             </svg>
                         </div>
                         <h4 class="text-lg font-semibold text-blue-800">CPU Load</h4>
@@ -99,7 +99,7 @@
                     $memPercent = ($totalMem > 0) ? round(($usedMem / $totalMem) * 100) : 0;
                     @endphp
                     <div class="text-center mb-4">
-                        <div class="relative w-24 h-24 mx-auto mb-3">
+                        <div class="relative w-25 h-25 mx-auto mb-3">
                             <svg class="w-full h-full" viewBox="0 0 36 36">
                                 <path d="M18 2.0845
                                     a 15.9155 15.9155 0 0 1 0 31.831
@@ -177,7 +177,7 @@
                     </div>
                 </div>
                 <div class="p-6">
-                    <div class="space-y-4">
+                    <div class="space-y-4 text-sm">
                         <div class="flex items-center justify-between">
                             <span class="text-green-800 font-medium">OS</span>
                             <span class="text-green-600">{{ $data['system']['os'] ?? 'Unknown' }}</span>
