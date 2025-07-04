@@ -54,12 +54,43 @@
                 </div>
             </div>
 
+<!-- Device ID Card -->
+<div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+    <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-medium text-blue-800 flex items-center">
+            <i class="fas fa-id-card-alt text-blue-500 mr-2"></i> Device Information
+        </h3>
+        <!-- Tombol Show Device -->
+        <a href="#"
+           class="inline-flex items-center px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md transition-colors">
+            <i class="fas fa-eye mr-2"></i> Show Device
+        </a>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <div class="bg-blue-50 p-4 rounded-lg border border-blue-100 transition-all hover:shadow-md">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-medium text-blue-500 uppercase tracking-wider">Device ID</p>
+                    <p class="text-2xl font-semibold text-blue-800 mt-1">
+                        <span id="device-id-value">--</span>
+                    </p>
+                </div>
+                <div class="p-2 rounded-full bg-blue-100 text-blue-600">
+                    <i class="fas fa-fingerprint"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
             <!-- Sensor Data Grid -->
             <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
                 <h3 class="text-lg font-medium text-blue-800 mb-4 flex items-center">
                     <i class="fas fa-microchip text-blue-500 mr-2"></i> Sensor Data
                 </h3>
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+
                     <!-- Temperature -->
                     <div class="bg-blue-50 p-4 rounded-lg border border-blue-100 transition-all hover:shadow-md">
                         <div class="flex items-center justify-between">
@@ -185,12 +216,12 @@
             clean: true,
             connectTimeout: 4000,
             reconnectPeriod: 1000,
+            protocol: 'wss'
         };
 
         let client = null;
         const topic = 'iot/monitoring';
 
-        // DOM Elements
         const connectBtn = document.getElementById('connect-btn');
         const disconnectBtn = document.getElementById('disconnect-btn');
         const connectionStatus = document.getElementById('connection-status');
@@ -198,14 +229,12 @@
         const messageLog = document.getElementById('message-log');
         const clearLogBtn = document.getElementById('clear-log');
 
-        // Clear log button
         clearLogBtn.addEventListener('click', function() {
             messageLog.innerHTML = '<div class="text-gray-400 italic">Log cleared</div>';
         });
 
-        // Connect to MQTT
         connectBtn.addEventListener('click', function() {
-            client = mqtt.connect('mqtt://broker.hivemq.com:1883', options);
+            client = mqtt.connect('wss://broker.hivemq.com:8884/mqtt', options);
 
             client.on('connect', function() {
                 connectionStatus.classList.remove('bg-gray-300', 'bg-red-500', 'bg-yellow-500');
@@ -227,29 +256,26 @@
                 try {
                     const timestamp = new Date().toLocaleTimeString();
                     const data = JSON.parse(message.toString());
-                    
-                    // Update UI with sensor data
+
                     updateSensorData(data);
-                    
-                    // Log the message
+
                     addToLog(`[${timestamp}] ${topic}: ${message.toString()}`, 'message');
-                    
-                    // Send to Laravel backend
+
                     fetch('/monitoring', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
                         },
                         body: JSON.stringify({
                             device_id: 1,
-                            voltage: data.tegangan,
-                            current: data.arus,
-                            power: data.daya,
-                            energy: data.energi,
-                            temperature: data.suhu,
-                            humidity: data.kelembapan,
-                            measured_at: `${data.tanggal} ${data.waktu}`
+                            voltage: data.voltage,
+                            current: data.current,
+                            power: data.power,
+                            energy: data.energy,
+                            temperature: data.temperature,
+                            humidity: data.humidity,
+                            measured_at: data.measured_at
                         })
                     })
                     .then(response => response.json())
@@ -262,7 +288,7 @@
             });
 
             client.on('error', function(err) {
-                connectionStatus.classList.remove('bg-green-500', 'bg-gray-300');
+                connectionStatus.classList.remove('bg-green-500');
                 connectionStatus.classList.add('bg-red-500');
                 connectionText.textContent = 'Connection error';
                 addToLog('Error: ' + err.message, 'error');
@@ -285,56 +311,58 @@
             });
         });
 
-        // Disconnect from MQTT
         disconnectBtn.addEventListener('click', function() {
             if (client) {
                 client.end();
+                addToLog('Manual disconnect triggered', 'warning');
             }
         });
 
-        // Update sensor data display
         function updateSensorData(data) {
             const updateValue = (id, value) => {
                 const el = document.getElementById(id);
                 if (el && value !== undefined) {
-                    el.textContent = value;
-                    // Add animation effect
+                    const val = typeof value === 'number' ? value.toFixed(2) : value;
+                    el.textContent = val;
                     el.classList.add('animate-pulse');
                     setTimeout(() => el.classList.remove('animate-pulse'), 500);
                 }
             };
 
-            updateValue('suhu-value', data.suhu ?? '--');
-            updateValue('kelembapan-value', data.kelembapan ?? '--');
-            updateValue('tegangan-value', data.tegangan ?? '--');
-            updateValue('arus-value', data.arus ?? '--');
-            updateValue('daya-value', data.daya ?? '--');
-            updateValue('energi-value', data.energi ?? '--');
+            updateValue('device-id-value', data.id ?? '--');
+            updateValue('suhu-value', data.temperature ?? '--');
+            updateValue('kelembapan-value', data.humidity ?? '--');
+            updateValue('tegangan-value', data.voltage ?? '--');
+            updateValue('arus-value', data.current ?? '--');
+            updateValue('daya-value', data.power ?? '--');
+            updateValue('energi-value', data.energy ?? '--');
         }
 
-        // Add message to log with different types
         function addToLog(message, type = 'info') {
             const logEntry = document.createElement('div');
             const timestamp = new Date().toLocaleTimeString();
-            
-            // Remove initial placeholder if exists
+
             if (messageLog.firstChild?.classList?.contains('italic')) {
                 messageLog.removeChild(messageLog.firstChild);
             }
-            
-            // Set styling based on message type
+
             let textColor = 'text-gray-700';
             if (type === 'error') textColor = 'text-red-600';
             if (type === 'success') textColor = 'text-green-600';
             if (type === 'warning') textColor = 'text-yellow-600';
             if (type === 'message') textColor = 'text-blue-600';
-            
+
             logEntry.className = `${textColor} py-1 border-b border-gray-100 last:border-0`;
             logEntry.innerHTML = `<span class="text-gray-500 text-xs">[${timestamp}]</span> ${message}`;
-            
+
             messageLog.prepend(logEntry);
             messageLog.scrollTop = 0;
         }
+
+        // ✅ Auto-connect saat halaman dimuat
+        addToLog('Auto connecting to MQTT broker...', 'info');
+        connectBtn.click();
     });
 </script>
+
 @endsection

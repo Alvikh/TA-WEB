@@ -22,13 +22,24 @@
     <form method="POST" action="{{ route('login') }}" class="w-full max-w-md text-white space-y-6 relative">
       @csrf
 
+      <!-- Error Login Message -->
+      @if (session('error'))
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+          <strong class="font-bold">Login gagal!</strong>
+          <span class="block sm:inline">{{ session('error') }}</span>
+        </div>
+      @endif
+
       <!-- Email -->
       <div>
         <label for="email" class="block text-sm font-medium mb-1">
           Email <span class="text-yellow-400">*</span>
         </label>
-        <input type="email" id="email" name="email" required
+        <input type="email" id="email" name="email" value="{{ old('email') }}" required
                class="w-full px-4 py-3 rounded-lg bg-white text-gray-900 shadow focus:outline-none focus:ring-2 focus:ring-teal-400 transition" />
+        @error('email')
+          <p class="text-sm text-red-300 mt-1">{{ $message }}</p>
+        @enderror
       </div>
 
       <!-- Password -->
@@ -49,6 +60,9 @@
                   0-8.268-2.943-9.542-7z" />
           </svg>
         </button>
+        @error('password')
+          <p class="text-sm text-red-300 mt-1">{{ $message }}</p>
+        @enderror
       </div>
 
       <!-- Submit -->
@@ -76,7 +90,6 @@
       isVisible = !isVisible;
       passwordInput.type = isVisible ? 'text' : 'password';
 
-      // Update icon
       eyeIcon.innerHTML = isVisible
         ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7
