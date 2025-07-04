@@ -30,7 +30,7 @@ class PredictController extends Controller
             $flaskBaseUrl = 'http://103.219.251.163:5050';
             
             // Kirim request ke Flask API
-            $response = Http::post("$flaskBaseUrl/api/predict-future", $validated);
+            $response = Http::post("$flaskBaseUrl/predict-future", $validated);
             
             // Jika request gagal
             if ($response->failed()) {
