@@ -10,6 +10,8 @@ use App\Http\Controllers\MonitoringController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\EnergyAnalyticsController;
 use App\Http\Controllers\Admin\ServerMonitoringControllers;
+use App\Http\Controllers\Admin\BroadcastController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -71,3 +73,7 @@ Route::get('/users/export/pdf', [UserController::class, 'exportPdf'])->name('use
 Route::get('/users/export/excel', [UserController::class, 'exportExcel'])->name('users.export.excel');
 Route::get('/users/{user}/export-pdf', [UserController::class, 'exportDetailPdf'])->name('users.export.detail');
 Route::get('/admin/server-monitoring/export-pdf', [ServerMonitoringControllers::class, 'exportPDF'])->name('admin.server.export');
+
+Route::get('/broadcast', [BroadcastController::class, 'index'])->name('broadcast.index'); // Menampilkan form + data user
+Route::post('/broadcast/send', [BroadcastController::class, 'send'])->name('broadcast.send'); // Kirim ke semua user
+Route::post('/broadcast/send-selected', [BroadcastController::class, 'sendSelected'])->name('broadcast.send.selected'); // Kirim ke user terpilih

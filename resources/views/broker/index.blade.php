@@ -1,7 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<div class="min-h-screen bg-blue-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto space-y-8">
+
     <div class="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
         <!-- Header Section -->
         <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-600 to-blue-500">

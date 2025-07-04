@@ -57,15 +57,15 @@
                 <span class="font-medium">Server Monitoring</span>
             </a>
 
-            {{-- <!-- Report -->
-            <a href="" class="flex items-center px-4 py-3 rounded-lg transition-all duration-200 group
-                   {{ request()->routeIs('#') ? 'bg-blue-300 text-blue-900 font-semibold border-l-4 border-blue-600' : 'text-blue-800 hover:bg-blue-200 hover:text-blue-900' }}">
-                <span class="w-6 h-6 mr-3 flex items-center justify-center
-                   {{ request()->routeIs('#') ? 'text-blue-900' : 'text-blue-600 group-hover:text-blue-800' }}">
-                    <i class="fas fa-book text-lg"></i>
-                </span>
-                <span class="font-medium">Report Management</span>
-            </a> --}}
+<!-- Broadcast Email -->
+<a href="{{ route('broadcast.index') }}" class="flex items-center px-4 py-3 rounded-lg transition-all duration-200 group
+       {{ request()->routeIs('broadcast.index') ? 'bg-blue-300 text-blue-900 font-semibold border-l-4 border-blue-600' : 'text-blue-800 hover:bg-blue-200 hover:text-blue-900' }}">
+    <span class="w-6 h-6 mr-3 flex items-center justify-center
+       {{ request()->routeIs('broadcast.index') ? 'text-blue-900' : 'text-blue-600 group-hover:text-blue-800' }}">
+        <i class="fas fa-envelope-open-text text-lg"></i>
+    </span>
+    <span class="font-medium">Broadcast Email</span>
+</a>
 
             <!-- Logout -->
             <form method="POST" action="{{ route('logout') }}">
