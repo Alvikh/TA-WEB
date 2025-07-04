@@ -57,7 +57,7 @@
                                 <path d="M18 2.0845
                                     a 15.9155 15.9155 0 0 1 0 31.831
                                     a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#3b82f6" stroke-width="3" stroke-dasharray="{{ $data['system']['cpu']['usage_percent'] ?? 0 }}, 100" />
-                                <text x="18" y="20.5" text-anchor="middle" font-size="8" fill="#3b82f6" font-weight="bold">{{ $data['system']['cpu']['usage_percent'] ?? 0 }}%</text>
+                                <text x="18" y="20.5" text-anchor="middle" font-size="5" fill="#3b82f6" font-weight="bold">{{ $data['system']['cpu']['usage_percent'] ?? 0 }}%</text>
                             </svg>
                         </div>
                         <h4 class="text-lg font-semibold text-blue-800">CPU Load</h4>
@@ -107,7 +107,7 @@
                                 <path d="M18 2.0845
                                     a 15.9155 15.9155 0 0 1 0 31.831
                                     a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#f59e0b" stroke-width="3" stroke-dasharray="{{ $memPercent }}, 100" />
-                                <text x="18" y="20.5" text-anchor="middle" font-size="10" fill="#f59e0b" font-weight="bold">{{ $memPercent }}%</text>
+                                <text x="18" y="20.5" text-anchor="middle" font-size="5" fill="#f59e0b" font-weight="bold">{{ $memPercent }}%</text>
                             </svg>
                         </div>
                         <h4 class="text-lg font-semibold text-amber-800">RAM Usage</h4>
