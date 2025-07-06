@@ -37,6 +37,15 @@ Route::post('/refresh', [AuthController::class, 'refreshToken']);
         Route::get('/building/{building}', [DeviceController::class, 'byBuilding']);
         Route::get('/status/{status}', [DeviceController::class, 'byStatus']);
     });
+    Route::group(['prefix' => 'energy'], function() {
+    // Device data endpoints
+    Route::get('device/{id}', [EnergyAnalyticsApiController::class, 'getDeviceData']);
+    Route::get('device/{id}/prediction', [EnergyAnalyticsApiController::class, 'getPredictionDataApi']);
+    Route::get('device/{id}/consumption', [EnergyAnalyticsApiController::class, 'getConsumptionHistoryApi']);
+    
+    // Data submission endpoint
+    Route::post('device/{id}/measurement', [EnergyAnalyticsApiController::class, 'storeMeasurementApi']);
+});
    Route::post('/predict-future', [PredictController::class, 'predictFuture']);
 });
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
@@ -89,38 +90,63 @@ class ProfileController extends Controller
 
     // Update profile photo
     public function updatePhoto(Request $request)
-    {
-        $user = $request->user();
+{
+    $user = $request->user();
 
-        $validator = Validator::make($request->all(), [
+     $validator = Validator::make($request->all(), [
             'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => $validator->errors()->first(),
-            ], 400);
-        }
+
+    if ($validator->fails()) {
+        return response()->json([
+            'success' => false,
+            'message' => $validator->errors()->first(),
+        ], 422);
+    }
+
+    try {
+        DB::beginTransaction();
 
         // Delete old photo if exists
         if ($user->profile_photo_path) {
-            Storage::delete($user->profile_photo_path);
+            try {
+                Storage::delete($user->profile_photo_path);
+            } catch (\Exception $e) {
+                Log::error("Failed to delete old profile photo: " . $e->getMessage());
+                // Continue with new photo upload even if old deletion fails
+            }
         }
 
-        // Store new photo
-        $path = $request->file('photo')->store('profile-photos');
+        // Store new photo with unique filename
+        $file = $request->file('photo');
+        $filename = 'profile-' . $user->id . '-' . time() . '.' . $file->extension();
+        $path = $file->storeAs('profile-photos', $filename, 'public');
 
+        // Update user record
         $user->update([
             'profile_photo_path' => $path
         ]);
 
+        DB::commit();
+
         return response()->json([
             'success' => true,
             'message' => 'Profile photo updated successfully',
-            'photo_url' => Storage::url($path)
+            'photo_url' => Storage::disk('public')->url($path),
+            'photo_path' => $path
         ]);
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        Log::error("Profile photo update failed: " . $e->getMessage());
+        
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to update profile photo. Please try again.',
+        ], 500);
     }
+}
 
     // Delete profile photo
     public function deletePhoto(Request $request)

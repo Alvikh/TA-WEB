@@ -45,8 +45,12 @@ Route::resource('users', UserController::class);
 Route::get('/devices/analytics/monitor', [EnergyAnalyticsController::class, 'monitor'])->name('devices.monitor');
 Route::get('/devices/analytics/{id}', [EnergyAnalyticsController::class, 'show'])->name('devices.analytic.show');
 Route::get('/devices/analytics/{id}/consumption', [EnergyAnalyticsController::class, 'getConsumption']);
-Route::get('/devices/analytics/{id}/prediction', [EnergyAnalyticsController::class, 'getPrediction']);
+Route::post('/devices/analytics/{id}/prediction', [EnergyAnalyticsController::class, 'getPrediction']);
 Route::resource('/devices/analytics/monitor', EnergyAnalyticsController::class);
+Route::resource('devices/analytics/monitor', EnergyAnalyticsController::class)->only([
+    'show'
+]);
+Route::post('/api/devices/{id}/prediction', [EnergyAnalyticsController::class, 'getPrediction']);
 
 // Route::get('/devices/monitor/{id}', [EnergyAnalyticsController,'index'])->name('devices.monitor');
 Route::patch('/{user}/activate', [UserController::class, 'activate'])->name('users.activate');
