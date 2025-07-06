@@ -29,12 +29,11 @@ class AuthController extends Controller
     // Tahap 1: Register dengan email dan password
     public function register(Request $request)
     {
-        Log::info('Request', [
-
-    'all' => $request]);
+        Log::info('Register request payload:', $request->all());
         $validator = Validator::make($request->all(), [
             'email'    => 'required|email|unique:users,email',
             'password' => 'required|min:6',
+            'password_confirmation' => 'required',
         ]);
 
         if ($validator->fails()) {
