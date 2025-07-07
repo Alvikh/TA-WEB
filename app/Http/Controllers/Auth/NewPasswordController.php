@@ -47,26 +47,34 @@ class NewPasswordController extends Controller
     /**
      * Handle the actual password reset submission (web)
      */
-    public function resetPassword(Request $request)
-    {
-        $request->validate([
-            'token' => 'required',
-            'email' => 'required|email',
-            'password' => 'required|confirmed|min:8',
-        ]);
+public function resetPassword(Request $request)
+{
+    $request->validate([
+        'token' => 'required',
+        'password' => 'required|confirmed|min:8',
+    ]);
 
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user, $password) {
-                $user->forceFill([
-                    'password' => Hash::make($password),
-                    'remember_token' => Str::random(60),
-                ])->save();
-            }
-        );
+    $status = Password::reset(
+        $request->only('email', 'password', 'password_confirmation', 'token'),
+        function ($user, $password) {
+            $user->forceFill([
+                'password' => Hash::make($password),
+                'remember_token' => Str::random(60),
+            ])->save();
+        }
+    );
 
-        return $status === Password::PASSWORD_RESET
-            ? redirect()->route('reset.success')
-            : back()->withErrors(['email' => [__($status)]]);
+    if ($status === Password::PASSWORD_RESET) {
+        return response()->json([
+            'success' => true,
+            'message' => 'Password berhasil diubah.',
+        ], 200);
     }
+
+    return response()->json([
+        'success' => false,
+        'message' => __($status),
+    ], 400);
+}
+
 }
