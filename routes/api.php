@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\ServerMonitoringController;
 use App\Http\Controllers\Api\EnergyMeasurementController;
+use App\Http\Controllers\Api\EnergyAnalyticsApiController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
