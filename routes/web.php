@@ -85,3 +85,5 @@ Route::post('/broadcast/send', [BroadcastController::class, 'send'])->name('broa
 Route::post('/broadcast/send-selected', [BroadcastController::class, 'sendSelected'])->name('broadcast.send.selected'); // Kirim ke user terpilih
 
 Route::post('/forgot-password', [NewPasswordController::class, 'forgotPassword']);
+Route::get('/reset-password/{token}', [NewPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('/reset-password', [NewPasswordController::class, 'resetPassword'])->name('password.update');
