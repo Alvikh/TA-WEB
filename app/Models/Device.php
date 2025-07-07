@@ -31,6 +31,11 @@ protected $primaryKey = 'id';
         return $this->hasMany(EnergyMeasurement::class);
     }
 
+    public function owner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'owner_id', 'id');
+    }
+
     // Relasi dengan alerts
     public function alerts()
     {
