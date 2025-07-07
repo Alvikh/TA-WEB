@@ -5,9 +5,6 @@
     <title>Reset Password</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    {{-- Redirect ke aplikasi mobile jika perlu --}}
-    <meta http-equiv="refresh" content="3; url=myapp://reset-success">
-
     {{-- Bootstrap CSS --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -68,6 +65,11 @@
                         <form method="POST" action="{{ route('password.update') }}">
                             @csrf
                             <input type="hidden" name="token" value="{{ $token }}">
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" name="email" id="email" class="form-control" placeholder="Masukkan email Anda" required value="{{ old('email') }}">
+                            </div>
 
                             <div class="mb-3">
                                 <label for="password" class="form-label">Password Baru</label>
