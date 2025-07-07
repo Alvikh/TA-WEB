@@ -66,7 +66,7 @@ class NewPasswordController extends Controller
         );
 
         return $status === Password::PASSWORD_RESET
-            ? redirect('myapp://reset-success')
+            ? redirect()->route('reset.success')
             : back()->withErrors(['email' => [__($status)]]);
     }
 }
