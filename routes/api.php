@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\DeviceController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\ServerMonitoringController;
 use App\Http\Controllers\Api\EnergyMeasurementController;
+use App\Http\Controllers\Auth\NewPasswordController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -62,3 +63,6 @@ Route::get('/test-api', function () {
         Route::get('/device/{deviceId}/latest', [EnergyMeasurementController::class, 'latest']);
         Route::get('/device/{deviceId}/statistics', [EnergyMeasurementController::class, 'statistics']);
     });
+
+Route::post('/forgot-password', [NewPasswordController::class, 'forgotPassword']);
+

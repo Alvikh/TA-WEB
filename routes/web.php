@@ -11,6 +11,8 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\EnergyAnalyticsController;
 use App\Http\Controllers\Admin\ServerMonitoringControllers;
 use App\Http\Controllers\Admin\BroadcastController;
+use App\Http\Controllers\Auth\NewPasswordController;
+
 
 
 /*
@@ -81,3 +83,5 @@ Route::get('/admin/server-monitoring/export-pdf', [ServerMonitoringControllers::
 Route::get('/broadcast', [BroadcastController::class, 'index'])->name('broadcast.index'); // Menampilkan form + data user
 Route::post('/broadcast/send', [BroadcastController::class, 'send'])->name('broadcast.send'); // Kirim ke semua user
 Route::post('/broadcast/send-selected', [BroadcastController::class, 'sendSelected'])->name('broadcast.send.selected'); // Kirim ke user terpilih
+
+Route::post('/forgot-password', [NewPasswordController::class, 'forgotPassword']);
