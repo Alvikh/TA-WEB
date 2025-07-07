@@ -86,11 +86,6 @@
 
                     </div>
                 </div>
-
-                <div class="text-center text-white mt-4">
-                    <small>Jika berhasil, Anda akan diarahkan kembali ke aplikasi.</small>
-                </div>
-
             </div>
         </div>
     </div>

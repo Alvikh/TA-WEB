@@ -58,23 +58,16 @@ public function resetPassword(Request $request)
         $request->only('email', 'password', 'password_confirmation', 'token'),
         function ($user, $password) {
             $user->forceFill([
-                'password' => Hash::make($password),
-                'remember_token' => Str::random(60),
+                'password' => \Hash::make($password),
+                'remember_token' => \Str::random(60),
             ])->save();
         }
     );
 
     if ($status === Password::PASSWORD_RESET) {
-        return response()->json([
-            'success' => true,
-            'message' => 'Password berhasil diubah.',
-        ], 200);
+        return view('auth.reset-success');
     }
 
-    return response()->json([
-        'success' => false,
-        'message' => __($status),
-    ], 400);
+    return back()->withErrors(['email' => [__($status)]]);
 }
-
 }

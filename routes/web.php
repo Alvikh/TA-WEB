@@ -87,6 +87,3 @@ Route::post('/broadcast/send-selected', [BroadcastController::class, 'sendSelect
 Route::post('/forgot-password', [NewPasswordController::class, 'forgotPassword']);
 Route::get('/reset-password/{token}', [NewPasswordController::class, 'showResetForm'])->name('password.reset');
 Route::post('/reset-password', [NewPasswordController::class, 'resetPassword'])->name('password.update');
-Route::get('/reset-sucess',function(){
-    view('auth.succes');
-})->name('reset.success');
