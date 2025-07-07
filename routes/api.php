@@ -2,13 +2,14 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\PredictController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\api\AlertController;
 use App\Http\Controllers\Api\DeviceController;
+use App\Http\Controllers\Api\PredictController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\ServerMonitoringController;
 use App\Http\Controllers\Api\EnergyMeasurementController;
-use App\Http\Controllers\Auth\NewPasswordController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
