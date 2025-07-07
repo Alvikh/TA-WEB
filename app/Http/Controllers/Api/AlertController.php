@@ -20,7 +20,7 @@ class AlertController extends Controller
         ]);
 
         // Cari device beserta ownernya sekaligus
-        $device = Device::with('owner')->find($validated['id']);
+        $device = Device::with('owner')->where('device_id','=',$validated['id']);
         
         if (!$device) {
             return response()->json(['message' => 'Device not found'], 404);
