@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\api\AlertController;
+use App\Http\Controllers\Api\AlertController;
 use App\Http\Controllers\Api\DeviceController;
 use App\Http\Controllers\Api\PredictController;
 use App\Http\Controllers\Api\ProfileController;
