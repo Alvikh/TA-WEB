@@ -36,7 +36,8 @@
         }
         
         .logo {
-            width: 120px;
+            width: 200px;
+            height: auto;
             margin-bottom: 20px;
         }
         
@@ -73,7 +74,7 @@
         }
         
         .footer {
-            text-align: center;
+            text-align: left;
             margin-top: 30px;
             font-size: 14px;
             color: #718096;
