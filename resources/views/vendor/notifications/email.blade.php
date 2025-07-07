@@ -115,7 +115,7 @@
             <p class="small-text">Jika Anda tidak pernah meminta reset password, abaikan saja email ini. Password Anda tetap aman.</p>
             
             <div class="footer">
-                <p>Terima kasih,<br>Tim Pey</p>
+                <p>Terima kasih,<br>Tim Power Smart Management</p>
             </div>
         </div>
     </div>
