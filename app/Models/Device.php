@@ -4,15 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Device extends Model
 {
     use HasFactory;
-protected $primaryKey = 'id'; 
+
+    protected $primaryKey = 'id';
     protected $table = 'devices';
 
     protected $fillable = [
-        'owner_id',
+        'owner_id', // Pastikan ini sesuai dengan foreign key di tabel
         'name',
         'device_id',
         'type',
@@ -22,22 +25,23 @@ protected $primaryKey = 'id';
     ];
 
     protected $casts = [
-        'installation_date' => 'date',
+        'installation_date' => 'datetime',
     ];
 
+    // Relasi ke User (pemilik device)
+    public function owner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'owner_id');
+    }
+
     // Relasi dengan energy measurements
-    public function energyMeasurements()
+    public function energyMeasurements(): HasMany
     {
         return $this->hasMany(EnergyMeasurement::class);
     }
 
-    public function owner(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'owner_id', 'id');
-    }
-
     // Relasi dengan alerts
-    public function alerts()
+    public function alerts(): HasMany
     {
         return $this->hasMany(Alert::class);
     }

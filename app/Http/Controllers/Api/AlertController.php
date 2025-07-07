@@ -20,8 +20,10 @@ class AlertController extends Controller
         ]);
 
         // Cari device beserta ownernya sekaligus
-        $device = Device::with('owner')->where('device_id','=',$validated['id']);
-        
+$device = Device::with('owner')
+                    ->where('device_id', $validated['id'])
+                    ->first();
+                    $user = $device->owner;
         if (!$device) {
             return response()->json(['message' => 'Device not found'], 404);
         }
@@ -32,15 +34,18 @@ class AlertController extends Controller
         }
 
         // Kirim email
-        Mail::to($device->owner->email)->send(new AlertNotification(
-            $validated['type'],
-            $validated['message'],
-            $validated['severity']
-        ));
+         Mail::to($user->email)->send(new AlertNotification(
+        $validated['type'],
+        $validated['message'],
+        $validated['severity'],
+        $device,
+        $user
+    ));
 
-        return response()->json([
-            'message' => 'Alert email sent successfully',
-            'to' => $device->owner->email
-        ]);
+    return response()->json([
+        'success' => true,
+        'message' => 'Alert sent successfully',
+        'recipient' => $user->email
+    ]);
     }
 }

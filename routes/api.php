@@ -51,6 +51,7 @@ Route::post('/refresh', [AuthController::class, 'refreshToken']);
    Route::post('/predict-future', [PredictController::class, 'predictFuture']);
 });
 Route::post('/send-alert', [AlertController::class, 'sendAlertEmail']);
+Route::get('/send-alert', [AlertController::class, 'sendAlertEmail']);
 
 Route::get('/test-api', function () {
     return response()->json(['message' => 'API works!']);
