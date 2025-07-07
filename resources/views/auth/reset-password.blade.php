@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>Reset Password</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta http-equiv="refresh" content="0; url=myapp://reset-success" />
+
     <!-- Bootstrap CDN for quick styling -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -20,6 +22,8 @@
                         {{-- Status Message --}}
                         @if (session('status'))
                             <div class="alert alert-success">{{ session('status') }}</div>
+                              <p>Redirecting... If you're not redirected, <a href="myapp://reset-success">click here</a>.</p>
+
                         @endif
 
                         {{-- Error Validation --}}
@@ -66,9 +70,7 @@
                     </div>
                 </div>
 
-                <p class="mt-3 text-center">
-                    <a href="{{ route('login') }}">Back to login</a>
-                </p>
+ 
             </div>
         </div>
     </div>
