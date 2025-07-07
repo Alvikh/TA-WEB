@@ -48,8 +48,8 @@ Route::post('/refresh', [AuthController::class, 'refreshToken']);
     Route::post('device/{id}/measurement', [EnergyAnalyticsApiController::class, 'storeMeasurementApi']);
 });
    Route::post('/predict-future', [PredictController::class, 'predictFuture']);
-   Route::post('/send-alert', [AlertController::class, 'sendAlertEmail']);
 });
+Route::post('/send-alert', [AlertController::class, 'sendAlertEmail']);
 
 Route::get('/test-api', function () {
     return response()->json(['message' => 'API works!']);
