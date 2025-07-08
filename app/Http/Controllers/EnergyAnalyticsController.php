@@ -27,7 +27,7 @@ class EnergyAnalyticsController extends Controller
         
         // Get prediction data
         $predictionData = $this->getPredictionData($device);
-// dd($predictionData);
+dd($predictionData);
         return view('energy-analytics.show', [
             'device' => $device,
             'latestReading' => $latestReading,
