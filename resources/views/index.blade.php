@@ -342,7 +342,7 @@
                 </div>
 
                 <div class="lg:w-1/2">
-                    <img src="{{ asset('images/main.png') }}" alt="IoT Installation" class="rounded-xl shadow-xl w-full">
+                    <img src="{{ asset('images/main1.png') }}" alt="IoT Installation" class="rounded-xl shadow-xl w-full">
                 </div>
             </div>
         </div>
