@@ -14,9 +14,9 @@ use Illuminate\Support\Facades\Http;
 class EnergyAnalyticsApiController extends Controller
 {
     public function getDeviceData($id)
-{
-    try {
-        $device = Device::findOrFail($id);
+    {
+        try {
+            $device = Device::findOrFail($id);
 
         $latestReading = EnergyMeasurement::where('device_id', $device->device_id)
             ->where('measured_at', '>=', now()->subMinutes(5))
@@ -43,16 +43,14 @@ class EnergyAnalyticsApiController extends Controller
             'plot_url' => $predictionData['plot_url'] ?? null,
             'timestamp' => now()->toDateTimeString()
         ]);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Failed to fetch device data',
-            'error' => $e->getMessage()
-        ], 500);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to fetch device data',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
-}
-
 
     public function getPredictionDataApi($id)
     {
