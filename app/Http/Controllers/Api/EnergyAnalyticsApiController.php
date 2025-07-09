@@ -14,40 +14,45 @@ use Illuminate\Support\Facades\Http;
 class EnergyAnalyticsApiController extends Controller
 {
     public function getDeviceData($id)
-    {
-        try {
-            $device = Device::findOrFail($id);
-            
-            $latestReading = EnergyMeasurement::where('device_id', $device->device_id)
-                ->where('measured_at', '>=', now()->subMinutes(5))
-                ->latest('measured_at')
-                ->first() ?? $this->createEmptyReading();
-                
-            $consumptionData = $this->getHourlyConsumption($device->device_id);
-            $energyHistory = $this->getEnergyHistory($device->device_id);
-            $metrics = $this->calculateMetrics($device->device_id);
-            $predictionData = $this->getPredictionData($device);
+{
+    try {
+        $device = Device::findOrFail($id);
 
-            return response()->json([
-                'status' => 'success',
-                'device' => $device,
-                'latest_reading' => $latestReading,
-                'hourly_consumption' => $consumptionData,
-                'energy_history' => $energyHistory,
-                'metrics' => $metrics,
-                'prediction' => $predictionData,
-                'plot_url' => $predictionData['plot_url'] ?? null,
-                'timestamp' => now()->toDateTimeString()
-            ]);
+        $latestReading = EnergyMeasurement::where('device_id', $device->device_id)
+            ->where('measured_at', '>=', now()->subMinutes(5))
+            ->latest('measured_at')
+            ->first() ?? $this->createEmptyReading();
 
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Failed to fetch device data',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+        $hourlyConsumption = $this->getHourlyConsumption($device->device_id);
+        $dailyConsumption = $this->getDailyConsumption($device->device_id, 7);
+        $energyHistory = $this->getEnergyHistory($device->device_id, 7);
+        $metrics = $this->calculateMetrics($device->device_id);
+        $predictionData = $this->getPredictionData($device);
+
+        return response()->json([
+            'status' => 'success',
+            'device' => $device,
+            'latest_reading' => $latestReading,
+            'consumption' => [
+                'hourly' => $hourlyConsumption,
+                'daily' => $dailyConsumption,
+            ],
+            'energy_history' => $energyHistory,
+            'metrics' => $metrics,
+            'prediction' => $predictionData,
+            'plot_url' => $predictionData['plot_url'] ?? null,
+            'timestamp' => now()->toDateTimeString()
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Failed to fetch device data',
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
+
 
     public function getPredictionDataApi($id)
     {
