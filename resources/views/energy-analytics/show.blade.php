@@ -219,6 +219,7 @@
                     </tr>
                 </thead>
                 <tbody id="energy-history-body" class="bg-white divide-y divide-gray-200">
+                    {{-- {{ dd($predictionData); }} --}}
                     @foreach($predictionData['historical_data'] as $record)
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -688,48 +689,48 @@
         }
     });
 
-    const historyCtx = document.getElementById('energyHistoryChart').getContext('2d');
-    const historyChart = new Chart(historyCtx, {
-        type: 'bar',
-        data: {
-            labels: {!! json_encode($historyLabels ?? []) !!},
-            datasets: [{
-                label: 'Energy Usage (kWh)',
-                data: {!! json_encode($historyData ?? []) !!},
-                backgroundColor: 'rgba(79, 70, 229, 0.7)',
-                borderColor: 'rgba(79, 70, 229, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-                tooltip: {
-                    mode: 'index',
-                    intersect: false
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Energy Usage (kWh)'
-                    }
-                },
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Date'
-                    }
-                }
-            }
-        }
-    });
+    // const historyCtx = document.getElementById('energyHistoryChart').getContext('2d');
+    // const historyChart = new Chart(historyCtx, {
+    //     type: 'bar',
+    //     data: {
+    //         labels: {!! json_encode($historyLabels ?? []) !!},
+    //         datasets: [{
+    //             label: 'Energy Usage (kWh)',
+    //             data: {!! json_encode($historyData ?? []) !!},
+    //             backgroundColor: 'rgba(79, 70, 229, 0.7)',
+    //             borderColor: 'rgba(79, 70, 229, 1)',
+    //             borderWidth: 1
+    //         }]
+    //     },
+    //     options: {
+    //         responsive: true,
+    //         maintainAspectRatio: false,
+    //         plugins: {
+    //             legend: {
+    //                 position: 'top',
+    //             },
+    //             tooltip: {
+    //                 mode: 'index',
+    //                 intersect: false
+    //             }
+    //         },
+    //         scales: {
+    //             y: {
+    //                 beginAtZero: true,
+    //                 title: {
+    //                     display: true,
+    //                     text: 'Energy Usage (kWh)'
+    //                 }
+    //             },
+    //             x: {
+    //                 title: {
+    //                     display: true,
+    //                     text: 'Date'
+    //                 }
+    //             }
+    //         }
+    //     }
+    // });
 
     // Update chart with new data
     function updateChartData(data) {
