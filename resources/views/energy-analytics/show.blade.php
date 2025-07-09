@@ -198,157 +198,249 @@
         </div>
 
         <!-- Energy History Section -->
-        <div class="bg-white rounded-2xl shadow-sm border border-blue-100 overflow-hidden">
-            <div class="bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-4">
-                <h3 class="text-lg font-semibold text-white">
-                    <i class="fas fa-history mr-2"></i> Energy Usage History
-                </h3>
-            </div>
-            <div class="p-6">
-                <div class="h-80">
-                    <canvas id="energyHistoryChart" class="w-full h-full"></canvas>
-                </div>
-                <div class="mt-4 overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Energy (kWh)</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Avg Power (W)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="energy-history-body" class="bg-white divide-y divide-gray-200">
-                            @foreach($energyHistory as $record)
-                            <tr>
-                                {{-- {{ dd($record['date']); }} --}}
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $record['date'] }}</td>
-                                
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ number_format($record['energy'], 2) }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $record['duration'] }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ number_format($record['avg_power'], 2) }}</td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
        <div class="bg-white rounded-2xl shadow-sm border border-blue-100 overflow-hidden">
     <div class="bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-4">
         <h3 class="text-lg font-semibold text-white">
-            <i class="fas fa-chart-line mr-2"></i> Energy Consumption Prediction
+            <i class="fas fa-history mr-2"></i> Energy Usage History
         </h3>
     </div>
     <div class="p-6">
-            <!-- Prediction Chart -->
-            
-            
-            <!-- Prediction Summary -->
-            <div class="bg-blue-50 rounded-lg p-4">
-                <div class="mb-4">
-                    <h4 class="text-lg font-semibold text-blue-800 mb-2">Prediction Summary</h4>
-                    <div class="space-y-3">
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Predicted Period:</span>
-                            <span id="prediction-period" class="font-medium">
-                                {{ date('M j, Y', strtotime($predictionData['labels'][0])) }} to {{ date('M j, Y', strtotime(end($predictionData['labels']))) }}
-                            </span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Total Predicted Consumption:</span>
-                            <span id="total-predicted" class="font-medium text-blue-800">
-                                {{ number_format($predictionData['aggregates']['total_energy'], 2) }} kWh
-                            </span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Estimated Cost:</span>
-                            <span id="estimated-cost" class="font-medium text-blue-800">
-                                Rp{{ number_format($predictionData['aggregates']['estimated_cost'], 2) }}
-                            </span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Average Daily Usage:</span>
-                            <span id="avg-daily-predicted" class="font-medium text-blue-800">
-                                {{ number_format($predictionData['aggregates']['average_power'], 2) }} kWh
-                            </span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Peak Power:</span>
-                            <span id="peak-power" class="font-medium text-blue-800">
-                                {{ number_format($predictionData['aggregates']['peak_power'], 2) }} kWh
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="mt-4">
-                    <label for="prediction-range" class="block text-sm font-medium text-gray-700 mb-2">
-                        Prediction Range:
-                    </label>
-                    <select id="prediction-range" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                        <option value="7">1 Week</option>
-                        <option value="30">1 Month</option>
-                        <option value="365">1 Year</option>
-                    </select>
-                    
-                    <button id="update-prediction" class="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition">
-                        Update Prediction
-                    </button>
-                </div>
-            </div>
-
-        <!-- Daily Averages Table -->
-        <div class="mt-6 bg-white rounded-lg border border-gray-200 overflow-hidden">
-            <h4 class="text-lg font-semibold text-gray-800 p-4 border-b">Daily Averages</h4>
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Average Power (kWh)</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Energy (kWh)</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Peak Power (kWh)</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @foreach($predictionData['daily_averages'] as $day)
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $day['date'] }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ number_format($day['average'], 2) }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ number_format($day['total'], 2) }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ number_format($day['peak'], 2) }}</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+        <div class="h-80">
+            <canvas id="energyHistoryChart" class="w-full h-full"></canvas>
         </div>
-
-        <!-- Hourly Data Table -->
-        <div class="mt-6 bg-white rounded-lg border border-gray-200 overflow-hidden">
-            <h4 class="text-lg font-semibold text-gray-800 p-4 border-b">Hourly Data Samples</h4>
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Power (kWh)</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @foreach($predictionData['sampled_hourly_data'] as $hour)
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $hour['time'] }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ number_format($hour['power'], 2) }}</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+        <div class="mt-4 overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Energy (kWh)</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Avg Power (W)</th>
+                    </tr>
+                </thead>
+                <tbody id="energy-history-body" class="bg-white divide-y divide-gray-200">
+                    @foreach($predictionData['historical_data'] as $record)
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ \Carbon\Carbon::parse($record['timestamp'])->format('d M Y H:i') }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {{ number_format($record['energy'], 2) }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{-- Calculate duration if needed --}}
+                            N/A
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ number_format($record['power'], 2) }}
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
+
+        <!-- Energy Prediction Section -->
+        <div class="bg-white rounded-2xl shadow-sm border border-blue-100 overflow-hidden">
+            <div class="bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-4">
+                <h3 class="text-lg font-semibold text-white">
+                    <i class="fas fa-chart-line mr-2"></i> Energy Consumption Prediction
+                </h3>
+            </div>
+            <div class="p-6">
+                <!-- Prediction Visualization -->
+                {{-- @if(isset($predictionData['plot_url']))
+                <div class="mb-8">
+                    <img src="{{ $predictionData['plot_url'] }}" alt="Energy Prediction Chart" class="w-full rounded-lg shadow">
+                </div>
+                @endif --}}
+
+                <!-- Prediction Summary -->
+                <div class="bg-blue-50 rounded-lg p-6 mb-8">
+                    <h4 class="text-xl font-bold text-blue-800 mb-4">Prediction Summary</h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Basic Prediction Info -->
+                        <div class="space-y-4">
+                            <div class="bg-white p-4 rounded-lg shadow-sm">
+                                <p class="text-sm text-gray-500 mb-1">Prediction Period</p>
+                                <p class="text-lg font-semibold">
+                                    {{ \Carbon\Carbon::parse($predictionData['start_date'])->format('M j, Y') }} 
+                                    to 
+                                    {{ \Carbon\Carbon::parse($predictionData['daily_predictions'][count($predictionData['daily_predictions'])-1]['period'] ?? \Carbon\Carbon::parse($predictionData['start_date'])->addDays($predictionData['num_periods']-1)->format('M j, Y')) }}
+                                </p>
+                            </div>
+                            
+                            <div class="bg-white p-4 rounded-lg shadow-sm">
+                                <p class="text-sm text-gray-500 mb-1">Duration Type</p>
+                                <p class="text-lg font-semibold capitalize">{{ $predictionData['duration_type'] }}</p>
+                            </div>
+                            
+                            <div class="bg-white p-4 rounded-lg shadow-sm">
+                                <p class="text-sm text-gray-500 mb-1">Number of Periods</p>
+                                <p class="text-lg font-semibold">{{ $predictionData['num_periods'] }}</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Aggregated Metrics -->
+                        <div class="space-y-4">
+                            <div class="bg-white p-4 rounded-lg shadow-sm">
+                                <p class="text-sm text-gray-500 mb-1">Total Predicted Consumption</p>
+                                <p class="text-lg font-semibold text-blue-600">
+                                    @php
+                                        $total_kwh = array_reduce($predictionData['daily_predictions'], function($carry, $item) {
+                                            return $carry + $item['total_energy_kwh'];
+                                        }, 0);
+                                    @endphp
+                                    {{ number_format($total_kwh, 2) }} kWh
+                                </p>
+                            </div>
+                            
+                            <div class="bg-white p-4 rounded-lg shadow-sm">
+                                <p class="text-sm text-gray-500 mb-1">Estimated Cost</p>
+                                <p class="text-lg font-semibold text-blue-600">
+                                    Rp{{ number_format($total_kwh * 1500, 2) }}
+                                </p>
+                            </div>
+                            
+                            <div class="bg-white p-4 rounded-lg shadow-sm">
+                                <p class="text-sm text-gray-500 mb-1">Average Daily Usage</p>
+                                <p class="text-lg font-semibold text-blue-600">
+                                    @php
+                                        $avg_daily = $total_kwh / count($predictionData['daily_predictions']);
+                                    @endphp
+                                    {{ number_format($avg_daily, 2) }} kWh/day
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Predictions -->
+                <div class="space-y-8">
+                    <!-- Daily Predictions -->
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-800 mb-4">Daily Predictions</h4>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Avg Power (W)</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Energy (kWh)</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estimated Cost</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    @foreach(array_slice($predictionData['daily_predictions'], 0, 7) as $day)
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $day['period'] }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ number_format($day['average_power_w'], 2) }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ number_format($day['total_energy_kwh'], 2) }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Rp{{ number_format($day['estimated_cost'], 2) }}</td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Monthly Predictions -->
+                    @if(isset($predictionData['monthly_predictions']) && count($predictionData['monthly_predictions']) > 0)
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-800 mb-4">Monthly Predictions</h4>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Month</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Avg Power (W)</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Energy (kWh)</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estimated Cost</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    @foreach($predictionData['monthly_predictions'] as $month)
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $month['period'] }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ number_format($month['average_power_w'], 2) }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ number_format($month['total_energy_kwh'], 2) }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Rp{{ number_format($month['estimated_cost'], 2) }}</td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    @endif
+
+                    <!-- Yearly Predictions -->
+                    @if(isset($predictionData['yearly_predictions']) && count($predictionData['yearly_predictions']) > 0)
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-800 mb-4">Yearly Predictions</h4>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Year</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Avg Power (W)</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Energy (kWh)</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estimated Cost</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    @foreach($predictionData['yearly_predictions'] as $year)
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $year['period'] }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ number_format($year['average_power_w'], 2) }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ number_format($year['total_energy_kwh'], 2) }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Rp{{ number_format($year['estimated_cost'], 2) }}</td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    @endif
+                </div>
+
+                <!-- Historical Data Comparison -->
+                <div class="mt-12 bg-gray-50 p-6 rounded-lg">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4">Historical Data Comparison</h4>
+                    
+                    @if(isset($predictionData['historical_data']) && count($predictionData['historical_data']) > 0)
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Timestamp</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Power (W)</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Energy (kWh)</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Voltage (V)</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current (A)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                @foreach(array_slice($predictionData['historical_data'], 0, 10) as $record)
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $record['timestamp'] }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ number_format($record['power'], 2) }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ number_format($record['energy'], 2) }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ number_format($record['voltage'], 2) }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ number_format($record['current'], 2) }}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    @else
+                    <p class="text-gray-500">No historical data available for comparison.</p>
+                    @endif
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -357,7 +449,98 @@
 <script src="https://cdn.jsdelivr.net/npm/moment"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment"></script>
 <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
-
+<script>
+    // Initialize history chart with prediction data
+    const historyCtx = document.getElementById('energyHistoryChart').getContext('2d');
+    const historyChart = new Chart(historyCtx, {
+        type: 'line',
+        data: {
+            labels: @json(array_map(function($record) {
+                return \Carbon\Carbon::parse($record['timestamp'])->format('d M H:i');
+            }, $predictionData['historical_data'])),
+            datasets: [
+                {
+                    label: 'Power (W)',
+                    data: @json(array_column($predictionData['historical_data'], 'power')),
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    backgroundColor: 'rgba(59, 130, 246, 0.05)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    yAxisID: 'y'
+                },
+                {
+                    label: 'Energy (kWh)',
+                    data: @json(array_column($predictionData['historical_data'], 'energy')),
+                    borderColor: 'rgba(79, 70, 229, 1)',
+                    backgroundColor: 'rgba(79, 70, 229, 0.05)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    yAxisID: 'y1'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                label += context.dataset.label.includes('Power') ? 
+                                    context.parsed.y.toFixed(2) + ' W' : 
+                                    context.parsed.y.toFixed(2) + ' kWh';
+                            }
+                            return label;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Time'
+                    }
+                },
+                y: {
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                    title: {
+                        display: true,
+                        text: 'Power (W)'
+                    },
+                    beginAtZero: true
+                },
+                y1: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    title: {
+                        display: true,
+                        text: 'Energy (kWh)'
+                    },
+                    beginAtZero: true,
+                    grid: {
+                        drawOnChartArea: false
+                    }
+                }
+            }
+        }
+    });
+</script>
 <script>
     // Initialize MQTT connection
     const deviceId = "{{ $device->device_id }}";
@@ -475,27 +658,7 @@
                 fill: true
             }]
         },
-        options: getChartOptions('Power Consumption (W)')
-    });
-
-    const historyCtx = document.getElementById('energyHistoryChart').getContext('2d');
-    const historyChart = new Chart(historyCtx, {
-        type: 'bar',
-        data: {
-            labels: {!! json_encode($historyLabels ?? []) !!},
-            datasets: [{
-                label: 'Energy Usage (kWh)',
-                data: {!! json_encode($historyData ?? []) !!},
-                backgroundColor: 'rgba(79, 70, 229, 0.7)',
-                borderColor: 'rgba(79, 70, 229, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: getChartOptions('Energy Usage (kWh)', 'bar')
-    });
-
-    function getChartOptions(title, type = 'line') {
-        const commonOptions = {
+        options: {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
@@ -512,7 +675,7 @@
                     beginAtZero: true,
                     title: {
                         display: true,
-                        text: title
+                        text: 'Power (W)'
                     }
                 },
                 x: {
@@ -522,18 +685,51 @@
                     }
                 }
             }
-        };
-
-        if (type === 'line') {
-            commonOptions.interaction = {
-                mode: 'nearest',
-                axis: 'x',
-                intersect: false
-            };
         }
+    });
 
-        return commonOptions;
-    }
+    const historyCtx = document.getElementById('energyHistoryChart').getContext('2d');
+    const historyChart = new Chart(historyCtx, {
+        type: 'bar',
+        data: {
+            labels: {!! json_encode($historyLabels ?? []) !!},
+            datasets: [{
+                label: 'Energy Usage (kWh)',
+                data: {!! json_encode($historyData ?? []) !!},
+                backgroundColor: 'rgba(79, 70, 229, 0.7)',
+                borderColor: 'rgba(79, 70, 229, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Energy Usage (kWh)'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                }
+            }
+        }
+    });
 
     // Update chart with new data
     function updateChartData(data) {
@@ -578,7 +774,7 @@
     }
 
     function fetchChartData(period) {
-                fetch(`/devices/analytics/{{$device->device_id}}/consumption?period=${period}`)
+        fetch(`/devices/analytics/{{$device->device_id}}/consumption?period=${period}`)
             .then(response => response.json())
             .then(data => {
                 consumptionChart.data.labels = data.labels;

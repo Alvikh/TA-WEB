@@ -27,7 +27,7 @@ class EnergyAnalyticsController extends Controller
         
         // Get prediction data
         $predictionData = $this->getPredictionData($device);
-dd($predictionData);
+// dd($predictionData);
         return view('energy-analytics.show', [
             'device' => $device,
             'latestReading' => $latestReading,
@@ -44,7 +44,7 @@ dd($predictionData);
         ]);
     }
 
-    protected function getPredictionData($device)
+    protected function getPredictionData($device, $durationType = 'year', $numPeriods = 1)
     {
         $flaskBaseUrl = 'http://103.219.251.163:5050';
         $latestReading = EnergyMeasurement::where('device_id', $device->device_id)
@@ -82,24 +82,39 @@ dd($predictionData);
             ];
 
             $response = Http::post("$flaskBaseUrl/api/predict-future", [
-                'duration_type' => 'week',
-                'num_periods' => 1,
+                'duration_type' => $durationType,
+                'num_periods' => $numPeriods,
                 'last_sensor_data' => $sensorData,
-                'device_id' => $device->device_id
+                'device_id' => $device->device_id,
+                'start_date' => now()->format('d-m-Y H:i:s')
             ]);
-
-            if ($response->successful()) {
-                $rawData = $response->json();
-                $processedData = $this->processPredictionData($rawData);
+return $response->json();
+            // if ($response->successful()) {
+            //     $rawData = $response->json();
+            //     $processedData = $this->processPredictionData($rawData);
                 
-                return array_merge($defaultData, $processedData);
-            }
+            //     return array_merge($defaultData, $processedData);
+            // }
         } catch (\Exception $e) {
             Log::error('Prediction failed: '.$e->getMessage());
         }
 
         return $defaultData;
     }
+// Di EnergyAnalyticsController.php
+public function getPrediction(Device $device, Request $request)
+{
+    $durationType = $request->query('duration', 'day');
+    $numPeriods = 1; // Atau ambil dari request jika ingin dinamis
+    
+    // Panggil method yang sudah ada untuk generate prediksi
+    $predictionData = $this->getPredictionData($device, $durationType, $numPeriods);
+    
+    return view('energy-analytics.prediction-content', [
+        'predictionData' => $predictionData,
+        'device' => $device
+    ]);
+}
 
     protected function processPredictionData($rawData)
     {
@@ -241,7 +256,7 @@ dd($predictionData);
             'data' => $data
         ];
     }
-public function getPrediction($id)
+public function getPredictions($id)
 {
     $device = Device::findOrFail($id);
     

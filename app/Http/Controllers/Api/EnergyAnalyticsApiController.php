@@ -136,9 +136,9 @@ class EnergyAnalyticsApiController extends Controller
         }
     }
 
-    protected function getPredictionData($device)
+    protected function getPredictionData($device, $durationType = 'year', $numPeriods = 1)
     {
-        $flaskBaseUrl = config('services.flask_api.url', 'http://103.219.251.163:5050');
+        $flaskBaseUrl = 'http://103.219.251.163:5050';
         $latestReading = EnergyMeasurement::where('device_id', $device->device_id)
             ->latest('measured_at')
             ->firstOrFail();
@@ -147,8 +147,8 @@ class EnergyAnalyticsApiController extends Controller
             'labels' => [],
             'data' => [],
             'historical' => [],
-            'predicted_usage' => 0,
-            'savings_potential' => 0,
+            'predictedUsage' => 0,
+            'savingsPotential' => 0,
             'plot_url' => null,
             'aggregates' => [
                 'total_energy' => 0,
@@ -173,21 +173,22 @@ class EnergyAnalyticsApiController extends Controller
                 'measured_at' => $latestReading->measured_at->format('d-m-Y H:i:s')
             ];
 
-            $response = Http::timeout(30)
-                ->post("$flaskBaseUrl/api/predict-future", [
-                    'duration_type' => 'week',
-                    'num_periods' => 1,
-                    'last_sensor_data' => $sensorData,
-                    'device_id' => $device->device_id
-                ]);
-
-            if ($response->successful()) {
-                $rawData = $response->json();
-                return array_merge($defaultData, $this->processPredictionData($rawData));
-            }
-
+            $response = Http::post("$flaskBaseUrl/api/predict-future", [
+                'duration_type' => $durationType,
+                'num_periods' => $numPeriods,
+                'last_sensor_data' => $sensorData,
+                'device_id' => $device->device_id,
+                'start_date' => now()->format('d-m-Y H:i:s')
+            ]);
+return $response->json();
+            // if ($response->successful()) {
+            //     $rawData = $response->json();
+            //     $processedData = $this->processPredictionData($rawData);
+                
+            //     return array_merge($defaultData, $processedData);
+            // }
         } catch (\Exception $e) {
-            Log::error('Prediction API failed: '.$e->getMessage());
+            Log::error('Prediction failed: '.$e->getMessage());
         }
 
         return $defaultData;

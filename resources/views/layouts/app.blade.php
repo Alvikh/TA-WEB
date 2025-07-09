@@ -56,6 +56,15 @@
     <link rel="icon" href="{{ asset('images/LOGO.png') }}" type="image/png"/>
     
     <style>
+        /* Di file CSS Anda */
+.fa-spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
         /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
