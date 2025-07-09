@@ -32,16 +32,18 @@ use App\Http\Controllers\Auth\NewPasswordController;
 Route::get('/', function () {
     return view('index');
 });
+Route::post('/register', [AuthControllerWEB::class, 'register']);
+Route::post('/login', [AuthControllerWEB::class, 'login']);
 Route::get('/admin', function () {
     return view('welcomePage');
 });
-Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
-    Route::get('/server', [ServerMonitoringControllers::class, 'index'])->name('admin.server.monitoring');
-});
 
-Route::post('/register', [AuthControllerWEB::class, 'register']);
-Route::post('/login', [AuthControllerWEB::class, 'login']);
+Route::middleware(['admin','auth'])->group(function () {
+    Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+        Route::get('/server', [ServerMonitoringControllers::class, 'index'])->name('admin.server.monitoring');
+    });
+
 
 Route::resource('users', UserController::class);
 Route::get('/devices/analytics/monitor', [EnergyAnalyticsController::class, 'monitor'])->name('devices.monitor');
@@ -62,7 +64,7 @@ Route::patch('/{device}/deactivate', [UserController::class, 'deactivate'])->nam
 Route::post('/monitoring', [BrokerController::class, 'store']);
 Route::get('/monitoring', [BrokerController::class, 'index'])->name('devices.monitoring');
 Route::get('/monitoring/energy', [MonitoringController::class, 'index'])->name('monitoring.index');
-Route::get('/devices/{device}/predict', [EnergyAnalyticsController::class, 'getPredictions'])
+Route::get('/devices/{device}/predict', [EnerSgyAnalyticsController::class, 'getPredictions'])
     ->name('devices.predict');
 Route::resource('devices', DeviceController::class);
 Route::middleware([
@@ -88,3 +90,4 @@ Route::post('/broadcast/send-selected', [BroadcastController::class, 'sendSelect
 Route::post('/forgot-password', [NewPasswordController::class, 'forgotPassword']);
 Route::get('/reset-password/{token}', [NewPasswordController::class, 'showResetForm'])->name('password.reset');
 Route::post('/reset-password', [NewPasswordController::class, 'resetPassword'])->name('password.update');
+});
