@@ -193,13 +193,13 @@
                 <p class="text-xl text-blue-200 max-w-3xl mx-auto">Innovating energy management through cutting-edge technology</p>
             </div>
 
-            <div class="flex flex-col lg:flex-row items-center mb-20">
+            <div class="flex flex-col lg:flex-row items-center mb-20 justify-around">
                 <div class="lg:w-1/2 mb-10 lg:mb-0 lg:pr-10">
                     <p class="text-blue-100 mb-4">Smart Power Management is an intelligent solution for energy management that integrates Internet of Things (IoT) technology and Machine Learning (ML) to help users monitor, control, and optimize electricity consumption efficiently. Through real-time data processing and a data-driven learning system, we enable users to understand energy usage patterns and make more informed decisions.</p>
                     <p class="text-blue-100 mb-4">Through features such as energy consumption prediction, real-time monitoring, cost optimization, and 24/7 technical support, we are here to meet energy needs across various sectors, from households to businesses and industries. Our ML technology continuously analyzes energy usage data to provide accurate recommendations and automatic adjustments according to user needs.</p>
                     <p class="text-blue-100">By using Smart Power Management, you can not only reduce energy waste and lower electricity costs, but also contribute to creating a more efficient and sustainable energy system.</p>
                 </div>
-                <div class="lg:w-1/2">
+                <div class="lg:w-1/3">
                     <img src="{{ asset('images/ICON.png') }}" alt="SPM" class="rounded-lg shadow-xl w-full">
                 </div>
             </div>
