@@ -200,7 +200,7 @@
                     <p class="text-blue-100">By using Smart Power Management, you can not only reduce energy waste and lower electricity costs, but also contribute to creating a more efficient and sustainable energy system.</p>
                 </div>
                 <div class="lg:w-1/2">
-                    <img src="{{ asset('images/LOGO.png') }}" alt="SPM" class="rounded-lg shadow-xl w-full">
+                    <img src="{{ asset('images/ICON.png') }}" alt="SPM" class="rounded-lg shadow-xl w-full">
                 </div>
             </div>
 
