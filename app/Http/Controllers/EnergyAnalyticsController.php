@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
 use App\Models\Device;
-use Illuminate\Http\Request;
 use App\Models\EnergyMeasurement;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
@@ -14,8 +15,11 @@ class EnergyAnalyticsController extends Controller
 {
     public function show($id)
     {
+        if (!is_numeric($id)) {
+        $device = Device::where('device_id', $id)->firstOrFail();
+    } else {
         $device = Device::findOrFail($id);
-        
+    }
         $latestReading = EnergyMeasurement::where('device_id', $device->device_id)
             ->where('measured_at', '>=', now()->subMinutes(5))
             ->latest('measured_at')
@@ -476,4 +480,25 @@ public function getPredictions($id)
             ], 500);
         }
     }
+
+    public function exportPdf($id)
+{
+    $device = Device::findOrFail($id);
+    $latestReading = EnergyMeasurement::where('device_id', $device->device_id)
+        ->latest('measured_at')
+        ->first() ?? $this->createEmptyReading();
+
+    $metrics = $this->calculateMetrics($device->device_id);
+
+    $pdf = Pdf::loadView('exports.energy_analytics_pdf', [
+        'device' => $device,
+        'latestReading' => $latestReading,
+        'avgDailyPower' => $metrics['avgDailyPower'],
+        'peakPowerToday' => $metrics['peakPowerToday'],
+        'energyToday' => $metrics['energyToday'],
+    ]);
+
+    return $pdf->download('Device-Analytics' . $device->device_id . '.pdf');
 }
+}
+

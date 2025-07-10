@@ -95,17 +95,42 @@
             color: transparent;
             background-image: linear-gradient(to right, #3b82f6, #6366f1);
         }
+        #sidebar {
+    z-index: 40;
+}
+
+/* Overlay untuk mobile */
+#sidebar-overlay {
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* Memastikan konten utama tidak ter-scroll saat sidebar terbuka di mobile */
+body.sidebar-open {
+    overflow: hidden;
+}
     </style>
 </head>
-<body class="bg-gray-50 font-sans antialiased text-gray-800 flex min-h-screen ">
+<body class="bg-gray-50 font-sans antialiased text-gray-800 flex min-h-screen">
 
-    <!-- Sidebar -->
-    @include('layouts.sidebar')
+    <!-- Mobile menu button -->
+    <div class="md:hidden fixed bottom-6 right-6 z-50">
+        <button id="mobile-menu-button" class="p-3 rounded-full bg-primary-500 text-white shadow-lg hover:bg-primary-600 transition-all">
+            <i class="fas fa-bars text-xl"></i>
+        </button>
+    </div>
+
+    <!-- Sidebar - Modified for mobile -->
+    <div id="sidebar" class="fixed inset-0 z-40 flex transform -translate-x-full md:translate-x-0 md:relative md:z-0 transition-all duration-300 ease-in-out">
+        <div class="w-64 bg-white shadow-lg md:shadow-none h-full">
+            @include('layouts.sidebar')
+        </div>
+        <div class="flex-1 bg-black bg-opacity-50 md:hidden" id="sidebar-overlay"></div>
+    </div>
 
     <!-- Main Content -->
     <div class="flex-1 flex flex-col overflow-hidden h-[100vh]">
         <!-- Main content area -->
-        <main class="flex-1 overflow-y-auto p-6">
+        <main class="flex-1 overflow-y-auto p-6 pt-16 md:pt-6">
             <!-- Animated background pattern (subtle) -->
             <div class="fixed inset-0 -z-10 overflow-hidden opacity-5">
                 <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTAgMEg0MFY0MEgwVjBaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNLTItMkg0MlY0MkgtMlYtMloiIHN0cm9rZT0iI0U1RTVFNSIgc3Ryb2tlLXdpZHRoPSIxIi8+Cjwvc3ZnPgo=')]"></div>
@@ -142,8 +167,39 @@
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
     <script>
-        // Add active class to current nav item
+        // Mobile sidebar toggle
         document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+            let isSidebarOpen = false;
+
+            // Toggle sidebar
+            function toggleSidebar() {
+                isSidebarOpen = !isSidebarOpen;
+                if (isSidebarOpen) {
+                    sidebar.classList.remove('-translate-x-full');
+                    mobileMenuButton.innerHTML = '<i class="fas fa-times text-xl"></i>';
+                } else {
+                    sidebar.classList.add('-translate-x-full');
+                    mobileMenuButton.innerHTML = '<i class="fas fa-bars text-xl"></i>';
+                }
+            }
+
+            // Event listeners
+            mobileMenuButton.addEventListener('click', toggleSidebar);
+            sidebarOverlay.addEventListener('click', toggleSidebar);
+
+            // Close sidebar when clicking a link (for single page apps)
+            document.querySelectorAll('#sidebar a').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth < 768) {
+                        toggleSidebar();
+                    }
+                });
+            });
+
+            // Add active class to current nav item
             const currentPath = window.location.pathname;
             document.querySelectorAll('nav a').forEach(link => {
                 if (link.getAttribute('href') === currentPath) {

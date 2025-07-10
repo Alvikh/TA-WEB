@@ -98,7 +98,7 @@
                     <div class="space-y-3">
                         <div>
                             <p class="text-sm text-gray-500">Username</p>
-                            <p class="text-gray-800">{{ $user->username ?? 'Not set' }}</p>
+                            <p class="text-gray-800">{{ $user->name ?? 'Not set' }}</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">Email</p>

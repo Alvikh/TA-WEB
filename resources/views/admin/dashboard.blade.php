@@ -5,7 +5,7 @@
 
         <!-- Header Section -->
         <div class="flex justify-between items-center">
-            <div>
+            <div>   
                 <h1 class="text-3xl font-bold text-blue-800">Dashboard Overview</h1>
                 <p class="text-sm text-blue-600">Welcome back, {{ auth()->user()->name }} <span class="text-blue-400">•</span> {{ now()->format('l, F j, Y') }}</p>
             </div>
@@ -186,7 +186,7 @@
             <i class="fas fa-id-card-alt text-blue-500 mr-2"></i> Device Information
         </h3>
         <!-- Tombol Show Device -->
-        <a href="#"
+        <a href="#" id="show-device-btn"
            class="inline-flex items-center px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md transition-colors">
             <i class="fas fa-eye mr-2"></i> Show Device
         </a>
@@ -497,6 +497,10 @@
             updateValue('arus-value', data.current ?? '--');
             updateValue('daya-value', data.power ?? '--');
             updateValue('energi-value', data.energy ?? '--');
+            if (data.id && data.id !== '--') {
+        const showDeviceBtn = document.getElementById('show-device-btn');
+        showDeviceBtn.href = `/devices/analytics/monitor/${data.id}`;
+    }
         }
 
         function addToLog(message, type = 'info') {

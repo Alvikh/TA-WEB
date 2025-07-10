@@ -63,7 +63,7 @@
             <i class="fas fa-id-card-alt text-blue-500 mr-2"></i> Device Information
         </h3>
         <!-- Tombol Show Device -->
-        <a href="#"
+        <a href="#" id="show-device-btn"
            class="inline-flex items-center px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md transition-colors">
             <i class="fas fa-eye mr-2"></i> Show Device
         </a>
@@ -338,6 +338,14 @@
             updateValue('arus-value', data.current ?? '--');
             updateValue('daya-value', data.power ?? '--');
             updateValue('energi-value', data.energy ?? '--');
+            const showDeviceBtn = document.getElementById('show-device-btn');
+    if (data.id && data.id !== '--') {
+        showDeviceBtn.href = `/devices/analytics/monitor/${data.id}`;
+        showDeviceBtn.classList.remove('cursor-not-allowed', 'opacity-50');
+    } else {
+        showDeviceBtn.href = '#';
+        showDeviceBtn.classList.add('cursor-not-allowed', 'opacity-50');
+    }
         }
 
         function addToLog(message, type = 'info') {

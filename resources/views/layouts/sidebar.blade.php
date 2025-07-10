@@ -1,4 +1,4 @@
-<aside class="w-64 bg-gradient-to-b from-blue-50 to-blue-100 border-r border-blue-200 flex-shrink-0 shadow-lg">
+<aside class="w-64 h-full bg-gradient-to-b from-blue-50 to-blue-100 border-r border-blue-200 flex-shrink-0 shadow-lg">
     <div class="h-full flex flex-col">
         <!-- Logo Section -->
         <div class="px-6 py-5 flex justify-center border-b border-blue-200">

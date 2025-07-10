@@ -9,27 +9,6 @@
                     <img src="{{ asset('images/LOGO.png') }}" alt="Smart Power Management Logo" class="w-[20%] h-[20%] mr-3">
                 </div>
 
-                <!-- Mobile menu button -->
-                <div class="md:hidden">
-                    <!-- Hamburger Button -->
-                    <button id="hamburger-button" class="navbar-toggle text-white focus:outline-none">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
-                    </button>
-                </div>
-
-                <!-- Mobile Menu (hidden by default) -->
-                <div id="mobile-menu" class="hidden md:hidden fixed inset-0 bg-gray-900 bg-opacity-90 z-50 transition-all duration-300 ease-in-out">
-                    <div class="flex justify-end p-4">
-                        <button id="close-button" class="mobile-menu-close text-white focus:outline-none">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-
                 <!-- Desktop Menu -->
                 <div class="hidden md:flex items-center space-x-8">
                     <a href="#home" class="nav-link hover:text-blue-300 transition">Home</a>
@@ -41,22 +20,36 @@
                         Login
                     </a>
                 </div>
-            </div>
 
-            <!-- Mobile Menu -->
-            <div class="navbar-menu hidden md:hidden">
-                <div class="px-2 pt-2 pb-4 space-y-1">
-                    <a href="#home" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700">Home</a>
-                    <a href="#services" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700">Services</a>
-                    <a href="#about" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700">About</a>
-                    <a href="#features" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700">Features</a>
-                    {{-- <a href="#contact" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700">Contact</a> --}}
-                    <a href="/login" class="block w-full text-center bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full transition duration-300 mt-2">
-                        Admin Login
-                    </a>
+                <!-- Mobile menu button -->
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-white focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Mobile Menu (hidden by default) -->
+                <div id="mobile-menu" class="hidden md:hidden fixed inset-0 bg-gray-900 bg-opacity-90 z-50 transition-all duration-300 ease-in-out">
+                    <div class="flex justify-end p-4">
+                        <button id="mobile-menu-close" class="text-white focus:outline-none">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="px-2 pt-2 pb-4 space-y-1 flex flex-col items-center justify-center h-full">
+                        <a href="#home" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700">Home</a>
+                        <a href="#services" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700">Services</a>
+                        <a href="#about" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700">About</a>
+                        <a href="#features" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700">Features</a>
+                        <a href="/login" class="block w-full max-w-xs text-center bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full transition duration-300 mt-4">
+                            Login
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
     </nav>
 
     <!-- Hero Section -->
@@ -347,6 +340,34 @@
             </div>
         </div>
     </section>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenuClose = document.getElementById('mobile-menu-close');
+            const mobileMenu = document.getElementById('mobile-menu');
 
+            // Toggle mobile menu
+            mobileMenuButton.addEventListener('click', function() {
+                mobileMenu.classList.remove('hidden');
+                mobileMenu.classList.add('block');
+            });
+
+            // Close mobile menu
+            mobileMenuClose.addEventListener('click', function() {
+                mobileMenu.classList.remove('block');
+                mobileMenu.classList.add('hidden');
+            });
+
+            // Close menu when clicking on a link
+            const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+            mobileMenuLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    mobileMenu.classList.remove('block');
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+        });
+
+    </script>
 
     @include('layouts.footer')

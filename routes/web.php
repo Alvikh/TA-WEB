@@ -38,7 +38,7 @@ Route::get('/admin', function () {
     return view('welcomePage');
 });
 
-Route::middleware(['admin','auth'])->group(function () {
+// Route::middleware(['admin','auth'])->group(function () {
     Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
         Route::get('/server', [ServerMonitoringControllers::class, 'index'])->name('admin.server.monitoring');
@@ -90,4 +90,6 @@ Route::post('/broadcast/send-selected', [BroadcastController::class, 'sendSelect
 Route::post('/forgot-password', [NewPasswordController::class, 'forgotPassword']);
 Route::get('/reset-password/{token}', [NewPasswordController::class, 'showResetForm'])->name('password.reset');
 Route::post('/reset-password', [NewPasswordController::class, 'resetPassword'])->name('password.update');
-});
+// });
+
+Route::get('/energy-analytics/{id}/export-pdf', [EnergyAnalyticsController::class, 'exportPdf'])->name('energy-analytics.exportPdf');
