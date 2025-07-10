@@ -470,7 +470,7 @@
         , data: {
             labels: @json(array_map(function($record) {
       return \Carbon\Carbon::parse($record['timestamp'])->format('d M H:i');
-    }, $predictionData['historical_data'])),
+    }, $predictionData['historical_data']))
             , datasets: [{
                     label: 'Power (W)'
                     , data: @json(array_column($predictionData['historical_data'], 'power'))
@@ -657,53 +657,49 @@
 
     // Initialize charts
     const consumptionCtx = document.getElementById('electricCurrentChart').getContext('2d');
-    const consumptionChart = new Chart(consumptionCtx, {
-        type: 'line'
-        , data: {
-            labels: {
-                !!json_encode($consumptionLabels ? ? []) !!
+const consumptionChart = new Chart(consumptionCtx, {
+    type: 'line',
+    data: {
+        labels: @json($consumptionLabels ?? []),
+        datasets: [{
+            label: 'Power (W)',
+            data: @json($consumptionData ?? []),
+            borderColor: 'rgba(59, 130, 246, 1)',
+            backgroundColor: 'rgba(59, 130, 246, 0.05)',
+            borderWidth: 2,
+            tension: 0.4,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'top'
+            },
+            tooltip: {
+                mode: 'index',
+                intersect: false
             }
-            , datasets: [{
-                label: 'Power (W)'
-                , data: {
-                    !!json_encode($consumptionData ? ? []) !!
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Power (W)'
                 }
-                , borderColor: 'rgba(59, 130, 246, 1)'
-                , backgroundColor: 'rgba(59, 130, 246, 0.05)'
-                , borderWidth: 2
-                , tension: 0.4
-                , fill: true
-            }]
-        }
-        , options: {
-            responsive: true
-            , maintainAspectRatio: false
-            , plugins: {
-                legend: {
-                    position: 'top'
-                , }
-                , tooltip: {
-                    mode: 'index'
-                    , intersect: false
-                }
-            }
-            , scales: {
-                y: {
-                    beginAtZero: true
-                    , title: {
-                        display: true
-                        , text: 'Power (W)'
-                    }
-                }
-                , x: {
-                    title: {
-                        display: true
-                        , text: 'Time'
-                    }
+            },
+            x: {
+                title: {
+                    display: true,
+                    text: 'Time'
                 }
             }
         }
-    });
+    }
+});
 
     // Update chart with new data
     function updateChartData(data) {
@@ -765,7 +761,6 @@
     // Connect to MQTT when page loads
     document.addEventListener('DOMContentLoaded', function() {
         connectToMQTT();
-
         // Auto-refresh history every 5 minutes
         setInterval(fetchEnergyHistory, 300000);
     });
