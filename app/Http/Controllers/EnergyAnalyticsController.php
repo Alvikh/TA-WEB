@@ -481,7 +481,7 @@ public function getPredictions($id)
         }
     }
 
-    public function exportPdf($id)
+public function exportPdf($id)
 {
     $device = Device::findOrFail($id);
     $latestReading = EnergyMeasurement::where('device_id', $device->device_id)
@@ -489,6 +489,7 @@ public function getPredictions($id)
         ->first() ?? $this->createEmptyReading();
 
     $metrics = $this->calculateMetrics($device->device_id);
+    $predictionData = $this->getPredictionData($device); // Tambahkan ini
 
     $pdf = Pdf::loadView('exports.energy_analytics_pdf', [
         'device' => $device,
@@ -496,9 +497,11 @@ public function getPredictions($id)
         'avgDailyPower' => $metrics['avgDailyPower'],
         'peakPowerToday' => $metrics['peakPowerToday'],
         'energyToday' => $metrics['energyToday'],
+        'predictionData' => $predictionData // Tambahkan ini juga
     ]);
 
-    return $pdf->download('Device-Analytics' . $device->device_id . '.pdf');
+    return $pdf->download('Device-Analytics-' . $device->device_id . '.pdf');
 }
+
 }
 
