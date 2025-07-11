@@ -220,7 +220,7 @@
         <div class="h-80">
             <canvas id="energyHistoryChart" class="w-full h-full"></canvas>
         </div>
-        <div class="mt-4 overflow-x-auto">
+        {{-- <div class="mt-4 overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
@@ -231,7 +231,6 @@
                     </tr>
                 </thead>
                 <tbody id="energy-history-body" class="bg-white divide-y divide-gray-200">
-                    {{-- {{ dd($predictionData); }} --}}
                     @foreach($predictionData['historical_data'] as $record)
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -241,7 +240,6 @@
                             {{ number_format($record['energy'], 2) }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {{-- Calculate duration if needed --}}
                             N/A
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -251,7 +249,7 @@
                     @endforeach
                 </tbody>
             </table>
-        </div>
+        </div> --}}
     </div>
 </div>
 
