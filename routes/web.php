@@ -54,7 +54,7 @@ Route::resource('/devices/analytics/monitor', EnergyAnalyticsController::class);
 Route::resource('devices/analytics/monitor', EnergyAnalyticsController::class)->only([
     'show'
 ]);
-Route::post('/api/devices/{id}/prediction', [EnergyAnalyticsApiController::class, 'getPrediction']);
+Route::post('/api/devices/{id}/prediction', [EnergyAnalyticsController::class, 'getPrediction']);
 
 // Route::get('/devices/monitor/{id}', [EnergyAnalyticsController,'index'])->name('devices.monitor');
 Route::patch('/{user}/activate', [UserController::class, 'activate'])->name('users.activate');
@@ -64,7 +64,7 @@ Route::patch('/{device}/deactivate', [UserController::class, 'deactivate'])->nam
 Route::post('/monitoring', [BrokerController::class, 'store']);
 Route::get('/monitoring', [BrokerController::class, 'index'])->name('devices.monitoring');
 Route::get('/monitoring/energy', [MonitoringController::class, 'index'])->name('monitoring.index');
-Route::get('/devices/{device}/predict', [EnerSgyAnalyticsController::class, 'getPredictions'])
+Route::get('/devices/{device}/predict', [EnergyAnalyticsController::class, 'getPredictions'])
     ->name('devices.predict');
 Route::resource('devices', DeviceController::class);
 Route::middleware([
@@ -92,4 +92,4 @@ Route::get('/reset-password/{token}', [NewPasswordController::class, 'showResetF
 Route::post('/reset-password', [NewPasswordController::class, 'resetPassword'])->name('password.update');
 // });
 
-Route::get('/energy-analytics/{id}/export-pdf', [EnergyAnalyticsController::class, 'exportPdf'])->name('energy-analytics.exportPdf');
+Route::get('/energy-analytics/{id}/export-pdf', [EnergyAnalyticsController::class, 'exportPdf'])->name('energy.export.pdf');

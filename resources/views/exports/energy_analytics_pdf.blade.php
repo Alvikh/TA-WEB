@@ -1,176 +1,73 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Laporan Energi & Prediksi - {{ $device->name ?? 'Perangkat' }}</title>
+    <title>Energy Analytics Report</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            font-size: 12px;
-            color: #333;
-        }
-
-        h1, h2, h3 {
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            padding: 20px;
-        }
-
-        .section {
-            margin-bottom: 25px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        th, td {
-            border: 1px solid #aaa;
-            padding: 6px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f0f0f0;
-        }
-
-        .chart {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .footer {
-            margin-top: 40px;
-            font-size: 10px;
-            text-align: center;
-            color: #666;
-            border-top: 1px solid #ccc;
-            padding-top: 10px;
-        }
+        body { font-family: sans-serif; font-size: 12px; }
+        h1, h2, h3 { margin: 0; padding: 0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 4px; text-align: left; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Laporan Energi & Prediksi</h1>
-        <p><strong>Tanggal:</strong> {{ now()->format('d-m-Y H:i:s') }}</p>
+    <h2>Energy Report for Device: {{ $device->device_id }}</h2>
+    <p><strong>Latest Reading:</strong> {{ $latestReading->measured_at }}</p>
 
-        <!-- Informasi Perangkat -->
-        <div class="section">
-            <h2>Informasi Perangkat</h2>
-            <table>
+    <h3>Consumption Data (Hourly)</h3>
+    <table>
+        <thead>
+            <tr><th>Hour</th><th>Power (kW)</th></tr>
+        </thead>
+        <tbody>
+            @foreach($consumptionLabels as $index => $label)
                 <tr>
-                    <th>Nama Perangkat</th>
-                    <td>{{ $device->name ?? '-' }}</td>
+                    <td>{{ $label }}</td>
+                    <td>{{ $consumptionData[$index] }}</td>
                 </tr>
-                <tr>
-                    <th>ID Perangkat</th>
-                    <td>{{ $device->device_id }}</td>
-                </tr>
-            </table>
-        </div>
+            @endforeach
+        </tbody>
+    </table>
 
-        <!-- Pembacaan Sensor Terbaru -->
-        <div class="section">
-            <h2>Pembacaan Sensor Terbaru</h2>
-            <table>
+    <h3>Energy History</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Power (kW)</th>
+                <th>Energy (kWh)</th>
+                <th>Duration</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($energyHistory as $record)
                 <tr>
-                    <th>Tegangan (V)</th>
-                    <th>Arus (A)</th>
-                    <th>Daya (W)</th>
-                    <th>Energi (kWh)</th>
-                    <th>Frekuensi (Hz)</th>
-                    <th>Faktor Daya</th>
-                    <th>Suhu (°C)</th>
-                    <th>Kelembapan (%)</th>
+                    <td>{{ $record['date'] ?? $record['timestamp'] }}</td>
+                    <td>{{ $record['avg_power'] ?? $record['power'] }}</td>
+                    <td>{{ $record['energy'] }}</td>
+                    <td>{{ $record['duration'] }}</td>
                 </tr>
-                <tr>
-                    <td>{{ $latestReading->voltage }}</td>
-                    <td>{{ $latestReading->current }}</td>
-                    <td>{{ $latestReading->power }}</td>
-                    <td>{{ $latestReading->energy }}</td>
-                    <td>{{ $latestReading->frequency ?? '-' }}</td>
-                    <td>{{ $latestReading->power_factor ?? '-' }}</td>
-                    <td>{{ $latestReading->temperature ?? '-' }}</td>
-                    <td>{{ $latestReading->humidity ?? '-' }}</td>
-                </tr>
-            </table>
-        </div>
+            @endforeach
+        </tbody>
+    </table>
 
-        <!-- Statistik Hari Ini -->
-        <div class="section">
-            <h2>Statistik Hari Ini</h2>
-            <table>
-                <tr>
-                    <th>Daya Rata-rata (W)</th>
-                    <th>Daya Puncak (W)</th>
-                    <th>Total Energi (kWh)</th>
-                </tr>
-                <tr>
-                    <td>{{ $avgDailyPower }}</td>
-                    <td>{{ $peakPowerToday }}</td>
-                    <td>{{ $energyToday }}</td>
-                </tr>
-            </table>
-        </div>
+    <h3>Metrics</h3>
+    <ul>
+        <li>Average Daily Power: {{ $avgDailyPower }} kW</li>
+        <li>Peak Power Today: {{ $peakPowerToday }} kW</li>
+        <li>Energy Today: {{ $energyToday }} kWh</li>
+    </ul>
 
-        <!-- Prediksi Energi -->
-        @if (!empty($predictionData))
-        <div class="section">
-            <h2>Prediksi Penggunaan Energi</h2>
-            <table>
-                <tr>
-                    <th>Total Energi Prediksi (kWh)</th>
-                    <th>Daya Rata-rata Prediksi (W)</th>
-                    <th>Daya Puncak Prediksi (W)</th>
-                    <th>Estimasi Biaya (Rp)</th>
-                    <th>Potensi Penghematan (%)</th>
-                </tr>
-                <tr>
-                    <td>{{ number_format($predictionData['aggregates']['total_energy'], 2) }}</td>
-                    <td>{{ number_format($predictionData['aggregates']['average_power'], 2) }}</td>
-                    <td>{{ number_format($predictionData['aggregates']['peak_power'], 2) }}</td>
-                    <td>{{ number_format($predictionData['aggregates']['estimated_cost'], 0) }}</td>
-                    <td>{{ number_format($predictionData['savingsPotential'], 2) }}</td>
-                </tr>
-            </table>
-        </div>
+    <h3>Prediction Summary</h3>
+    <ul>
+        <li>Total Energy: {{ $predictionData['aggregates']['total_energy'] ?? '-' }} kWh</li>
+        <li>Average Power: {{ $predictionData['aggregates']['average_power'] ?? '-' }} kW</li>
+        <li>Peak Power: {{ $predictionData['aggregates']['peak_power'] ?? '-' }} kW</li>
+        <li>Estimated Cost: Rp {{ number_format($predictionData['aggregates']['estimated_cost'] ?? 0) }}</li>
+    </ul>
 
-        <!-- Data Prediksi Per Jam -->
-        @if (!empty($predictionData['labels']))
-        <div class="section">
-            <h3>Data Prediksi per Jam (Sample)</h3>
-            <table>
-                <tr>
-                    <th>Waktu</th>
-                    <th>Daya (kWh)</th>
-                </tr>
-                @foreach($predictionData['labels'] as $i => $label)
-                    <tr>
-                        <td>{{ $label }}</td>
-                        <td>{{ $predictionData['data'][$i] ?? '-' }}</td>
-                    </tr>
-                @endforeach
-            </table>
-        </div>
-        @endif
-
-        <!-- Gambar Grafik -->
-        @if (!empty($predictionData['plot_url']))
-        <div class="chart">
-            <p><strong>Grafik Prediksi Energi:</strong></p>
-            <img src="{{ $predictionData['plot_url'] }}" alt="Grafik Prediksi" style="width: 100%; max-width: 600px;">
-        </div>
-        @endif
-        @endif
-
-        <div class="footer">
-            &copy; {{ date('Y') }} Sistem Monitoring Energi IoT - Laporan dibuat otomatis.
-        </div>
-    </div>
+    @if($plotUrl)
+        <h3>Prediction Chart</h3>
+        <img src="{{ $plotUrl }}" alt="Prediction Plot" style="width: 100%;">
+    @endif
 </body>
 </html>

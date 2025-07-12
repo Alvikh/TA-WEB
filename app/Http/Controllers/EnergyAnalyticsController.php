@@ -317,26 +317,36 @@ return view('energy-analytics.show', $data);
             'energyToday' => round($stats->total_energy ?? 0, 2)
         ];
     }
+public function exportPdf($id)
+{
+    $device = is_numeric($id) 
+        ? Device::findOrFail($id)
+        : Device::where('device_id', $id)->firstOrFail();
 
-    public function exportPdf($id)
-    {
-        $device = Device::findOrFail($id);
-        $latestReading = EnergyMeasurement::where('device_id', $device->device_id)
-            ->latest('measured_at')
-            ->first() ?? $this->createEmptyReading();
+    $latestReading = EnergyMeasurement::where('device_id', $device->device_id)
+        ->where('measured_at', '>=', now()->subMinutes(5))
+        ->latest('measured_at')
+        ->first() ?? $this->createEmptyReading();
 
-        $metrics = $this->calculateMetrics($device->device_id);
-        $predictionData = $this->getPredictionData($device);
+    $consumptionData = $this->getHourlyConsumption($device->device_id);
+    $energyHistory = $this->getEnergyHistory($device->device_id);
+    $metrics = $this->calculateMetrics($device->device_id);
+    $predictionData = $this->getPredictionData($device);
 
-        $pdf = Pdf::loadView('exports.energy_analytics_pdf', [
-            'device' => $device,
-            'latestReading' => $latestReading,
-            'avgDailyPower' => $metrics['avgDailyPower'],
-            'peakPowerToday' => $metrics['peakPowerToday'],
-            'energyToday' => $metrics['energyToday'],
-            'predictionData' => $predictionData
-        ]);
+    $pdf = Pdf::loadView('exports.energy_analytics_pdf', [
+        'device' => $device,
+        'latestReading' => $latestReading,
+        'consumptionLabels' => $consumptionData['labels'],
+        'consumptionData' => $consumptionData['data'],
+        'energyHistory' => $energyHistory['records'],
+        'avgDailyPower' => $metrics['avgDailyPower'],
+        'peakPowerToday' => $metrics['peakPowerToday'],
+        'energyToday' => $metrics['energyToday'],
+        'predictionData' => $predictionData,
+        'plotUrl' => $predictionData['plot_url'] ?? null
+    ]);
 
-        return $pdf->download('Device-Analytics-' . $device->device_id . '.pdf');
-    }
+    return $pdf->download('energy_report_'.$device->device_id.'.pdf');
+}
+
 }
