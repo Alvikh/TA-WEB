@@ -34,15 +34,14 @@ class User extends Authenticatable
     protected $casts = [
     'email_verified_at' => 'datetime',
     'last_login_at' => 'datetime',
+    'verification_code_expires_at' => 'datetime',
 ];
 
-    // Relasi many-to-many dengan buildings
-    // public function buildings()
-    // {
-    //     return $this->belongsToMany(Building::class);
-    // }
+public function hasVerifiedEmail()
+{
+    return !is_null($this->email_verified_at);
+}
 
-    // Helper methods untuk check role
     public function isAdmin(): bool
     {
         return $this->role === 'admin';

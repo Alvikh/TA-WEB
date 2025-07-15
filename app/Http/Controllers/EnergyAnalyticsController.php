@@ -45,7 +45,6 @@ $data = [
     'plotUrl' => $predictionData['plot_url'] ?? null
 ];
 
-// dd($data); // Debug isi semua data
 return view('energy-analytics.show', $data);
     }
 
@@ -91,7 +90,7 @@ return view('energy-analytics.show', $data);
 
         if ($response->successful()) {
             $rawData = $response->json();
-            
+            // dd($rawData);
             // Get historical data for comparison
             $historical = EnergyMeasurement::where('device_id', $device->device_id)
                 ->where('measured_at', '>=', now()->subDays(30))

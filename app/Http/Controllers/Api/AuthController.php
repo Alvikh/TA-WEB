@@ -216,4 +216,88 @@ $user->update([
             'refresh_token' => $newRefreshToken->token
         ]);
     }
+    use Illuminate\Support\Facades\Mail;
+use App\Mail\VerificationEmail;
+
+public function sendVerificationCode(Request $request)
+{
+    $user = $request->user();
+    
+    // Generate 6-digit code
+    $code = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
+    $expiresAt = now()->addMinutes(15);
+
+    $user->update([
+        'verification_code' => $code,
+        'verification_code_expires_at' => $expiresAt,
+    ]);
+
+    // Send email (you need to create the Mailable)
+    Mail::to($user->email)->send(new VerificationEmail($code));
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Verification code sent to your email',
+        'expires_at' => $expiresAt->toDateTimeString(),
+    ]);
+}
+
+public function verifyEmail(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'code' => 'required|digits:6',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json([
+            'success' => false,
+            'message' => $validator->errors()->first(),
+        ], 400);
+    }
+
+    $user = $request->user();
+
+    if ($user->email_verified_at) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Email already verified',
+        ], 400);
+    }
+
+    if ($user->verification_code !== $request->code) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Invalid verification code',
+        ], 400);
+    }
+
+    if (now()->gt($user->verification_code_expires_at)) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Verification code expired',
+        ], 400);
+    }
+
+    $user->update([
+        'email_verified_at' => now(),
+        'verification_code' => null,
+        'verification_code_expires_at' => null,
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Email successfully verified',
+        'user' => $user,
+    ]);
+}
+
+public function checkVerificationStatus(Request $request)
+{
+    $user = $request->user();
+    
+    return response()->json([
+        'success' => true,
+        'is_verified' => !is_null($user->email_verified_at),
+    ]);
+}
 }

@@ -15,15 +15,15 @@ use App\Http\Controllers\Api\EnergyAnalyticsApiController;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/refresh', [AuthController::class, 'refreshToken']);
-// Route::prefix('monitoring')->group(function () {
-    //     Route::get('dashboard', [ServerMonitoringController::class, 'getDashboardData']);
-    // });
-    Route::middleware('auth:sanctum')->group(function () {
+
+Route::middleware('auth:sanctum')->group(function () {
     Route::post('/refresh', [AuthController::class, 'refresh']);
     Route::post('/user', [AuthController::class, 'user']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/complete-profile', [AuthController::class, 'completeProfile']);
-
+    Route::post('/send-verification', [AuthController::class, 'sendVerificationCode']);
+    Route::post('/verify-email', [AuthController::class, 'verifyEmail']);
+    Route::get('/check-verification', [AuthController::class, 'checkVerificationStatus']);
     Route::prefix('profile')->group(function () {
         Route::get('/', [ProfileController::class, 'show']);
         Route::put('/', [ProfileController::class, 'update']);
@@ -41,14 +41,12 @@ Route::post('/refresh', [AuthController::class, 'refreshToken']);
         Route::get('/status/{status}', [DeviceController::class, 'byStatus']);
     });
     Route::group(['prefix' => 'energy'], function() {
-    // Device data endpoints
-    Route::get('device/{id}', [EnergyAnalyticsApiController::class, 'getDeviceData']);
-    Route::get('device/{id}/prediction', [EnergyAnalyticsApiController::class, 'getPredictionDataApi']);
-    Route::get('device/{id}/consumption', [EnergyAnalyticsApiController::class, 'getConsumptionHistoryApi']);
-    
-    // Data submission endpoint
-    Route::post('device/{id}/measurement', [EnergyAnalyticsApiController::class, 'storeMeasurementApi']);
-});
+        Route::get('device/{id}', [EnergyAnalyticsApiController::class, 'getDeviceData']);
+        Route::get('device/{id}/prediction', [EnergyAnalyticsApiController::class, 'getPredictionDataApi']);
+        Route::get('device/{id}/consumption', [EnergyAnalyticsApiController::class, 'getConsumptionHistoryApi']);
+        
+        Route::post('device/{id}/measurement', [EnergyAnalyticsApiController::class, 'storeMeasurementApi']);
+    });
    Route::post('/predict-future', [PredictController::class, 'predictFuture']);
 });
 Route::post('/send-alert', [AlertController::class, 'sendAlertEmail']);
@@ -69,4 +67,3 @@ Route::get('/test-api', function () {
     });
 
 Route::post('/forgot-password', [NewPasswordController::class, 'forgotPassword']);
-
