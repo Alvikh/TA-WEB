@@ -21,40 +21,94 @@ class EnergyAnalyticsController extends Controller
             $device = Device::findOrFail($id);
         }
 
+        if ($device->type == "monitoring") {
+            return $this->showMonitoringDevice($device);
+        } else {
+            return $this->showControlDevice($device);
+        }
+    }
+
+    protected function showMonitoringDevice($device)
+    {
         $latestReading = EnergyMeasurement::where('device_id', $device->device_id)
             ->where('measured_at', '>=', now()->subMinutes(5))
             ->latest('measured_at')
-            ->first() ?? $this->createEmptyReading();
+            ->first() ?? $this->createEmptyMonitoringReading();
 
         $consumptionData = $this->getHourlyConsumption($device->device_id);
         $energyHistory = $this->getEnergyHistory($device->device_id);
         $metrics = $this->calculateMetrics($device->device_id);
         $predictionData = $this->getPredictionData($device);
-$data = [
-    'device' => $device,
-    'latestReading' => $latestReading,
-    'consumptionLabels' => $consumptionData['labels'],
-    'consumptionData' => $consumptionData['data'],
-    'historyLabels' => $energyHistory['labels'],
-    'historyData' => $energyHistory['data'],
-    'energyHistory' => $energyHistory['records'],
-    'avgDailyPower' => $metrics['avgDailyPower'],
-    'peakPowerToday' => $metrics['peakPowerToday'],
-    'energyToday' => $metrics['energyToday'],
-    'predictionData' => $predictionData,
-    'plotUrl' => $predictionData['plot_url'] ?? null
-];
 
-return view('energy-analytics.show', $data);
+        $data = [
+            'device' => $device,
+            'latestReading' => $latestReading,
+            'consumptionLabels' => $consumptionData['labels'],
+            'consumptionData' => $consumptionData['data'],
+            'historyLabels' => $energyHistory['labels'],
+            'historyData' => $energyHistory['data'],
+            'energyHistory' => $energyHistory['records'],
+            'avgDailyPower' => $metrics['avgDailyPower'],
+            'peakPowerToday' => $metrics['peakPowerToday'],
+            'energyToday' => $metrics['energyToday'],
+            'predictionData' => $predictionData,
+            'plotUrl' => $predictionData['plot_url'] ?? null
+        ];
+
+        return view('energy-analytics.show', $data);
     }
 
+    protected function showControlDevice($device)
+    {
+        $latestReading = EnergyMeasurement::where('device_id', $device->device_id)
+            ->latest('measured_at')
+            ->first() ?? $this->createEmptyControlReading();
+
+        $readings = EnergyMeasurement::where('device_id', $device->device_id)
+            ->orderBy('measured_at', 'desc')
+            ->take(20)
+            ->get();
+
+        $data = [
+            'device' => $device,
+            'latestReading' => $latestReading,
+            'readings' => $readings
+        ];
+
+        return view('energy-analytics.control', $data);
+    }
+protected function createEmptyMonitoringReading()
+    {
+        return new EnergyMeasurement([
+            'voltage' => 0,
+            'current' => 0,
+            'power' => 0,
+            'energy' => 0,
+            'frequency' => 0,
+            'power_factor' => 0,
+            'temperature' => 0,
+            'humidity' => 0,
+            'measured_at' => now()
+        ]);
+    }
+
+    protected function createEmptyControlReading()
+    {
+        return new EnergyMeasurement([
+            'temperature' => 0,
+            'humidity' => 0,
+            'relay_state' => 'OFF',
+            'timestamp' => now()->timestamp,
+            'measured_at' => now()
+        ]);
+    }
     protected function getPredictionData($device, $durationType = 'year', $numPeriods = 1)
 {
-    $flaskBaseUrl = 'http://103.219.251.163:5050';
+    $flaskBaseUrl = 'http://192.168.1.10:5050';
     $latestReading = EnergyMeasurement::where('device_id', $device->device_id)
         ->latest('measured_at')
         ->firstOrFail();
-
+// dd($latestReading);
     $defaultData = [
         'start_date' => now()->format('Y-m-d'),
         'duration_type' => $durationType,
@@ -87,7 +141,7 @@ return view('energy-analytics.show', $data);
         ];
 
         $response = Http::post("$flaskBaseUrl/api/predict-future", $payload);
-
+// dd($response->json());
         if ($response->successful()) {
             $rawData = $response->json();
             // dd($rawData);

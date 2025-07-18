@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -23,7 +22,9 @@ class User extends Authenticatable
         'status',
         'last_login_at',
         'profile_photo_path',
-        'current_team_id'
+        'current_team_id',
+        'verification_code',
+        'verification_code_expires_at',
     ];
 
     protected $hidden = [

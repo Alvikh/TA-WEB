@@ -92,4 +92,4 @@ Route::get('/reset-password/{token}', [NewPasswordController::class, 'showResetF
 Route::post('/reset-password', [NewPasswordController::class, 'resetPassword'])->name('password.update');
 // });
 
-Route::get('/energy-analytics/{id}/export-pdf', [EnergyAnalyticsController::class, 'exportPdf'])->name('energy.export.pdf');
+Route::get('/energy-analytics/{id}/export-pdf', [EnergyAnalyticsController::class, 'exportPdf'])->name('energy-analytics.exportPdf');

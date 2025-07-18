@@ -3,33 +3,31 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\User;
-use Illuminate\Support\Str;
 use App\Models\RefreshToken;
+use App\Mail\VerificationEmail;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Symfony\Component\Clock\now;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use Illuminate\Container\Attributes\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
     protected function createRefreshToken(User $user)
     {
-        // Delete old refresh tokens
         $user->refreshTokens()->delete();
-
-        // Create new refresh token
         return $user->refreshTokens()->create([
             'token' => Str::random(60),
             'expires_at' => now()->addDays(7),
         ]);
     }
-    // Tahap 1: Register dengan email dan password
+
     public function register(Request $request)
     {
         Log::info('Register request payload:', $request->all());
+
         $validator = Validator::make($request->all(), [
             'email'    => 'required|email|unique:users,email',
             'password' => 'required|min:6',
@@ -55,16 +53,15 @@ class AuthController extends Controller
             'success' => true,
             'message' => 'Register tahap 1 berhasil',
             'token'   => $token,
-            'user'=>$user
+            'user'    => $user,
         ]);
     }
 
-    // Tahap 2: Lengkapi informasi akun
     public function completeProfile(Request $request)
     {
-        Log::info('Request', [
-    'all' => $request]);
-        $user = $request->user(); // pengguna saat ini dari token
+        Log::info('Request', ['all' => $request]);
+
+        $user = $request->user();
 
         $validator = Validator::make($request->all(), [
             'name'    => 'required|string|max:255',
@@ -88,66 +85,64 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Profil berhasil diperbarui',
-            'user'=>$user
+            'user'    => $user,
         ]);
     }
-public function refresh(Request $request)
+
+    public function refresh(Request $request)
     {
         $user = $request->user();
 
-        $token = $user->createToken('auth_token', ['*'], now()->addDay(7))->plainTextToken;
+        $token = $user->createToken('auth_token', ['*'], now()->addDays(7))->plainTextToken;
         $this->createRefreshToken($user);
-$user->update([
-            'last_login_at' => now(),
-        ]);
+
+        $user->update(['last_login_at' => now()]);
+
         return response()->json([
             'success' => true,
             'message' => 'Login berhasil',
             'token'   => $token,
-            'user'=>$user
+            'user'    => $user,
         ]);
     }
-    // Login
+
     public function login(Request $request)
-{
-    $validator = Validator::make($request->all(), [
-        'email'    => 'required|email',
-        'password' => 'required',
-    ]);
+    {
+        $validator = Validator::make($request->all(), [
+            'email'    => 'required|email',
+            'password' => 'required',
+        ]);
 
-    if ($validator->fails()) {
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first(),
+            ], 400);
+        }
+
+        $user = User::where('email', $request->email)->with('devices')->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Email atau password salah',
+            ], 401);
+        }
+
+        $token = $user->createToken('auth_token', ['*'], now()->addDays(7))->plainTextToken;
+        $refreshToken = $this->createRefreshToken($user);
+
+        $user->update(['last_login_at' => now()]);
+
         return response()->json([
-            'success' => false,
-            'message' => $validator->errors()->first(),
-        ], 400);
+            'success' => true,
+            'message' => 'Login berhasil',
+            'token'   => $token,
+            'refresh_token' => $refreshToken->token,
+            'user'    => $user,
+        ]);
     }
 
-    $user = User::where('email', $request->email)->with('devices')->first();
-
-    if (!$user || !Hash::check($request->password, $user->password)) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Email atau password salah',
-        ], 401);
-    }
-
-    $token = $user->createToken('auth_token', ['*'], now()->addDay(7))->plainTextToken;
-    $refreshToken = $this->createRefreshToken($user);
-    
-    $user->update([
-        'last_login_at' => now(),
-    ]);
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Login berhasil',
-        'token'   => $token,
-        'refresh_token' => $refreshToken->token, // Add this line
-        'user' => $user
-    ]);
-}
-
-    // Logout
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
@@ -158,7 +153,6 @@ $user->update([
         ]);
     }
 
-    // Get user info
     public function user(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -179,13 +173,11 @@ $user->update([
             'user'    => $user,
         ]);
     }
-    
 
     public function refreshToken(Request $request)
     {
         $request->validate([
-            
-            'refresh_token' => 'required'
+            'refresh_token' => 'required',
         ]);
 
         $refreshToken = RefreshToken::where('token', $request->refresh_token)
@@ -195,109 +187,100 @@ $user->update([
         if (!$refreshToken) {
             return response()->json([
                 'success' => false,
-                'message' => 'Refresh token tidak valid atau sudah kadaluarsa'
+                'message' => 'Refresh token tidak valid atau sudah kadaluarsa',
             ], 401);
         }
 
         $user = $refreshToken->user;
 
-        // Revoke all old access tokens
         $user->tokens()->delete();
-
-        // Create new access token
-        $token = $user->createToken('auth_token', ['*'], now()->addDay(7))->plainTextToken;
-
-        // Create new refresh token (optional: rotate refresh token)
+        $token = $user->createToken('auth_token', ['*'], now()->addDays(7))->plainTextToken;
         $newRefreshToken = $this->createRefreshToken($user);
 
         return response()->json([
             'success' => true,
-            'token' => $token,
-            'refresh_token' => $newRefreshToken->token
+            'token'   => $token,
+            'refresh_token' => $newRefreshToken->token,
         ]);
     }
-    use Illuminate\Support\Facades\Mail;
-use App\Mail\VerificationEmail;
 
-public function sendVerificationCode(Request $request)
-{
-    $user = $request->user();
-    
-    // Generate 6-digit code
-    $code = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
-    $expiresAt = now()->addMinutes(15);
+    public function sendVerificationCode(Request $request)
+    {
+        $user = User::where('email', $request->email)->first();
 
-    $user->update([
-        'verification_code' => $code,
-        'verification_code_expires_at' => $expiresAt,
-    ]);
+        $code = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
+        $expiresAt = now()->addMinutes(15);
 
-    // Send email (you need to create the Mailable)
-    Mail::to($user->email)->send(new VerificationEmail($code));
+        $user->update([
+            'verification_code' => $code,
+            'verification_code_expires_at' => $expiresAt,
+        ]);
 
-    return response()->json([
-        'success' => true,
-        'message' => 'Verification code sent to your email',
-        'expires_at' => $expiresAt->toDateTimeString(),
-    ]);
-}
+        Mail::to($user->email)->send(new VerificationEmail($code));
 
-public function verifyEmail(Request $request)
-{
-    $validator = Validator::make($request->all(), [
-        'code' => 'required|digits:6',
-    ]);
-
-    if ($validator->fails()) {
         return response()->json([
-            'success' => false,
-            'message' => $validator->errors()->first(),
-        ], 400);
+            'success' => true,
+            'message' => 'Verification code sent to your email',
+            'expires_at' => $expiresAt->toDateTimeString(),
+        ]);
     }
 
-    $user = $request->user();
+    public function verifyEmail(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'code' => 'required|digits:6',
+        ]);
 
-    if ($user->email_verified_at) {
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first(),
+            ], 400);
+        }
+
+        $user = $request->user();
+
+        if ($user->email_verified_at) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Email already verified',
+            ], 400);
+        }
+
+        if ($user->verification_code !== $request->code) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid verification code',
+            ], 400);
+        }
+
+        if (now()->gt($user->verification_code_expires_at)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Verification code expired',
+            ], 400);
+        }
+
+        $user->update([
+            'email_verified_at' => now(),
+            'verification_code' => null,
+            'verification_code_expires_at' => null,
+        ]);
+
         return response()->json([
-            'success' => false,
-            'message' => 'Email already verified',
-        ], 400);
+            'success' => true,
+            'message' => 'Email successfully verified',
+            'user'    => $user,
+        ]);
     }
 
-    if ($user->verification_code !== $request->code) {
+    public function checkVerificationStatus(Request $request)
+    {
+        $user = $request->user();
+
         return response()->json([
-            'success' => false,
-            'message' => 'Invalid verification code',
-        ], 400);
+            'success' => true,
+            'is_verified' => !is_null($user->email_verified_at),
+        ]);
     }
-
-    if (now()->gt($user->verification_code_expires_at)) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Verification code expired',
-        ], 400);
-    }
-
-    $user->update([
-        'email_verified_at' => now(),
-        'verification_code' => null,
-        'verification_code_expires_at' => null,
-    ]);
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Email successfully verified',
-        'user' => $user,
-    ]);
-}
-
-public function checkVerificationStatus(Request $request)
-{
-    $user = $request->user();
-    
-    return response()->json([
-        'success' => true,
-        'is_verified' => !is_null($user->email_verified_at),
-    ]);
-}
 }

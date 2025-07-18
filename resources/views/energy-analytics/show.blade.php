@@ -320,8 +320,10 @@
                     <p class="text-sm text-gray-500 mb-1">Average Daily Usage</p>
                     <p class="text-lg font-semibold text-blue-600">
                         @php
-                        $avg_daily = $total_kwh / count($predictionData['daily_predictions']);
-                        @endphp
+    $dailyCount = count($predictionData['daily_predictions']);
+    $avg_daily = $dailyCount > 0 ? $total_kwh / $dailyCount : 0;
+@endphp
+
                         {{ number_format($avg_daily, 2) }} kWh/day
                     </p>
                 </div>

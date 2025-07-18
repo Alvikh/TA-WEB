@@ -12,7 +12,234 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
 class EnergyAnalyticsApiController extends Controller
+{public function getConsumptionHistoryApi(Request $request, $id)
+    {
+        try {
+            $startDate = $request['start_date'] 
+                ? Carbon::parse($request['start_date'])->startOfDay()
+                : now()->subDays(7)->startOfDay();
+            $endDate = $request['end_date']
+                ? Carbon::parse($request['end_date'])->endOfDay()
+                : now()->endOfDay();
+            
+            $interval = $request['interval']; // hourly or daily
+            
+            $device = Device::findOrFail($id);
+            $deviceId = $device->device_id;
+// return $deviceId;
+            // Get data based on interval
+            $data = match($interval) {
+                'hourly' => $this->getHourlyConsumption($deviceId, $startDate, $endDate),
+                'daily' => $this->getDailyConsumption($deviceId, $startDate, $endDate),
+                default => throw new \InvalidArgumentException('Invalid interval specified')
+            };
+            // return $data;
+            // Calculate metrics for the selected period
+            $metrics = $this->calculateMetrics($deviceId, $startDate, $endDate);
+
+            return response()->json([
+                'status' => 'success',
+                'period' => $interval,
+                'start_date' => $startDate->toDateTimeString(),
+                'end_date' => $endDate->toDateTimeString(),
+                'data' => $data,
+                'metrics' => $metrics,
+                'timestamp' => now()->toDateTimeString()
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to fetch consumption data',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    protected function getHourlyConsumption($deviceId, $startDate, $endDate)
 {
+    $readings = EnergyMeasurement::where('device_id', $deviceId)
+        ->whereBetween('measured_at', [$startDate, $endDate])
+        ->selectRaw('HOUR(measured_at) as hour, 
+                    DATE(measured_at) as date,
+                    SUM(power) as total_power,
+                    COUNT(*) as count_entries')
+        ->groupBy('date', 'hour')
+        ->orderBy('date')
+        ->orderBy('hour')
+        ->get();
+
+    // Init 0 values
+    $hourlyData = [];
+    $currentDate = $startDate->copy();
+    
+    while ($currentDate <= $endDate) {
+        $dateStr = $currentDate->format('Y-m-d');
+        $hourlyData[$dateStr] = array_fill(0, 24, 0);
+        $currentDate->addDay();
+    }
+
+    // Fill actual energy data
+    foreach ($readings as $reading) {
+    $dateStr = Carbon::parse($reading->date)->format('Y-m-d');
+    
+    // Ambil rata-rata power per entry
+    $avgPower = $reading->count_entries > 0
+        ? $reading->total_power / $reading->count_entries
+        : 0;
+
+    // Karena ini power per jam, maka energi dalam jam itu = avg power (Watt) ÷ 1000 → kWh
+    $energyInKWh = $avgPower / 1000;
+
+    $hourlyData[$dateStr][$reading->hour] = round($energyInKWh, 4);
+}
+
+
+    // If one day
+    if ($startDate->isSameDay($endDate)) {
+        $labels = array_map(fn($h) => sprintf('%02d:00', $h), range(0, 23));
+        $data = $hourlyData[$startDate->format('Y-m-d')] ?? array_fill(0, 24, 0);
+
+        return [
+            'labels' => $labels,
+            'data' => $data,
+            'unit' => 'kWh'
+        ];
+    }
+
+    // Multiple day: daily energy sum
+    $dailyTotals = [];
+    $labels = [];
+
+    foreach ($hourlyData as $date => $hours) {
+        $total = array_sum($hours);
+        $dailyTotals[] = round($total, 4);
+        $labels[] = Carbon::parse($date)->format('M d');
+    }
+
+    return [
+        'labels' => $labels,
+        'data' => $dailyTotals,
+        'unit' => 'kWh'
+    ];
+}
+
+
+   protected function getDailyConsumption($deviceId, $startDate, $endDate)
+{
+    // First get all raw measurements in the date range
+    $measurements = EnergyMeasurement::where('device_id', $deviceId)
+        ->whereBetween('measured_at', [$startDate, $endDate])
+        ->select(['measured_at', 'power', 'energy'])
+        ->orderBy('measured_at')
+        ->get();
+
+    // Initialize results array
+    $results = [];
+    $currentDate = $startDate->copy();
+
+    while ($currentDate <= $endDate) {
+        $dateStr = $currentDate->format('Y-m-d');
+        $results[$dateStr] = [
+            'total_energy' => 0,
+            'power_samples' => [],
+            'last_measurement' => null,
+            'first_measurement' => null
+        ];
+        $currentDate->addDay();
+    }
+
+    // Process each measurement
+    foreach ($measurements as $i => $measurement) {
+    if ($i === 0) continue;
+
+    $prev = $measurements[$i - 1];
+    $date = Carbon::parse($measurement->measured_at)->format('Y-m-d');
+
+    $diff = $measurement->energy - $prev->energy;
+
+    if ($diff >= 0 && isset($results[$date])) {
+        $results[$date]['total_energy'] += $diff / 1000; // Convert Wh → kWh
+        $results[$date]['power_samples'][] = $measurement->power;
+    }
+}
+
+
+    // Calculate daily values
+    $dailyData = [];
+    foreach ($results as $date => $data) {
+        $totalEnergy = 0;
+        $avgPower = 0;
+
+        if ($data['first_measurement'] && $data['last_measurement']) {
+            // Calculate energy consumption more precisely
+            $energyDiff = $data['last_measurement']->energy - $data['first_measurement']->energy;
+            $totalEnergy = max(0, $energyDiff / 1000); // Convert Wh to kWh, ensure non-negative
+        }
+
+        // Calculate average power from samples
+        if (count($data['power_samples']) > 0) {
+            $avgPower = array_sum($data['power_samples']) / count($data['power_samples']);
+        }
+
+        $dailyData[] = [
+            'date' => $date,
+            'total_energy_kwh' => round($totalEnergy, 4),
+            'avg_power_kw' => round($avgPower, 2)
+        ];
+    }
+
+    // Prepare output
+    $labels = array_map(fn($d) => Carbon::parse($d['date'])->format('M d'), $dailyData);
+    $energyData = array_column($dailyData, 'total_energy_kwh');
+    $powerData = array_column($dailyData, 'avg_power_kw');
+
+    return [
+        'status' => 'success',
+        'labels' => $labels,
+        'data' => $energyData,
+        'unit' => 'kWh',
+        'meta' => [
+            'average_power_data' => $powerData,
+            'power_unit' => 'kW',
+            'measurement_count' => $measurements->count(),
+            'days_with_data' => count(array_filter($energyData, fn($v) => $v > 0))
+        ],
+        'timestamp' => now()->toDateTimeString()
+    ];
+}
+
+protected function calculateMetrics($deviceId, $startDate, $endDate)
+{
+    $stats = EnergyMeasurement::where('device_id', $deviceId)
+        ->whereBetween('measured_at', [$startDate, $endDate])
+        ->selectRaw('AVG(power) as avg_power, 
+                     MAX(power) as peak_power, 
+                     SUM(power) as total_power_sum,
+                     COUNT(*) as count_entries')
+        ->first();
+
+    $days = $startDate->diffInDays($endDate) + 1;
+
+    $totalEnergyKwh = $stats && $stats->total_power_sum
+        ? round(($stats->total_power_sum * 5) / 3600000, 4)
+        : 0;
+
+    return [
+        'avg_daily_energy' => $days > 0
+            ? round($totalEnergyKwh / $days, 4)
+            : 0,
+        'peak_power' => round($stats->peak_power ?? 0, 2),
+        'total_energy' => $totalEnergyKwh,
+        'units' => [
+            'power' => 'kW',
+            'energy' => 'kWh'
+        ]
+    ];
+}
+
+
+
     public function getDeviceData($id)
     {
         try {
@@ -23,10 +250,14 @@ class EnergyAnalyticsApiController extends Controller
             ->latest('measured_at')
             ->first() ?? $this->createEmptyReading();
 
-        $hourlyConsumption = $this->getHourlyConsumption($device->device_id);
-        $dailyConsumption = $this->getDailyConsumption($device->device_id, 7);
-        $energyHistory = $this->getEnergyHistory($device->device_id, 7);
-        $metrics = $this->calculateMetrics($device->device_id);
+        $startDate = now()->subDays(7)->startOfDay();
+$endDate = now()->endOfDay();
+
+$hourlyConsumption = $this->getHourlyConsumption($device->device_id, $startDate, $endDate);
+$dailyConsumption = $this->getDailyConsumption($device->device_id, $startDate, $endDate);
+$energyHistory = $this->getEnergyHistory($device->device_id, 7);
+$metrics = $this->calculateMetrics($device->device_id, $startDate, $endDate);
+
         $predictionData = $this->getPredictionData($device);
 
         return response()->json([
@@ -73,37 +304,7 @@ class EnergyAnalyticsApiController extends Controller
         }
     }
 
-    public function getConsumptionHistoryApi(Request $request, $id)
-    {
-        try {
-            $period = $request->query('period', 'day');
-            $days = $request->query('days', 7);
-            
-            $data = match($period) {
-                'day' => $this->getHourlyConsumption($id),
-                'week', 'month' => $this->getDailyConsumption($id, $days),
-                default => throw new \InvalidArgumentException('Invalid period specified')
-            };
-            
-            $metrics = $this->calculateMetrics($id);
-
-            return response()->json([
-                'status' => 'success',
-                'period' => $period,
-                'days' => $days,
-                'data' => $data,
-                'metrics' => $metrics,
-                'timestamp' => now()->toDateTimeString()
-            ]);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Failed to fetch consumption data',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
+    
 
     public function storeMeasurementApi(Request $request, $id)
     {
@@ -141,7 +342,8 @@ class EnergyAnalyticsApiController extends Controller
 
     protected function getPredictionData($device, $durationType = 'year', $numPeriods = 1)
     {
-        $flaskBaseUrl = 'http://103.219.251.163:5050';
+        // $flaskBaseUrl = 'http://103.219.251.163:5050';
+        $flaskBaseUrl = 'http://192.168.1.10:5050';
         $latestReading = EnergyMeasurement::where('device_id', $device->device_id)
             ->latest('measured_at')
             ->firstOrFail();
@@ -301,58 +503,7 @@ return $response->json();
         ];
     }
 
-    protected function getHourlyConsumption($deviceId)
-    {
-        $today = now()->startOfDay();
-        
-        $readings = EnergyMeasurement::where('device_id', $deviceId)
-            ->where('measured_at', '>=', $today)
-            ->selectRaw('HOUR(measured_at) as hour, AVG(power) as avg_power')
-            ->groupBy('hour')
-            ->orderBy('hour')
-            ->get();
-            
-        $labels = [];
-        $data = [];
-        
-        for ($i = 0; $i < 24; $i++) {
-            $labels[] = sprintf('%02d:00', $i);
-            $hourData = $readings->firstWhere('hour', $i);
-            $data[] = $hourData ? round($hourData->avg_power, 2) : 0;
-        }
-        
-        return [
-            'labels' => $labels,
-            'data' => $data,
-            'unit' => 'kW'
-        ];
-    }
-
-    protected function getDailyConsumption($deviceId, $days = 7)
-    {
-        $startDate = now()->subDays($days)->startOfDay();
-        
-        $readings = EnergyMeasurement::where('device_id', $deviceId)
-            ->where('measured_at', '>=', $startDate)
-            ->selectRaw('DATE(measured_at) as date, AVG(power) as avg_power')
-            ->groupBy('date')
-            ->orderBy('date')
-            ->get();
-            
-        $labels = [];
-        $data = [];
-        
-        foreach ($readings as $reading) {
-            $labels[] = Carbon::parse($reading->date)->format('M d');
-            $data[] = round($reading->avg_power, 2);
-        }
-        
-        return [
-            'labels' => $labels,
-            'data' => $data,
-            'unit' => 'kW'
-        ];
-    }
+    
 
     protected function getEnergyHistory($deviceId, $days = 7)
     {
@@ -402,25 +553,5 @@ return $response->json();
         return sprintf('%02dh %02dm', $hours, $minutes);
     }
 
-    protected function calculateMetrics($deviceId)
-    {
-        $today = now()->startOfDay();
-        
-        $stats = EnergyMeasurement::where('device_id', $deviceId)
-            ->where('measured_at', '>=', $today)
-            ->selectRaw('AVG(power) as avg_power, 
-                        MAX(power) as peak_power, 
-                        SUM(energy) as total_energy')
-            ->first();
-            
-        return [
-            'avg_daily_power' => round($stats->avg_power ?? 0, 2),
-            'peak_power_today' => round($stats->peak_power ?? 0, 2),
-            'energy_today' => round($stats->total_energy ?? 0, 2),
-            'units' => [
-                'power' => 'kW',
-                'energy' => 'kWh'
-            ]
-        ];
-    }
+   
 }
