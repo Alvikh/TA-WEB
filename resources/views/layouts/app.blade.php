@@ -144,7 +144,7 @@ body.sidebar-open {
         <footer class="bg-white border-t border-gray-200 py-4 px-6">
             <div class="flex flex-col md:flex-row items-center justify-between">
                 <div class="text-sm text-gray-500 mb-4 md:mb-0">
-                    &copy; {{ date('Y') }} <span class="font-medium text-primary-600">Your Company</span>. All rights reserved.
+                    &copy; {{ date('Y') }} <span class="font-medium text-primary-600">Smart Power Management</span>. All rights reserved.
                 </div>
                 <div class="flex space-x-6">
                     <a href="#" class="text-gray-400 hover:text-primary-500 transition-colors">
