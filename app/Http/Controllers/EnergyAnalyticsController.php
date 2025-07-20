@@ -164,9 +164,11 @@ protected function createEmptyMonitoringReading()
 
             Log::debug('[DB] Fetching 30-day historical energy data');
             $historicalRaw = EnergyMeasurement::where('device_id', $device->device_id)
-    ->where('measured_at', '>=', now()->subDays(30))
-    ->orderBy('measured_at')
-    ->get();
+            ->where('measured_at', '>=', now()->subDays(30))
+            ->orderBy('measured_at')
+            ->get();
+            dd($historicalRaw);
+            Log::debug('historical event');
 
 $historical = $historicalRaw
     ->filter(function ($item) {
