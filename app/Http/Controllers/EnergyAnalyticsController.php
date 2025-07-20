@@ -106,28 +106,22 @@ protected function createEmptyMonitoringReading()
     }
     protected function getPredictionData($device, $durationType = 'year', $numPeriods = 1)
 {
-        Log::debug('PredictionData started', ['device' => $device->device_id]);
+    Log::debug('--- [START] getPredictionData ---', [
+        'device_id' => $device->device_id,
+        'duration_type' => $durationType,
+        'num_periods' => $numPeriods
+    ]);
 
     $flaskBaseUrl = 'http://103.219.251.171:5050';
-    $latestReading = EnergyMeasurement::where('device_id', $device->device_id)
-        ->latest('measured_at')
-        ->firstOrFail();
-
-    $defaultData = [
-        'start_date' => now()->format('Y-m-d'),
-        'duration_type' => $durationType,
-        'num_periods' => $numPeriods,
-        'daily_predictions' => [],
-        'monthly_predictions' => [],
-        'yearly_predictions' => [],
-        'historical_data' => [],
-        'plot_url' => null,
-        'total_kwh' => 0,
-        'estimated_cost' => 0
-    ];
-
+    
     try {
-                DB::connection()->getPdo();
+        Log::debug('[DB] Check database connection');
+        DB::connection()->getPdo();
+        
+        Log::debug('[DB] Fetch latest sensor data from EnergyMeasurement');
+        $latestReading = EnergyMeasurement::where('device_id', $device->device_id)
+            ->latest('measured_at')
+            ->firstOrFail();
 
         $sensorData = [
             'voltage' => $latestReading->voltage,
@@ -140,6 +134,8 @@ protected function createEmptyMonitoringReading()
             'measured_at' => $latestReading->measured_at->format('d-m-Y H:i:s')
         ];
 
+        Log::debug('[Payload] Preparing data to send to Flask API', $sensorData);
+
         $payload = [
             'duration_type' => $durationType,
             'num_periods' => $numPeriods,
@@ -148,23 +144,25 @@ protected function createEmptyMonitoringReading()
             'start_date' => now()->format('d-m-Y H:i:s')
         ];
 
-        // Make the HTTP request with timeout and retry
-            Log::debug('Memory usage: '.memory_get_usage());
+        Log::debug('[HTTP] Sending POST request to Flask API: /api/predict-future');
+        Log::debug('Memory before request: ' . memory_get_usage());
 
         $response = Http::timeout(15)
             ->retry(3, 100)
             ->post("$flaskBaseUrl/api/predict-future", $payload);
-    Log::debug('Memory usage 2: '.memory_get_usage());
-dd($response);
+
+        Log::debug('Memory after request: ' . memory_get_usage());
+
         if ($response->successful()) {
+            Log::debug('[HTTP] Flask API response received successfully');
             $rawData = $response->json();
 
-            // Validate response structure
             if (!isset($rawData['daily_predictions'])) {
+                Log::error('[Response] Missing daily_predictions in response');
                 throw new \Exception("Invalid response format: daily_predictions missing");
             }
 
-            // Get historical data
+            Log::debug('[DB] Fetching 30-day historical energy data');
             $historical = EnergyMeasurement::where('device_id', $device->device_id)
                 ->where('measured_at', '>=', now()->subDays(30))
                 ->orderBy('measured_at')
@@ -179,7 +177,7 @@ dd($response);
                     ];
                 })->toArray();
 
-            // Process predictions
+            Log::debug('[Process] Formatting prediction and historical data');
             $processedData = [
                 'start_date' => $rawData['start_date'] ?? now()->format('Y-m-d'),
                 'duration_type' => $rawData['duration_type'] ?? $durationType,
@@ -188,35 +186,36 @@ dd($response);
                 'monthly_predictions' => $rawData['monthly_predictions'] ?? [],
                 'yearly_predictions' => $rawData['yearly_predictions'] ?? [],
                 'historical_data' => $historical,
-                'plot_url' => $rawData['plot_url'] ?? null
+                'plot_url' => $rawData['plot_url'] ?? null,
+                'total_kwh' => 0,
+                'estimated_cost' => 0
             ];
 
-            // Calculate aggregates
             if (!empty($processedData['daily_predictions'])) {
+                Log::debug('[Calculate] Calculating total_kwh and estimated_cost');
                 $total_kwh = array_reduce($processedData['daily_predictions'], 
                     fn($carry, $item) => $carry + ($item['total_energy_kwh'] ?? 0), 
                     0);
-                
+
                 $processedData['total_kwh'] = $total_kwh;
                 $processedData['estimated_cost'] = $total_kwh * 1500; // Adjust rate as needed
             }
 
+            Log::debug('--- [END] getPredictionData SUCCESS ---');
             return $processedData;
 
         } else {
-                    Log::error('DB Connection Failed: '.$e->getMessage());
-
-            Log::error("Flask API returned error status: " . $response->status() . 
-                      " Response: " . $response->body());
-            return $defaultData;
+            Log::error('[HTTP] Flask API returned error: ' . $response->status());
+            Log::error('[HTTP] Response body: ' . $response->body());
+            return $this->getDefaultData($durationType, $numPeriods);
         }
 
     } catch (\Illuminate\Http\Client\ConnectionException $e) {
-        Log::error("Flask API connection failed: " . $e->getMessage());
-        return $defaultData;
+        Log::error('[Exception] Flask API connection failed: ' . $e->getMessage());
+        return $this->getDefaultData($durationType, $numPeriods);
     } catch (\Exception $e) {
-        Log::error("Error processing prediction data: " . $e->getMessage());
-        return $defaultData;
+        Log::error('[Exception] Error in getPredictionData: ' . $e->getMessage());
+        return $this->getDefaultData($durationType, $numPeriods);
     }
 }
 
