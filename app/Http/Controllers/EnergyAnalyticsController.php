@@ -162,11 +162,12 @@ protected function createEmptyMonitoringReading()
                 throw new \Exception("Invalid response format: daily_predictions missing");
             }
 
-            Log::debug('[DB] Fetching 30-day historical energy data');
-            $historicalRaw = EnergyMeasurement::where('device_id', $device->device_id)
-            ->where('measured_at', '>=', now()->subDays(30))
-            ->orderBy('measured_at')
-            ->get();
+           $historicalRaw = EnergyMeasurement::where('device_id', $device->device_id)
+    ->where('measured_at', '>=', now()->subDays(30))
+    ->orderBy('measured_at')
+    ->limit(1000) // batasi dulu
+    ->get();
+
             dd($historicalRaw);
             Log::debug('historical event');
 
