@@ -104,7 +104,8 @@ protected function createEmptyMonitoringReading()
     }
     protected function getPredictionData($device, $durationType = 'year', $numPeriods = 1)
 {
-    $flaskBaseUrl = 'http://192.168.1.10:5050';
+    $flaskBaseUrl = 'http://103.219.251.163:5050';
+    // $flaskBaseUrl = 'http://192.168.1.10:5050';
     $latestReading = EnergyMeasurement::where('device_id', $device->device_id)
         ->latest('measured_at')
         ->firstOrFail();
