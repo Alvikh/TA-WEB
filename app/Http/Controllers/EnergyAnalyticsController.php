@@ -165,10 +165,10 @@ protected function createEmptyMonitoringReading()
            $historicalRaw = EnergyMeasurement::where('device_id', $device->device_id)
     ->where('measured_at', '>=', now()->subDays(30))
     ->orderBy('measured_at')
-    ->limit(1000) // batasi dulu
+    ->limit(1000)
     ->get();
 
-            dd($historicalRaw);
+            // dd($historicalRaw);
             Log::debug('historical event');
 
 $historical = $historicalRaw
