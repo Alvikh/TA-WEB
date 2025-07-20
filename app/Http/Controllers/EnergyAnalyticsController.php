@@ -163,24 +163,27 @@ protected function createEmptyMonitoringReading()
             }
 
             Log::debug('[DB] Fetching 30-day historical energy data');
-            $historical = EnergyMeasurement::where('device_id', $device->device_id)
-                ->where('measured_at', '>=', now()->subDays(30))
-                ->orderBy('measured_at')
-                ->get()
-                ->map(function ($item) {
-    try {
+            $historicalRaw = EnergyMeasurement::where('device_id', $device->device_id)
+    ->where('measured_at', '>=', now()->subDays(30))
+    ->orderBy('measured_at')
+    ->get();
+
+$historical = $historicalRaw
+    ->filter(function ($item) {
+        return $item->measured_at && $item->power !== null;
+    })
+    ->map(function ($item) {
         return [
-            'timestamp' => $item->measured_at->format('Y-m-d H:i:s'),
+            'timestamp' => optional($item->measured_at)->format('Y-m-d H:i:s'),
             'power' => $item->power,
             'energy' => $item->energy,
             'voltage' => $item->voltage,
             'current' => $item->current
         ];
-    } catch (\Exception $e) {
-        Log::error('[Map Error] Failed processing item: ' . $e->getMessage());
-        return [];
-    }
-                })->toArray();
+    })
+    ->values() // reset index
+    ->toArray();
+
 
             Log::debug('[Process] Formatting prediction and historical data');
             $processedData = [
