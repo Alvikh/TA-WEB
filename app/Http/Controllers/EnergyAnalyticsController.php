@@ -155,7 +155,7 @@ protected function createEmptyMonitoringReading()
             ->retry(3, 100)
             ->post("$flaskBaseUrl/api/predict-future", $payload);
     Log::debug('Memory usage 2: '.memory_get_usage());
-
+dd($response);
         if ($response->successful()) {
             $rawData = $response->json();
 
