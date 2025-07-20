@@ -106,129 +106,96 @@ protected function createEmptyMonitoringReading()
     }
     protected function getPredictionData($device, $durationType = 'year', $numPeriods = 1)
 {
-    Log::debug('--- [START] getPredictionData ---', [
-        'device_id' => $device->device_id,
-        'duration_type' => $durationType,
-        'num_periods' => $numPeriods
-    ]);
-
     $flaskBaseUrl = 'http://103.219.251.171:5050';
-    
+    $defaultData = [
+        'start_date' => now()->format('Y-m-d'),
+        'duration_type' => $durationType,
+        'num_periods' => $numPeriods,
+        'daily_predictions' => [],
+        'monthly_predictions' => [],
+        'yearly_predictions' => [],
+        'historical_data' => [],
+        'plot_url' => null,
+        'total_kwh' => 0,
+        'estimated_cost' => 0
+    ];
+
     try {
-        Log::debug('[DB] Check database connection');
-        DB::connection()->getPdo();
-        
-        Log::debug('[DB] Fetch latest sensor data from EnergyMeasurement');
         $latestReading = EnergyMeasurement::where('device_id', $device->device_id)
             ->latest('measured_at')
             ->firstOrFail();
 
-        $sensorData = [
-            'voltage' => $latestReading->voltage,
-            'current' => $latestReading->current,
-            'energy' => $latestReading->energy,
-            'frequency' => $latestReading->frequency,
-            'power_factor' => $latestReading->power_factor,
-            'temperature' => $latestReading->temperature,
-            'humidity' => $latestReading->humidity,
-            'measured_at' => $latestReading->measured_at->format('d-m-Y H:i:s')
-        ];
-
-        Log::debug('[Payload] Preparing data to send to Flask API', $sensorData);
-
         $payload = [
             'duration_type' => $durationType,
             'num_periods' => $numPeriods,
-            'last_sensor_data' => $sensorData,
+            'last_sensor_data' => [
+                'voltage' => $latestReading->voltage,
+                'current' => $latestReading->current,
+                'energy' => $latestReading->energy,
+                'frequency' => $latestReading->frequency,
+                'power_factor' => $latestReading->power_factor,
+                'temperature' => $latestReading->temperature,
+                'humidity' => $latestReading->humidity,
+                'measured_at' => $latestReading->measured_at->format('d-m-Y H:i:s')
+            ],
             'device_id' => $device->device_id,
             'start_date' => now()->format('d-m-Y H:i:s')
         ];
-
-        Log::debug('[HTTP] Sending POST request to Flask API: /api/predict-future');
-        Log::debug('Memory before request: ' . memory_get_usage());
 
         $response = Http::timeout(15)
             ->retry(3, 100)
             ->post("$flaskBaseUrl/api/predict-future", $payload);
 
-        Log::debug('Memory after request: ' . memory_get_usage());
-
-        if ($response->successful()) {
-            Log::debug('[HTTP] Flask API response received successfully');
-            $rawData = $response->json();
-
-            if (!isset($rawData['daily_predictions'])) {
-                Log::error('[Response] Missing daily_predictions in response');
-                throw new \Exception("Invalid response format: daily_predictions missing");
-            }
-
-           $historicalRaw = EnergyMeasurement::selectRaw('*, DATE_FORMAT(measured_at, "%Y-%m-%d %H:00:00") as hour_group')
-    ->where('device_id', $device->device_id)
-    ->where('measured_at', '>=', now()->subDays(30))
-    ->orderBy('measured_at')
-    ->groupBy('hour_group')
-    ->get();
-
-
-            // dd($historicalRaw);
-            Log::debug('historical event');
-
-$historical = $historicalRaw
-    ->filter(function ($item) {
-        return $item->measured_at && $item->power !== null;
-    })
-    ->map(function ($item) {
-        return [
-            'timestamp' => optional($item->measured_at)->format('Y-m-d H:i:s'),
-            'power' => $item->power,
-            'energy' => $item->energy,
-            'voltage' => $item->voltage,
-            'current' => $item->current
-        ];
-    })
-    ->values() // reset index
-    ->toArray();
-
-
-            Log::debug('[Process] Formatting prediction and historical data');
-            $processedData = [
-                'start_date' => $rawData['start_date'] ?? now()->format('Y-m-d'),
-                'duration_type' => $rawData['duration_type'] ?? $durationType,
-                'num_periods' => $rawData['num_periods'] ?? $numPeriods,
-                'daily_predictions' => $rawData['daily_predictions'] ?? [],
-                'monthly_predictions' => $rawData['monthly_predictions'] ?? [],
-                'yearly_predictions' => $rawData['yearly_predictions'] ?? [],
-                'historical_data' => $historical,
-                'plot_url' => $rawData['plot_url'] ?? null,
-                'total_kwh' => 0,
-                'estimated_cost' => 0
-            ];
-
-            if (!empty($processedData['daily_predictions'])) {
-                Log::debug('[Calculate] Calculating total_kwh and estimated_cost');
-                $total_kwh = array_reduce($processedData['daily_predictions'], 
-                    fn($carry, $item) => $carry + ($item['total_energy_kwh'] ?? 0), 
-                    0);
-
-                $processedData['total_kwh'] = $total_kwh;
-                $processedData['estimated_cost'] = $total_kwh * 1500; // Adjust rate as needed
-            }
-
-            Log::debug('--- [END] getPredictionData SUCCESS ---');
-            return $processedData;
-
-        } else {
-            Log::error('[HTTP] Flask API returned error: ' . $response->status());
-            Log::error('[HTTP] Response body: ' . $response->body());
-            return $this->getDefaultData($durationType, $numPeriods);
+        if (!$response->successful()) {
+            return $defaultData;
         }
 
-    } catch (\Illuminate\Http\Client\ConnectionException $e) {
-        Log::error('[Exception] Flask API connection failed: ' . $e->getMessage());
-        return $this->getDefaultData($durationType, $numPeriods);
+        $rawData = $response->json();
+
+        if (!isset($rawData['daily_predictions'])) {
+            return $defaultData;
+        }
+
+        $historical = EnergyMeasurement::where('device_id', $device->device_id)
+            ->where('measured_at', '>=', now()->subDays(30))
+            ->orderBy('measured_at')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'timestamp' => optional($item->measured_at)->format('Y-m-d H:i:s'),
+                    'power' => $item->power,
+                    'energy' => $item->energy,
+                    'voltage' => $item->voltage,
+                    'current' => $item->current
+                ];
+            })->toArray();
+
+        $processedData = [
+            'start_date' => $rawData['start_date'] ?? now()->format('Y-m-d'),
+            'duration_type' => $rawData['duration_type'] ?? $durationType,
+            'num_periods' => $rawData['num_periods'] ?? $numPeriods,
+            'daily_predictions' => $rawData['daily_predictions'] ?? [],
+            'monthly_predictions' => $rawData['monthly_predictions'] ?? [],
+            'yearly_predictions' => $rawData['yearly_predictions'] ?? [],
+            'historical_data' => $historical,
+            'plot_url' => $rawData['plot_url'] ?? null,
+            'total_kwh' => 0,
+            'estimated_cost' => 0
+        ];
+
+        if (!empty($processedData['daily_predictions'])) {
+            $processedData['total_kwh'] = array_reduce(
+                $processedData['daily_predictions'],
+                fn($carry, $item) => $carry + ($item['total_energy_kwh'] ?? 0),
+                0
+            );
+            $processedData['estimated_cost'] = $processedData['total_kwh'] * 1500;
+        }
+
+        return $processedData;
+
     } catch (\Exception $e) {
-        Log::error('[Exception] Error in getPredictionData: ' . $e->getMessage());
-        return $this->getDefaultData($durationType, $numPeriods);
+        return $defaultData;
     }
 }
 
