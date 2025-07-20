@@ -162,11 +162,13 @@ protected function createEmptyMonitoringReading()
                 throw new \Exception("Invalid response format: daily_predictions missing");
             }
 
-           $historicalRaw = EnergyMeasurement::where('device_id', $device->device_id)
+           $historicalRaw = EnergyMeasurement::selectRaw('*, DATE_FORMAT(measured_at, "%Y-%m-%d %H:00:00") as hour_group')
+    ->where('device_id', $device->device_id)
     ->where('measured_at', '>=', now()->subDays(30))
     ->orderBy('measured_at')
-    ->limit(1000)
+    ->groupBy('hour_group')
     ->get();
+
 
             // dd($historicalRaw);
             Log::debug('historical event');
