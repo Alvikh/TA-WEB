@@ -146,11 +146,8 @@ protected function createEmptyMonitoringReading()
         ];
 
         $response = Http::post("$flaskBaseUrl/api/predict-future", $payload);
-// dd($response->json());
         if ($response->successful()) {
             $rawData = $response->json();
-            // dd($rawData);
-            // Get historical data for comparison
             $historical = EnergyMeasurement::where('device_id', $device->device_id)
                 ->where('measured_at', '>=', now()->subDays(30))
                 ->orderBy('measured_at')
