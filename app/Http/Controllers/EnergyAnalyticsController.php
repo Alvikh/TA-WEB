@@ -107,13 +107,10 @@ protected function createEmptyMonitoringReading()
     protected function getPredictionData($device, $durationType = 'year', $numPeriods = 1)
 {
     $flaskBaseUrl = 'http://103.219.251.171:5050';
-    // $flaskBaseUrl = 'http://192.168.1.10:5050';
     $latestReading = EnergyMeasurement::where('device_id', $device->device_id)
         ->latest('measured_at')
         ->firstOrFail();
-        // $latestReading = EnergyMeasurement::where('device_id', $device->device_id)->where('voltage','!=','0')->first();
 
-// dd($latestReading);
     $defaultData = [
         'start_date' => now()->format('Y-m-d'),
         'duration_type' => $durationType,
@@ -122,7 +119,9 @@ protected function createEmptyMonitoringReading()
         'monthly_predictions' => [],
         'yearly_predictions' => [],
         'historical_data' => [],
-        'plot_url' => null
+        'plot_url' => null,
+        'total_kwh' => 0,
+        'estimated_cost' => 0
     ];
 
     try {
@@ -145,10 +144,20 @@ protected function createEmptyMonitoringReading()
             'start_date' => now()->format('d-m-Y H:i:s')
         ];
 
-        // $response = Http::post("$flaskBaseUrl/api/predict-future", $payload);
-        $response;
+        // Make the HTTP request with timeout and retry
+        $response = Http::timeout(15)
+            ->retry(3, 100)
+            ->post("$flaskBaseUrl/api/predict-future", $payload);
+
         if ($response->successful()) {
             $rawData = $response->json();
+
+            // Validate response structure
+            if (!isset($rawData['daily_predictions'])) {
+                throw new \Exception("Invalid response format: daily_predictions missing");
+            }
+
+            // Get historical data
             $historical = EnergyMeasurement::where('device_id', $device->device_id)
                 ->where('measured_at', '>=', now()->subDays(30))
                 ->orderBy('measured_at')
@@ -163,8 +172,8 @@ protected function createEmptyMonitoringReading()
                     ];
                 })->toArray();
 
-            // Process the predictions
-            $processed = [
+            // Process predictions
+            $processedData = [
                 'start_date' => $rawData['start_date'] ?? now()->format('Y-m-d'),
                 'duration_type' => $rawData['duration_type'] ?? $durationType,
                 'num_periods' => $rawData['num_periods'] ?? $numPeriods,
@@ -175,23 +184,31 @@ protected function createEmptyMonitoringReading()
                 'plot_url' => $rawData['plot_url'] ?? null
             ];
 
-            // Calculate aggregates if needed
-            if (!empty($processed['daily_predictions'])) {
-                $total_kwh = array_reduce($processed['daily_predictions'], 
+            // Calculate aggregates
+            if (!empty($processedData['daily_predictions'])) {
+                $total_kwh = array_reduce($processedData['daily_predictions'], 
                     fn($carry, $item) => $carry + ($item['total_energy_kwh'] ?? 0), 
                     0);
                 
-                $processed['total_kwh'] = $total_kwh;
-                $processed['estimated_cost'] = $total_kwh * 1500; // Example rate
+                $processedData['total_kwh'] = $total_kwh;
+                $processedData['estimated_cost'] = $total_kwh * 1500; // Adjust rate as needed
             }
 
-            return $processed;
-        }
-    } catch (\Exception $e) {
-        Log::error('Prediction failed: ' . $e->getMessage());
-    }
+            return $processedData;
 
-    return $defaultData;
+        } else {
+            Log::error("Flask API returned error status: " . $response->status() . 
+                      " Response: " . $response->body());
+            return $defaultData;
+        }
+
+    } catch (\Illuminate\Http\Client\ConnectionException $e) {
+        Log::error("Flask API connection failed: " . $e->getMessage());
+        return $defaultData;
+    } catch (\Exception $e) {
+        Log::error("Error processing prediction data: " . $e->getMessage());
+        return $defaultData;
+    }
 }
 
     protected function processPredictionData($rawData)
