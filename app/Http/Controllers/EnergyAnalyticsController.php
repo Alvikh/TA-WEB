@@ -168,15 +168,18 @@ protected function createEmptyMonitoringReading()
                 ->orderBy('measured_at')
                 ->get()
                 ->map(function ($item) {
-    Log::debug('[Map] Processing item', ['measured_at' => $item->measured_at]);
-
-    return [
-        'timestamp' => optional($item->measured_at)->format('Y-m-d H:i:s'),
-        'power' => $item->power ?? 0,
-        'energy' => $item->energy ?? 0,
-        'voltage' => $item->voltage ?? 0,
-        'current' => $item->current ?? 0
-    ];
+    try {
+        return [
+            'timestamp' => $item->measured_at->format('Y-m-d H:i:s'),
+            'power' => $item->power,
+            'energy' => $item->energy,
+            'voltage' => $item->voltage,
+            'current' => $item->current
+        ];
+    } catch (\Exception $e) {
+        Log::error('[Map Error] Failed processing item: ' . $e->getMessage());
+        return [];
+    }
                 })->toArray();
 
             Log::debug('[Process] Formatting prediction and historical data');
