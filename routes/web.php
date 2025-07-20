@@ -93,3 +93,17 @@ Route::post('/reset-password', [NewPasswordController::class, 'resetPassword'])-
 // });
 
 Route::get('/energy-analytics/{id}/export-pdf', [EnergyAnalyticsController::class, 'exportPdf'])->name('energy-analytics.exportPdf');
+Route::get('/test-flask-connection', function() {
+    try {
+        $response = Http::timeout(3)->get('http://103.219.251.171:5050/');
+        return [
+            'status' => $response->status(),
+            'body' => $response->body()
+        ];
+    } catch (\Exception $e) {
+        return [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ];
+    }
+});
