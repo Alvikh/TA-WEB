@@ -145,7 +145,8 @@ protected function createEmptyMonitoringReading()
             'start_date' => now()->format('d-m-Y H:i:s')
         ];
 
-        $response = Http::post("$flaskBaseUrl/api/predict-future", $payload);
+        // $response = Http::post("$flaskBaseUrl/api/predict-future", $payload);
+        $response;
         if ($response->successful()) {
             $rawData = $response->json();
             $historical = EnergyMeasurement::where('device_id', $device->device_id)
