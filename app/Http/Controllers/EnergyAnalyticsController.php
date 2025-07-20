@@ -106,6 +106,8 @@ protected function createEmptyMonitoringReading()
     }
     protected function getPredictionData($device, $durationType = 'year', $numPeriods = 1)
 {
+        Log::debug('PredictionData started', ['device' => $device->device_id]);
+
     $flaskBaseUrl = 'http://103.219.251.171:5050';
     $latestReading = EnergyMeasurement::where('device_id', $device->device_id)
         ->latest('measured_at')
@@ -125,6 +127,8 @@ protected function createEmptyMonitoringReading()
     ];
 
     try {
+                DB::connection()->getPdo();
+
         $sensorData = [
             'voltage' => $latestReading->voltage,
             'current' => $latestReading->current,
@@ -145,9 +149,12 @@ protected function createEmptyMonitoringReading()
         ];
 
         // Make the HTTP request with timeout and retry
+            Log::debug('Memory usage: '.memory_get_usage());
+
         $response = Http::timeout(15)
             ->retry(3, 100)
             ->post("$flaskBaseUrl/api/predict-future", $payload);
+    Log::debug('Memory usage 2: '.memory_get_usage());
 
         if ($response->successful()) {
             $rawData = $response->json();
@@ -197,6 +204,8 @@ protected function createEmptyMonitoringReading()
             return $processedData;
 
         } else {
+                    Log::error('DB Connection Failed: '.$e->getMessage());
+
             Log::error("Flask API returned error status: " . $response->status() . 
                       " Response: " . $response->body());
             return $defaultData;
