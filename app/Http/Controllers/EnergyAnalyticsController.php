@@ -156,19 +156,30 @@ protected function createEmptyMonitoringReading()
             return $defaultData;
         }
 
+        // Get hourly aggregated historical data
         $historical = EnergyMeasurement::where('device_id', $device->device_id)
             ->where('measured_at', '>=', now()->subDays(30))
-            ->orderBy('measured_at')
+            ->select([
+                DB::raw('DATE_FORMAT(measured_at, "%Y-%m-%d %H:00:00") as hour'),
+                DB::raw('AVG(power) as avg_power'),
+                DB::raw('AVG(voltage) as avg_voltage'),
+                DB::raw('AVG(current) as avg_current'),
+                DB::raw('MAX(energy) - MIN(energy) as energy_used')
+            ])
+            ->groupBy('hour')
+            ->orderBy('hour')
             ->get()
             ->map(function ($item) {
                 return [
-                    'timestamp' => optional($item->measured_at)->format('Y-m-d H:i:s'),
-                    'power' => $item->power,
-                    'energy' => $item->energy,
-                    'voltage' => $item->voltage,
-                    'current' => $item->current
+                    'timestamp' => $item->hour,
+                    'power' => round($item->avg_power, 2),
+                    'energy' => round($item->energy_used, 4),
+                    'voltage' => round($item->avg_voltage, 2),
+                    'current' => round($item->avg_current, 2)
                 ];
-            })->toArray();
+            })
+            ->values()
+            ->toArray();
 
         $processedData = [
             'start_date' => $rawData['start_date'] ?? now()->format('Y-m-d'),
@@ -198,7 +209,6 @@ protected function createEmptyMonitoringReading()
         return $defaultData;
     }
 }
-
     protected function processPredictionData($rawData)
 {
     if (!isset($rawData['daily_predictions']) || !is_array($rawData['daily_predictions'])) {
