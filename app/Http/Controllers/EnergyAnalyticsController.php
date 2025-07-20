@@ -168,13 +168,15 @@ protected function createEmptyMonitoringReading()
                 ->orderBy('measured_at')
                 ->get()
                 ->map(function ($item) {
-                    return [
-                        'timestamp' => $item->measured_at->format('Y-m-d H:i:s'),
-                        'power' => $item->power,
-                        'energy' => $item->energy,
-                        'voltage' => $item->voltage,
-                        'current' => $item->current
-                    ];
+    Log::debug('[Map] Processing item', ['measured_at' => $item->measured_at]);
+
+    return [
+        'timestamp' => optional($item->measured_at)->format('Y-m-d H:i:s'),
+        'power' => $item->power ?? 0,
+        'energy' => $item->energy ?? 0,
+        'voltage' => $item->voltage ?? 0,
+        'current' => $item->current ?? 0
+    ];
                 })->toArray();
 
             Log::debug('[Process] Formatting prediction and historical data');
