@@ -55,12 +55,12 @@
     <!-- Hero Section -->
     <section id="home" class="pt-30 pb-20 px-20">
         <div class="container mx-auto" data-aos="fade-up">
-            <div class="flex flex-col lg:flex-row items-center">
-                <div class="lg:w-1/2 mb-12 lg:mb-0">
+            <div class="flex flex-col lg:flex-row items-center h-[100vh]">
+                <div class="lg:w-1/2 mb-12 lg:mb-0 mt-8">
                     <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">Smart Energy Prediction with <span class="text-blue-300">IoT Technology</span></h1>
                     <p class="text-xl mb-8 text-blue-100">Smart Power Management helps you monitor, analyze, and predict your electricity consumption with advanced machine learning algorithms.</p>
                 </div>
-                <div class="lg:w-1/2" data-aos="fade-up">
+                <div class="lg:w-1/2 mt-20" data-aos="fade-up">
                     <img src="{{ asset('images/main.png') }}" alt="Smart Power Management Dashboard" class="rounded-lg w-full">
                 </div>
             </div>
