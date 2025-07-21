@@ -129,10 +129,16 @@ class EnergyAnalyticsApiController extends Controller
 {
     // First get all raw measurements in the date range
     $measurements = EnergyMeasurement::where('device_id', $deviceId)
-        ->whereBetween('measured_at', [$startDate, $endDate])
-        ->select(['measured_at', 'power', 'energy'])
-        ->orderBy('measured_at')
-        ->get();
+    ->whereBetween('measured_at', [$startDate, $endDate])
+    ->selectRaw("
+        DATE_FORMAT(measured_at, '%Y-%m-%d %H:00:00') as hour,
+        AVG(power) as avg_power,
+        MAX(energy) - MIN(energy) as energy_used
+    ")
+    ->groupBy('hour')
+    ->orderBy('hour')
+    ->limit(1000)
+    ->get();
 
     // Initialize results array
     $results = [];
