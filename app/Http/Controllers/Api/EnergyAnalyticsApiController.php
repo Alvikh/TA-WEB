@@ -242,53 +242,73 @@ protected function calculateMetrics($deviceId, $startDate, $endDate)
 
     public function getDeviceData($id)
 {
+    Log::debug('1. Memulai getDeviceData', ['device_id' => $id]);
+
     try {
-        // Validasi device
-        $device = Device::findOrFail($id);
-        
-        // Set default date range (7 hari terakhir)
+        Log::debug('2. Mencari device...');
+        $device = Device::find($id);
+        if (!$device) {
+            Log::error('Device tidak ditemukan', ['id' => $id]);
+            throw new \Exception("Device dengan ID {$id} tidak ditemukan");
+        }
+        Log::debug('3. Device ditemukan', ['device_name' => $device->name]);
+
         $startDate = now()->subDays(7)->startOfDay();
         $endDate = now()->endOfDay();
+        Log::debug('4. Rentang tanggal', ['start' => $startDate, 'end' => $endDate]);
 
-        // Dapatkan data secara terpisah untuk memudahkan debugging
+        Log::debug('5. Mengambil data hourly...');
         $hourlyConsumption = $this->getHourlyConsumption($device->device_id, $startDate, $endDate);
-        $dailyConsumption = $this->getDailyConsumption($device->device_id, $startDate, $endDate);
-        $energyHistory = $this->getEnergyHistory($device->device_id);
-        $metrics = $this->calculateMetrics($device->device_id, $startDate, $endDate);
-        $predictionData = $this->getPredictionData($device);
+        Log::debug('6. Data hourly', ['sample' => array_slice($hourlyConsumption['data'] ?? [], 0, 3)]);
 
-        // Format response sesuai dengan web version
-        return response()->json([
+        Log::debug('7. Mengambil data daily...');
+        $dailyConsumption = $this->getDailyConsumption($device->device_id, $startDate, $endDate);
+        Log::debug('8. Data daily', ['sample' => array_slice($dailyConsumption['data'] ?? [], 0, 3)]);
+
+        Log::debug('9. Mengambil energy history...');
+        $energyHistory = $this->getEnergyHistory($device->device_id);
+        Log::debug('10. Energy history', ['count' => count($energyHistory['data'] ?? [])]);
+
+        Log::debug('11. Menghitung metrics...');
+        $metrics = $this->calculateMetrics($device->device_id, $startDate, $endDate);
+        Log::debug('12. Metrics', $metrics);
+
+        Log::debug('13. Mengambil prediksi...');
+        $predictionData = $this->getPredictionData($device);
+        Log::debug('14. Prediction data', ['keys' => array_keys($predictionData)]);
+
+        Log::debug('15. Membuat response akhir...');
+        $response = [
             'status' => 'success',
-            'device' => $device,
+            'device' => $device->only(['id', 'device_id', 'name']),
             'latest_reading' => EnergyMeasurement::where('device_id', $device->device_id)
-                ->where('measured_at', '>=', now()->subMinutes(5))
                 ->latest('measured_at')
-                ->first() ?? $this->createEmptyReading(),
+                ->first()?->toArray() ?? [],
             'consumption' => [
                 'hourly' => $hourlyConsumption,
                 'daily' => $dailyConsumption,
             ],
             'energy_history' => $energyHistory,
-            'metrics' => [
-                'avg_daily_power' => $metrics['avgDailyPower'] ?? 0,
-                'peak_power_today' => $metrics['peakPowerToday'] ?? 0,
-                'energy_today' => $metrics['energyToday'] ?? 0
-            ],
+            'metrics' => $metrics,
             'prediction' => $predictionData,
             'timestamp' => now()->toDateTimeString()
-        ]);
+        ];
+
+        Log::debug('16. Response siap dikirim', ['keys' => array_keys($response)]);
+        return response()->json($response);
 
     } catch (\Exception $e) {
-        Log::error('API Error in getDeviceData: '.$e->getMessage(), [
-            'device_id' => $id,
-            'trace' => $e->getTraceAsString()
+        Log::error('ERROR DALAM getDeviceData', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+            'device_id' => $id
         ]);
         
         return response()->json([
             'status' => 'error',
             'message' => 'Failed to fetch device data',
-            'error' => env('APP_DEBUG') ? $e->getMessage() : 'Internal server error'
+            'error' => $e->getMessage(),
+            'debug_step' => 'Terjadi error pada langkah terakhir yang di-log'
         ], 500);
     }
 }
