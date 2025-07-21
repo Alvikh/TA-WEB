@@ -241,47 +241,57 @@ protected function calculateMetrics($deviceId, $startDate, $endDate)
 
 
     public function getDeviceData($id)
-    {
-        try {
-            $device = Device::findOrFail($id);
-
-        $latestReading = EnergyMeasurement::where('device_id', $device->device_id)
-            ->where('measured_at', '>=', now()->subMinutes(5))
-            ->latest('measured_at')
-            ->first() ?? $this->createEmptyReading();
-
+{
+    try {
+        // Validasi device
+        $device = Device::findOrFail($id);
+        
+        // Set default date range (7 hari terakhir)
         $startDate = now()->subDays(7)->startOfDay();
-$endDate = now()->endOfDay();
+        $endDate = now()->endOfDay();
 
-$hourlyConsumption = $this->getHourlyConsumption($device->device_id, $startDate, $endDate);
-$dailyConsumption = $this->getDailyConsumption($device->device_id, $startDate, $endDate);
-$energyHistory = $this->getEnergyHistory($device->device_id, 7);
-$metrics = $this->calculateMetrics($device->device_id, $startDate, $endDate);
-
+        // Dapatkan data secara terpisah untuk memudahkan debugging
+        $hourlyConsumption = $this->getHourlyConsumption($device->device_id, $startDate, $endDate);
+        $dailyConsumption = $this->getDailyConsumption($device->device_id, $startDate, $endDate);
+        $energyHistory = $this->getEnergyHistory($device->device_id);
+        $metrics = $this->calculateMetrics($device->device_id, $startDate, $endDate);
         $predictionData = $this->getPredictionData($device);
 
+        // Format response sesuai dengan web version
         return response()->json([
             'status' => 'success',
             'device' => $device,
-            'latest_reading' => $latestReading,
+            'latest_reading' => EnergyMeasurement::where('device_id', $device->device_id)
+                ->where('measured_at', '>=', now()->subMinutes(5))
+                ->latest('measured_at')
+                ->first() ?? $this->createEmptyReading(),
             'consumption' => [
                 'hourly' => $hourlyConsumption,
                 'daily' => $dailyConsumption,
             ],
             'energy_history' => $energyHistory,
-            'metrics' => $metrics,
+            'metrics' => [
+                'avg_daily_power' => $metrics['avgDailyPower'] ?? 0,
+                'peak_power_today' => $metrics['peakPowerToday'] ?? 0,
+                'energy_today' => $metrics['energyToday'] ?? 0
+            ],
             'prediction' => $predictionData,
-            'plot_url' => $predictionData['plot_url'] ?? null,
             'timestamp' => now()->toDateTimeString()
         ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Failed to fetch device data',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+
+    } catch (\Exception $e) {
+        Log::error('API Error in getDeviceData: '.$e->getMessage(), [
+            'device_id' => $id,
+            'trace' => $e->getTraceAsString()
+        ]);
+        
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Failed to fetch device data',
+            'error' => env('APP_DEBUG') ? $e->getMessage() : 'Internal server error'
+        ], 500);
     }
+}
 
     public function getPredictionDataApi($id)
     {
