@@ -517,6 +517,7 @@ return $response->json();
                         TIMESTAMPDIFF(SECOND, MIN(measured_at), MAX(measured_at)) as duration_seconds')
             ->groupBy('date')
             ->orderBy('date')
+            ->limit(1000)
             ->get();
             
         $labels = [];
