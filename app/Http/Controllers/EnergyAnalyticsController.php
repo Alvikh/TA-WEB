@@ -375,19 +375,43 @@ protected function createEmptyMonitoringReading()
     }
 
     protected function calculateMetrics($deviceId)
-    {
-        $today = now()->startOfDay();
-        $stats = EnergyMeasurement::where('device_id', $deviceId)
-            ->where('measured_at', '>=', $today)
-            ->selectRaw('AVG(power) as avg_power, MAX(power) as peak_power, SUM(energy) as total_energy')
-            ->first();
-
-        return [
-            'avgDailyPower' => round($stats->avg_power ?? 0, 2),
-            'peakPowerToday' => round($stats->peak_power ?? 0, 2),
-            'energyToday' => round($stats->total_energy ?? 0, 2)
-        ];
+{
+    $today = now()->startOfDay();
+    $tomorrow = now()->addDay()->startOfDay();
+    
+    // Dapatkan data pertama hari ini untuk kalkulasi energi yang benar
+    $firstMeasurementToday = EnergyMeasurement::where('device_id', $deviceId)
+        ->where('measured_at', '>=', $today)
+        ->where('measured_at', '<', $tomorrow)
+        ->orderBy('measured_at', 'asc')
+        ->first(['energy', 'measured_at']);
+    
+    // Dapatkan data terakhir hari ini
+    $lastMeasurementToday = EnergyMeasurement::where('device_id', $deviceId)
+        ->where('measured_at', '>=', $today)
+        ->where('measured_at', '<', $tomorrow)
+        ->orderBy('measured_at', 'desc')
+        ->first(['energy', 'measured_at']);
+    
+    // Hitung total energi (selisih antara pengukuran terakhir dan pertama)
+    $energyToday = 0;
+    if ($firstMeasurementToday && $lastMeasurementToday) {
+        $energyToday = $lastMeasurementToday->energy - $firstMeasurementToday->energy;
     }
+    
+    // Hitung statistik power
+    $stats = EnergyMeasurement::where('device_id', $deviceId)
+        ->where('measured_at', '>=', $today)
+        ->where('measured_at', '<', $tomorrow)
+        ->selectRaw('AVG(power) as avg_power, MAX(power) as peak_power')
+        ->first();
+    
+    return [
+        'avgDailyPower' => round($stats->avg_power ?? 0, 2),
+        'peakPowerToday' => round($stats->peak_power ?? 0, 2),
+        'energyToday' => round($energyToday, 2)
+    ];
+}
 public function exportPdf($id)
 {
     $device = is_numeric($id) 
