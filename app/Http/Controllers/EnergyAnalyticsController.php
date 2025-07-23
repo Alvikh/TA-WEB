@@ -145,7 +145,7 @@ protected function createEmptyMonitoringReading()
         $response = Http::timeout(15)
             ->retry(3, 100)
             ->post("$flaskBaseUrl/api/predict-future", $payload);
-
+// dd($response->json());
         if (!$response->successful()) {
             return $defaultData;
         }
