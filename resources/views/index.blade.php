@@ -197,11 +197,11 @@
                 </div>
             </div>
 
-            <div class="text-center mb-16">
+            {{-- <div class="text-center mb-16">
                 <h3 class="text-3xl font-bold mb-6">Our <span class="text-blue-300">Core Values</span></h3>
-            </div>
+            </div> --}}
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
+            {{-- <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
                 <div class="feature-card p-8 rounded-xl h-full" data-aos="fade-up" data-aos-delay="100">
                     <div class="bg-blue-500 rounded-full p-4 inline-block mb-4">
                         <i class="fas fa-lightbulb text-2xl"></i>
@@ -225,7 +225,7 @@
                     <h4 class="text-xl font-bold mb-3">Customer Focus</h4>
                     <p class="text-blue-100">Our solutions are designed with real user needs in mind, ensuring maximum value and usability.</p>
                 </div>
-            </div>
+            </div> --}}
         </div>
     </section>
 
