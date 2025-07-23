@@ -76,13 +76,13 @@
                 <div class="bg-blue-50 p-4 rounded-lg">
                     <p class="text-xs text-blue-500">Temperature</p>
                     <p class="text-lg font-semibold text-blue-800">
-                        <span id="temperature-value">{{ $latestReading->temperature ?? 'N/A' }}</span> °C
+                        <span id="temperature-value">{{ $latestReading->temperature ?? 'N/A' }} °C</span>
                     </p>
                 </div>
                 <div class="bg-green-50 p-4 rounded-lg">
                     <p class="text-xs text-green-500">Humidity</p>
                     <p class="text-lg font-semibold text-green-800">
-                        <span id="humidity-value">{{ $latestReading->humidity ?? 'N/A' }}</span>%
+                        <span id="humidity-value">{{ $latestReading->humidity ?? 'N/A' }} %</span>
                     </p>
                 </div>
                 <div class="bg-red-50 p-4 rounded-lg">
