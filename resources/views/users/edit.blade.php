@@ -140,7 +140,7 @@
                         <!-- Current Photo Preview -->
                         @if ($user->profile_photo_path)
                         <div class="mt-2 flex items-center">
-                            <img src="{{ asset('storage/'.$user->profile_photo_path) }}" alt="{{ $user->name }}" class="h-16 w-16 rounded-full object-cover border-2 border-gray-200">
+                            <img src="{{ asset($user->profile_photo_path) }}" alt="{{ $user->name }}" class="h-16 w-16 rounded-full object-cover border-2 border-gray-200">
                             <label for="remove_photo" class="ml-4 flex items-center cursor-pointer">
                                 <input type="checkbox" name="remove_photo" id="remove_photo" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
                                 <span class="ml-2 text-sm text-gray-700">Remove current photo</span>
