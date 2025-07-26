@@ -25,12 +25,12 @@
                 <button class="inline-flex items-center px-3 py-1 bg-white text-blue-600 border border-blue-200 text-sm font-semibold rounded-lg hover:bg-blue-50 transition duration-200 shadow-sm">
                     <i class="fas fa-sync-alt mr-2"></i> Refresh
                 </button>
-                <a href="{{ route('admin.server.export') }}" class="inline-flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                {{-- <a href="{{ route('admin.server.export') }}" class="inline-flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
                     <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M6 2a1 1 0 00-1 1v2h10V3a1 1 0 00-1-1H6zM4 6v10a2 2 0 002 2h8a2 2 0 002-2V6H4zm4 2h4v2H8V8zm0 4h4v2H8v-2z" />
                     </svg>
                     Export PDF
-                </a>
+                </a> --}}
             </div>
         </div>
 

@@ -253,19 +253,19 @@ class ServerMonitoringControllers extends Controller
         return round($bytes, $precision) . ' ' . $units[$pow];
     }
 
-    public function exportPDF()
-{
-    $data = [
-        'system' => $this->getSystemMetrics(),
-        'web_server' => $this->getWebServerMetrics(),
-        'database' => $this->getDatabaseMetrics(),
-        'application' => $this->getApplicationMetrics(),
-        'errors' => $this->getErrorMetrics(),
-        'timestamp' => now()->toDateTimeString()
-    ];
+//     public function exportPDF()
+// {
+//     $data = [
+//         'system' => $this->getSystemMetrics(),
+//         'web_server' => $this->getWebServerMetrics(),
+//         'database' => $this->getDatabaseMetrics(),
+//         'application' => $this->getApplicationMetrics(),
+//         'errors' => $this->getErrorMetrics(),
+//         'timestamp' => now()->toDateTimeString()
+//     ];
 
-    $pdf = Pdf::loadView('exports.server_pdf', compact('data'))->setPaper('a4', 'portrait');
-    return $pdf->stream('server-monitoring-' . now()->format('Ymd_His') . '.pdf');
-}
+//     $pdf = Pdf::loadView('exports.server_pdf', compact('data'))->setPaper('a4', 'portrait');
+//     return $pdf->stream('server-monitoring-' . now()->format('Ymd_His') . '.pdf');
+// }
 
 }
