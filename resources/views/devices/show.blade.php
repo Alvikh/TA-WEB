@@ -42,10 +42,12 @@
                         <span class="absolute bottom-2 right-2 px-3 py-1 
                             @if($device->status === 'active') bg-green-500
                             @elseif($device->status === 'inactive') bg-red-500
-                            @else bg-yellow-500
+                            @elseif($device->status === 'maintenance') bg-yellow-500
+                            @else bg-gray-500
                             @endif text-white text-xs font-medium rounded-full shadow-md">
                             {{ ucfirst($device->status) }}
                         </span>
+
                     </div>
 
                     <!-- Basic Info -->
@@ -138,12 +140,14 @@
                     </div>
                     <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
                         @if($device->status === 'active')
-                        <form action="{{ route('devices.deactivate', $device) }}" method="POST" class="w-full sm:w-auto">
+                        {{-- Active → Bisa di-set ke Maintenance --}}
+                        <form action="{{ route('devices.maintenance', $device) }}" method="POST" class="w-full sm:w-auto">
                             @csrf
                             @method('PATCH')
                             <button type="submit" class="w-full sm:w-auto inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition duration-150">
+                                <!-- Ikon Wrench -->
                                 <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2h6a1 1 0 100-2h-1V9z" clip-rule="evenodd" />
+                                    <path d="M17.211 2.789a1 1 0 00-1.414 0L12.586 6H11a1 1 0 00-.707.293l-7 7A1 1 0 003 14v3a1 1 0 001 1h3a1 1 0 00.707-.293l7-7A1 1 0 0014 9v-1.586l3.211-3.211a1 1 0 000-1.414l-.586-.586z" />
                                 </svg>
                                 Set to Maintenance
                             </button>
@@ -174,9 +178,10 @@
                             @csrf
                             @method('PATCH')
                             <button type="submit" class="w-full sm:w-auto inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-150">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2h6a1 1 0 100-2h-1V9z" clip-rule="evenodd" />
+                                <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-12.728 12.728M5.636 5.636l12.728 12.728" />
                                 </svg>
+
                                 Deactivate
                             </button>
                         </form>

@@ -202,29 +202,4 @@ class DeviceController extends Controller
             'data' => $devices
         ]);
     }
-
-    public function activate(Device $device)
-{
-    $device->status = 'active';
-    $device->save();
-
-    return redirect()->route('devices.show', $device)->with('success', 'Device activated successfully.');
-}
-
-public function deactivate(Device $device)
-{
-    $device->status = 'inactive';
-    $device->save();
-
-    return redirect()->route('devices.show', $device)->with('success', 'Device deactivated successfully.');
-}
-
-public function maintenance(Device $device)
-{
-    $device->status = 'maintenance';
-    $device->save();
-
-    return redirect()->route('devices.show', $device)->with('success', 'Device set to maintenance.');
-}
-
 }

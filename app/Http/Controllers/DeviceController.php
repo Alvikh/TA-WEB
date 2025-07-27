@@ -134,4 +134,28 @@ public function exportDetailPdf(Device $device)
     $pdf = Pdf::loadView('exports.devices_detail_pdf', compact('device'));
     return $pdf->download('device_detail_' . $device->id . '.pdf');
 }
+public function activate(Device $device)
+{
+    $device->status = 'active';
+    $device->save();
+
+    return redirect()->route('devices.show', $device)->with('success', 'Device activated successfully.');
+}
+
+public function deactivate(Device $device)
+{
+    $device->status = 'inactive';
+    $device->save();
+
+    return redirect()->route('devices.show', $device)->with('success', 'Device deactivated successfully.');
+}
+
+public function maintenance(Device $device)
+{
+    $device->status = 'maintenance';
+    $device->save();
+
+    return redirect()->route('devices.show', $device)->with('success', 'Device set to maintenance.');
+}
+
 }

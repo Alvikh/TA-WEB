@@ -35,13 +35,13 @@
                     <!-- Profile Photo -->
                     <div class="relative">
                         @if($user->profile_photo_path)
-                            <img src="{{ asset($user->profile_photo_path) }}" alt="{{ $user->name }}" class="h-40 w-40 rounded-full object-cover border-4 border-white shadow-lg">
+                        <img src="{{ asset($user->profile_photo_path) }}" alt="{{ $user->name }}" class="h-40 w-40 rounded-full object-cover border-4 border-white shadow-lg">
                         @else
-                            <div class="h-40 w-40 rounded-full bg-gray-100 flex items-center justify-center border-4 border-white shadow-lg">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                </svg>
-                            </div>
+                        <div class="h-40 w-40 rounded-full bg-gray-100 flex items-center justify-center border-4 border-white shadow-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                        </div>
                         @endif
                         <span class="absolute bottom-2 right-2 px-3 py-1 bg-{{ $user->status === 'active' ? 'green' : ($user->status === 'inactive' ? 'red' : 'yellow') }}-500 text-white text-xs font-medium rounded-full shadow-md">
                             {{ ucfirst($user->status) }}
@@ -118,9 +118,9 @@
                                 <p class="text-sm font-medium text-gray-500">Email Verification</p>
                                 <p class="text-gray-800 mt-1">
                                     @if($user->email_verified_at)
-                                        <span class="text-green-600">Verified on {{ $user->email_verified_at->format('M j, Y') }}</span>
+                                    <span class="text-green-600">Verified on {{ $user->email_verified_at->format('M j, Y') }}</span>
                                     @else
-                                        <span class="text-yellow-600">Not verified</span>
+                                    <span class="text-yellow-600">Not verified</span>
                                     @endif
                                 </p>
                             </div>
@@ -155,9 +155,9 @@
                                 <p class="text-sm font-medium text-gray-500">Last Login</p>
                                 <p class="text-gray-800 mt-1">
                                     @if($user->last_login_at)
-                                        {{ $user->last_login_at->format('M j, Y \a\t g:i A') }}
+                                    {{ $user->last_login_at->format('M j, Y \a\t g:i A') }}
                                     @else
-                                        Never logged in
+                                    Never logged in
                                     @endif
                                 </p>
                             </div>
@@ -180,9 +180,10 @@
                             @csrf
                             @method('PATCH')
                             <button type="submit" class="w-full sm:w-auto inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition duration-150">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
+                                <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-12.728 12.728M5.636 5.636l12.728 12.728" />
                                 </svg>
+
                                 Deactivate Account
                             </button>
                         </form>
