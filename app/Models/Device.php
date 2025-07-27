@@ -15,7 +15,7 @@ class Device extends Model
     protected $table = 'devices';
 
     protected $fillable = [
-        'owner_id', // Pastikan ini sesuai dengan foreign key di tabel
+        'owner_id',
         'name',
         'device_id',
         'type',

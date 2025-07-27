@@ -47,13 +47,27 @@
                             @endif text-white text-xs font-medium rounded-full shadow-md">
                             {{ ucfirst($device->status) }}
                         </span>
-
                     </div>
 
                     <!-- Basic Info -->
                     <div class="flex-1 text-center md:text-left">
                         <h2 class="text-3xl font-bold text-gray-800">{{ $device->name }}</h2>
                         <p class="text-lg text-gray-600 mt-2">Device ID: {{ $device->device_id }}</p>
+
+                        <!-- Owner Information -->
+                        @if($device->owner)
+                        <div class="mt-3 flex items-center justify-center md:justify-start">
+                            <div class="flex-shrink-0 h-10 w-10">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-gray-500">Pemilik Device</p>
+                                <p class="text-sm font-medium text-gray-900">{{ $device->owner->name }}</p>
+                            </div>
+                        </div>
+                        @endif
 
                         <div class="mt-4 flex flex-wrap justify-center md:justify-start gap-2">
                             <span class="px-3 py-1 bg-indigo-100 text-indigo-800 text-sm font-medium rounded-full flex items-center">
@@ -96,6 +110,12 @@
                                 <p class="text-sm font-medium text-gray-500">Device Type</p>
                                 <p class="text-gray-800 mt-1">{{ ucfirst($device->type) }}</p>
                             </div>
+                            @if($device->owner)
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Pemilik Device</p>
+                                <p class="text-gray-800 mt-1">{{ $device->owner->name }}</p>
+                            </div>
+                            @endif
                         </div>
                     </div>
 
@@ -181,7 +201,6 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-12.728 12.728M5.636 5.636l12.728 12.728" />
                                 </svg>
-
                                 Deactivate
                             </button>
                         </form>

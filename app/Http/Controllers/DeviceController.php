@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\DevicesExport;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\User;
+
 
 
 class DeviceController extends Controller
@@ -20,7 +22,8 @@ class DeviceController extends Controller
 
     public function create()
     {
-        return view('devices.create');
+        $users = User::all();
+        return view('devices.create', compact('users')); 
     }
 
     public function store(Request $request)
@@ -31,7 +34,8 @@ class DeviceController extends Controller
             'type' => 'required|string|max:255',
             'building' => 'required|string|max:255',
             'installation_date' => 'nullable|date',
-            'status' => 'required|in:active,inactive',
+            'status' => 'required|in:active,inactive,maintenance',
+            'owner_id' => 'required|exists:users,id',
         ]);
 
         if ($validator->fails()) {
@@ -64,7 +68,7 @@ class DeviceController extends Controller
             'type' => 'required|string|max:255',
             'building' => 'required|string|max:255',
             'installation_date' => 'nullable|date',
-            'status' => 'required|in:active,inactive',
+            'status' => 'required|in:active,inactive,maintenance',
         ]);
 
         if ($validator->fails()) {
