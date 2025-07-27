@@ -59,8 +59,9 @@ Route::post('/api/devices/{id}/prediction', [EnergyAnalyticsController::class, '
 // Route::get('/devices/monitor/{id}', [EnergyAnalyticsController,'index'])->name('devices.monitor');
 Route::patch('/{user}/activate', [UserController::class, 'activate'])->name('users.activate');
 Route::patch('/{user}/deactivate', [UserController::class, 'deactivate'])->name('users.deactivate');
-Route::patch('/{device}/activate', [UserController::class, 'activate'])->name('devices.activate');
-Route::patch('/{device}/deactivate', [UserController::class, 'deactivate'])->name('devices.deactivate');
+Route::patch('/devices/{device}/activate', [DeviceController::class, 'activate'])->name('devices.activate');
+Route::patch('/devices/{device}/deactivate', [DeviceController::class, 'deactivate'])->name('devices.deactivate');
+Route::patch('/devices/{device}/maintenance', [DeviceController::class, 'maintenance'])->name('devices.maintenance');
 Route::post('/monitoring', [BrokerController::class, 'store']);
 Route::get('/monitoring', [BrokerController::class, 'index'])->name('devices.monitoring');
 Route::get('/monitoring/energy', [MonitoringController::class, 'index'])->name('monitoring.index');
