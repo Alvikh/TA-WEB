@@ -238,7 +238,7 @@
                                     <!-- Current Image -->
                                     <div class="relative mb-4">
                                         @if($user->profile_photo_path)
-                                            <img src="{{ asset('storage/' . $user->profile_photo_path) }}" class="h-32 w-32 rounded-full object-cover shadow-lg border-2 border-gray-200" alt="Current Profile Photo">
+                                            <img src="{{ asset($user->profile_photo_path) }}" class="h-32 w-32 rounded-full object-cover shadow-lg border-2 border-gray-200" alt="Current Profile Photo">
                                         @else
                                             <div class="h-32 w-32 rounded-full bg-gray-100 flex items-center justify-center">
                                                 <svg class="h-16 w-16 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">

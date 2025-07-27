@@ -35,7 +35,7 @@
                     <!-- Profile Photo -->
                     <div class="relative">
                         @if($user->profile_photo_path)
-                            <img src="{{ asset('storage/' . $user->profile_photo_path) }}" alt="{{ $user->name }}" class="h-40 w-40 rounded-full object-cover border-4 border-white shadow-lg">
+                            <img src="{{ asset($user->profile_photo_path) }}" alt="{{ $user->name }}" class="h-40 w-40 rounded-full object-cover border-4 border-white shadow-lg">
                         @else
                             <div class="h-40 w-40 rounded-full bg-gray-100 flex items-center justify-center border-4 border-white shadow-lg">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
