@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Device Report</title>
+    <meta http-equiv="Content-Type" content="application/vnd.ms-excel; charset=UTF-8" />
     <style>
         body {
-            font-family: sans-serif;
-            font-size: 14px;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            color: #000;
         }
         h2 {
             margin-bottom: 5px;
@@ -15,12 +17,16 @@
             margin-top: 0;
             margin-bottom: 15px;
         }
-        table, th, td {
-            border: 1px solid black;
+        table {
             border-collapse: collapse;
+            width: 100%;
+        }
+        table, th, td {
+            border: 1px solid #000;
         }
         th, td {
             padding: 6px 10px;
+            text-align: left;
         }
         th {
             background-color: #f0f0f0;

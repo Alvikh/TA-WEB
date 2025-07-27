@@ -1,15 +1,37 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>User Report (Excel)</title>
+    <meta http-equiv="Content-Type" content="application/vnd.ms-excel; charset=UTF-8" />
     <style>
-        table, th, td {
-            border: 1px solid black;
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+        }
+        h2 {
+            margin-bottom: 5px;
+        }
+        p {
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+        table {
             border-collapse: collapse;
+            width: 100%;
+        }
+        table, th, td {
+            border: 1px solid #000;
+        }
+        th {
+            background-color: #f2f2f2;
+            text-align: left;
         }
         th, td {
-            padding: 5px;
+            padding: 6px 8px;
+        }
+        .text {
+            mso-number-format: "\@"; /* Force Excel to treat as text */
         }
     </style>
 </head>
@@ -20,12 +42,12 @@
     <table>
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Address</th>
-                <th>Role</th>
-                <th>Status</th>
+                <th style="width: 20%;">Name</th>
+                <th style="width: 25%;">Email</th>
+                <th style="width: 15%;">Phone</th>
+                <th style="width: 20%;">Address</th>
+                <th style="width: 10%;">Role</th>
+                <th style="width: 10%;">Status</th>
             </tr>
         </thead>
         <tbody>
@@ -33,7 +55,7 @@
                 <tr>
                     <td>{{ $user->name }}</td>
                     <td>{{ $user->email }}</td>
-                    <td>{{ $user->phone ?? '-' }}</td>
+                    <td class="text">{{ $user->phone ?? '-' }}</td>
                     <td>{{ $user->address ?? '-' }}</td>
                     <td>{{ ucfirst($user->role) }}</td>
                     <td>{{ ucfirst($user->status) }}</td>
