@@ -56,27 +56,43 @@ class ProfileController extends Controller
     public function updatePassword(Request $request)
     {
         $user = $request->user();
-        $validator = Validator::make($request->all(), [
-            'current_password' => 'required',
-            'new_password' => 'required|min:8|confirmed'
-        ]);
+    
+    // Debug: Log password yang diterima dan di database
+    \Log::info('Current PW Input: ' . $request->current_password);
+    \Log::info('DB PW Hash: ' . $user->password);
+    
+    // Bandingkan manual tanpa Hash::check (hanya untuk debug!)
+    if ($request->current_password === $user->password) {
+        \Log::info('Password match (plain text)');
+    } else {
+        \Log::info('Password mismatch');
+    }
+    
+    // Validasi
+    $validator = Validator::make($request->all(), [
+        'current_password' => 'required|string',
+        'new_password' => 'required|min:8|confirmed'
+    ]);
 
     if ($validator->fails()) {
-        return response()->json([
+return response()->json([
             'success' => false,
             'message' => $validator->errors()->first()
-        ], 400);
-    }
-        if (!Hash::check($request->current_password, $user->password)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Current password is incorrect',
-            ], 401);
-        }
+        ], 400);    }
 
-        $user->update([
-            'password' => Hash::make($request->new_password)
-        ]);
+    // Jika password di database plain text (sementara)
+    if ($request->current_password !== $user->password) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Current password is incorrect',
+        ], 401);
+    }
+
+    // Update password dengan hash baru
+    $user->update([
+        'password' => Hash::make($request->new_password)
+    ]);
+        
 
         return response()->json([
             'success' => true,
