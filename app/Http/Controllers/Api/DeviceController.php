@@ -116,10 +116,8 @@ class DeviceController extends Controller
     // Update device
     public function update(Request $request, $id)
     {
-        $device = Device::find($id);
-        if(!$device){
-            $device = Device::where('device_id',$id)->first();
-        }
+           $device = Device::find($id) ?? Device::where('device_id', $id)->first();
+return $device;
 
         if (!$device) {
             return response()->json([
