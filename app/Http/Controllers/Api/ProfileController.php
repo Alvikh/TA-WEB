@@ -58,14 +58,14 @@ class ProfileController extends Controller
         $user = $request->user();
     
     // Debug: Log password yang diterima dan di database
-    \Log::info('Current PW Input: ' . $request->current_password);
-    \Log::info('DB PW Hash: ' . $user->password);
+    Log::info('Current PW Input: ' . $request->current_password);
+    Log::info('DB PW Hash: ' . $user->password);
     
     // Bandingkan manual tanpa Hash::check (hanya untuk debug!)
     if ($request->current_password === $user->password) {
-        \Log::info('Password match (plain text)');
+        Log::info('Password match (plain text)');
     } else {
-        \Log::info('Password mismatch');
+        Log::info('Password mismatch');
     }
     
     // Validasi
