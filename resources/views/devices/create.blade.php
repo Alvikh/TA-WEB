@@ -39,7 +39,7 @@
                     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
                         <!-- Owner -->
                         <div class="sm:col-span-2">
-                            <label for="owner_id" class="block text-sm font-medium text-gray-700">Pemilik Device <span class="text-red-500">*</span></label>
+                            <label for="owner_id" class="block text-sm font-medium text-gray-700">Device Owner <span class="text-red-500">*</span></label>
                             <div class="mt-1 relative rounded-md shadow-sm">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">

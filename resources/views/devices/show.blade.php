@@ -63,7 +63,7 @@
                                 </svg>
                             </div>
                             <div class="ml-3">
-                                <p class="text-sm text-gray-500">Pemilik Device</p>
+                                <p class="text-sm text-gray-500">Device Owner</p>
                                 <p class="text-sm font-medium text-gray-900">{{ $device->owner->name }}</p>
                             </div>
                         </div>
@@ -112,7 +112,7 @@
                             </div>
                             @if($device->owner)
                             <div>
-                                <p class="text-sm font-medium text-gray-500">Pemilik Device</p>
+                                <p class="text-sm font-medium text-gray-500">Device Owner</p>
                                 <p class="text-gray-800 mt-1">{{ $device->owner->name }}</p>
                             </div>
                             @endif
