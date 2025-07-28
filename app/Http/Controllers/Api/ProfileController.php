@@ -56,10 +56,6 @@ class ProfileController extends Controller
     public function updatePassword(Request $request)
     {
         $user = $request->user();
-
-// return response()->json([
-//             'success' => false,
-//             'message' => $request]);
         $validator = Validator::make($request->all(), [
             'current_password' => 'required',
             'new_password' => 'required|min:8|confirmed'
