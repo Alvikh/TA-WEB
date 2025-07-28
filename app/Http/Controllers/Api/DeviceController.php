@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Device;
 use Illuminate\Http\Request;
 use App\Mail\VerificationEmail;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -115,41 +116,47 @@ class DeviceController extends Controller
 
     // Update device
     public function update(Request $request, $id)
-    {
-           $device = Device::find($id) ?? Device::where('device_id', $id)->first();
-// return $device;
+{
+    // Mencari device - prioritas pertama by ID, kedua by device_id
+    $device = Device::find($id) ?? Device::where('device_id', $id)->first();
 
-        if (!$device) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Device not found',
-            ], 404);
-        }
-
-        $validator = Validator::make($request->all(), [
-            'name' => 'sometimes|required|string|max:255',
-            'device_id' => 'sometimes|required|string|unique:devices,device_id,'.$id,
-            'type' => 'sometimes|required|string',
-            'building' => 'sometimes|required|string',
-            'installation_date' => 'sometimes|required|date',
-            'status' => 'sometimes|required|string|in:active,inactive,maintenance',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => $validator->errors()->first(),
-            ], 400);
-        }
-
-        $device->update($request->all());
-
+    if (!$device) {
         return response()->json([
-            'success' => true,
-            'message' => 'Device updated successfully',
-            'data' => $device
-        ]);
+            'success' => false,
+            'message' => 'Device not found',
+        ], 404);
     }
+
+    $validator = Validator::make($request->all(), [
+        'name' => 'sometimes|required|string|max:255',
+        'device_id' => [
+            'sometimes',
+            'required',
+            'string',
+            Rule::unique('devices', 'device_id')->ignore($device->id)
+        ],
+        'type' => 'sometimes|required|string',
+        'building' => 'sometimes|required|string',
+        'validation_date' => 'sometimes|required|date',
+        'status' => 'sometimes|required|string|in:active,inactive,maintenance',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Validation error',
+            'errors' => $validator->errors()
+        ], 400);
+    }
+
+    $device->update($validator->validated());
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Device updated successfully',
+        'data' => $device->fresh()
+    ]);
+}
 
     // Delete device
     public function destroy($id)
