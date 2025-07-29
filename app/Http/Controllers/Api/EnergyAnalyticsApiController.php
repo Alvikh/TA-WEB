@@ -542,46 +542,50 @@ return $response->json();
     
 
     protected function getEnergyHistory($deviceId, $days = 7)
-    {
-        $startDate = now()->subDays($days)->startOfDay();
+{
+    $startDate = now()->subDays($days)->startOfDay();
+    
+    $history = EnergyMeasurement::where('device_id', $deviceId)
+        ->where('measured_at', '>=', $startDate)
+        ->selectRaw('DATE(measured_at) as date, 
+                    SUM(energy) as total_energy,
+                    AVG(power) as avg_power,
+                    TIMESTAMPDIFF(SECOND, MIN(measured_at), MAX(measured_at)) as duration_seconds')
+        ->groupBy('date')
+        ->orderBy('date')
+        ->limit(10000)
+        ->get();
         
-        $history = EnergyMeasurement::where('device_id', $deviceId)
-            ->where('measured_at', '>=', $startDate)
-            ->selectRaw('DATE(measured_at) as date, 
-                        SUM(energy) as total_energy,
-                        AVG(power) as avg_power,
-                        TIMESTAMPDIFF(SECOND, MIN(measured_at), MAX(measured_at)) as duration_seconds')
-            ->groupBy('date')
-            ->orderBy('date')
-            ->limit(1000)
-            ->get();
-            
-        $labels = [];
-        $data = [];
-        $records = [];
+    $labels = [];
+    $data = [];
+    $records = [];
+    
+    foreach ($history as $record) {
+        $date = Carbon::parse($record->date);
+        $labels[] = $date->format('M d');
         
-        foreach ($history as $record) {
-            $date = Carbon::parse($record->date);
-            $labels[] = $date->format('M d');
-            $data[] = round($record->total_energy, 2);
-            
-            $duration = $this->formatDuration($record->duration_seconds);
-            
-            $records[] = [
-                'date' => $date->format('Y-m-d'),
-                'energy' => $record->total_energy,
-                'duration' => $duration,
-                'avg_power' => $record->avg_power
-            ];
-        }
+        // Convert energy from Wh to kWh (assuming energy is stored in watt-hours)
+        $energyKwh = $record->total_energy / 1000;
+        $data[] = round($energyKwh, 2);
         
-        return [
-            'labels' => $labels,
-            'data' => $data,
-            'records' => $records,
-            'unit' => 'kWh'
+        $duration = $this->formatDuration($record->duration_seconds);
+        
+        $records[] = [
+            'date' => $date->format('Y-m-d'),
+            'energy' => round($energyKwh, 2), // Return in kWh
+            'duration' => $duration,
+            'avg_power' => round($record->avg_power, 2),
+            'cost' => round($energyKwh, 2) // Example cost calculation (adjust rate as needed)
         ];
     }
+    
+    return [
+        'labels' => $labels,
+        'data' => $data,
+        'records' => $records,
+        'unit' => 'kWh'
+    ];
+}
 
     protected function formatDuration($seconds)
     {
