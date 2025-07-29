@@ -56,7 +56,7 @@ class ProfileController extends Controller
     public function updatePassword(Request $request)
     {
         $user = $request->user();
-    
+    return $user;
     // Debug: Log password yang diterima dan di database
     Log::info('Current PW Input: ' . $request->current_password);
     Log::info('DB PW Hash: ' . $user->password);
