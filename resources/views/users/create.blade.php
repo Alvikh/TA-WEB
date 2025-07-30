@@ -161,7 +161,7 @@
                     </div>
 
                     <!-- Account Information Section -->
-                    <div class="space-y-6">
+                    <div class="space-y-6 mt-5">
                         <div class="border-b border-gray-200 pb-5">
                             <h3 class="text-lg font-medium leading-6 text-gray-900">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
