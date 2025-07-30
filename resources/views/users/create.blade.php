@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12">
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 ">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="bg-white shadow-xl rounded-2xl overflow-hidden">
             <!-- Form Header with gradient background -->
@@ -25,6 +25,53 @@
                 @csrf
 
                 <div class="space-y-8">
+                    <!-- Profile Photo Section -->
+                    <div class="space-y-6">
+                        <div class="border-b border-gray-200 pb-5">
+                            <h3 class="text-lg font-medium leading-6 text-gray-900">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+                                </svg>
+                                Profile Photo
+                            </h3>
+                            <p class="mt-1 text-sm text-gray-500">Upload a profile picture for the user.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-6">
+                            <!-- Profile Photo Upload -->
+                            <div class="sm:col-span-2">
+                                <div class="mt-1 flex flex-col items-center">
+                                    <!-- Image Preview -->
+                                    <div class="relative mb-4">
+                                        <img id="preview-image" class="h-32 w-32 rounded-full object-cover shadow-lg border-2 border-gray-200 hidden" alt="Preview">
+                                        <div id="upload-icon" class="h-32 w-32 rounded-full bg-gray-100 flex items-center justify-center">
+                                            <svg class="h-16 w-16 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                            </svg>
+                                        </div>
+                                    </div>
+
+                                    <!-- Upload Button -->
+                                    <div class="flex flex-col items-center">
+                                        <label for="profile_photo" class="cursor-pointer">
+                                            <span class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                                </svg>
+                                                Upload Photo
+                                            </span>
+                                            <input id="profile_photo" name="profile_photo" type="file" class="sr-only" accept="image/*">
+                                        </label>
+                                        <p class="mt-2 text-xs text-gray-500">PNG, JPG, GIF up to 2MB</p>
+                                    </div>
+                                </div>
+                                @error('profile_photo')
+                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                </div>
                     <!-- Personal Information Section -->
                     <div class="space-y-6">
                         <div class="border-b border-gray-200 pb-5">
@@ -218,53 +265,7 @@
                         </div>
                     </div>
 
-                    <!-- Profile Photo Section -->
-                    <div class="space-y-6">
-                        <div class="border-b border-gray-200 pb-5">
-                            <h3 class="text-lg font-medium leading-6 text-gray-900">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
-                                </svg>
-                                Profile Photo
-                            </h3>
-                            <p class="mt-1 text-sm text-gray-500">Upload a profile picture for the user.</p>
-                        </div>
-
-                        <div class="grid grid-cols-1 gap-6">
-                            <!-- Profile Photo Upload -->
-                            <div class="sm:col-span-2">
-                                <div class="mt-1 flex flex-col items-center">
-                                    <!-- Image Preview -->
-                                    <div class="relative mb-4">
-                                        <img id="preview-image" class="h-32 w-32 rounded-full object-cover shadow-lg border-2 border-gray-200 hidden" alt="Preview">
-                                        <div id="upload-icon" class="h-32 w-32 rounded-full bg-gray-100 flex items-center justify-center">
-                                            <svg class="h-16 w-16 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                            </svg>
-                                        </div>
-                                    </div>
-
-                                    <!-- Upload Button -->
-                                    <div class="flex flex-col items-center">
-                                        <label for="profile_photo" class="cursor-pointer">
-                                            <span class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                                </svg>
-                                                Upload Photo
-                                            </span>
-                                            <input id="profile_photo" name="profile_photo" type="file" class="sr-only" accept="image/*">
-                                        </label>
-                                        <p class="mt-2 text-xs text-gray-500">PNG, JPG, GIF up to 2MB</p>
-                                    </div>
-                                </div>
-                                @error('profile_photo')
-                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                    
 
                 <!-- Form Footer -->
                 <div class="mt-12 pt-6 border-t border-gray-200 flex flex-col-reverse sm:flex-row justify-end space-y-4 space-y-reverse sm:space-y-0 sm:space-x-4">
