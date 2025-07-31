@@ -12,7 +12,7 @@ class AlertController extends Controller
 {
     public function sendAlertEmail(Request $request)
     {
-        return  $request->json();
+        return  $request;
         $validated = $request->validate([
             'id' => 'required|string',  // device_id
             'type' => 'required|string',
