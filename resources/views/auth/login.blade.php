@@ -14,7 +14,7 @@
   </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-blue-900 via-[#0A4E87] to-cyan-500 flex items-center justify-center px-4">
-
+{{-- {{ dd($errors) }} --}}
   <!-- Login Card -->
   <div class="bg-white/10 backdrop-blur-lg shadow-2xl rounded-3xl w-full max-w-4xl p-10 flex items-center gap-10">
 
@@ -23,6 +23,7 @@
       @csrf
 
       <!-- Error Login Message -->
+      
       @if ($errors->any())
     <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
         <strong class="font-bold">Terjadi kesalahan:</strong>

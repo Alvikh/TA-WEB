@@ -75,5 +75,8 @@ public function login(Request $request)
         $request->user()->currentAccessToken()->delete();
         return response()->json(['message' => 'Logout berhasil']);
     }
+    public function show(){
+        return view('auth.login');
+    }
 }
 
