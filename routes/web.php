@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\CheckAdmin;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BrokerController;
@@ -7,11 +8,11 @@ use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\AuthControllerWEB;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\MonitoringController;
+use App\Http\Controllers\Admin\BroadcastController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\EnergyAnalyticsController;
-use App\Http\Controllers\Admin\ServerMonitoringControllers;
-use App\Http\Controllers\Admin\BroadcastController;
 use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\Admin\ServerMonitoringControllers;
 
 
 
@@ -28,6 +29,9 @@ use App\Http\Controllers\Auth\NewPasswordController;
 // Route::get('/test-api', function () {
 //     return response()->json(['message' => 'API works!']);
 // });
+// Route::get('/test-admin', function () {
+//     return 'Admin OK';
+// })->middleware(['web-admin']);
 
 Route::get('/', function () {
     return view('index');
@@ -38,8 +42,8 @@ Route::get('/admin', function () {
     return view('welcomePage');
 });
 
-// Route::middleware(['admin','auth'])->group(function () {
-    Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth',CheckAdmin::class])->group(function () {
+        Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
         Route::get('/server', [ServerMonitoringControllers::class, 'index'])->name('admin.server.monitoring');
     });
@@ -91,7 +95,7 @@ Route::post('/broadcast/send-selected', [BroadcastController::class, 'sendSelect
 Route::post('/forgot-password', [NewPasswordController::class, 'forgotPassword']);
 Route::get('/reset-password/{token}', [NewPasswordController::class, 'showResetForm'])->name('password.reset');
 Route::post('/reset-password', [NewPasswordController::class, 'resetPassword'])->name('password.update');
-// });
+});
 
 Route::get('/energy-analytics/{id}/export-pdf', [EnergyAnalyticsController::class, 'exportPdf'])->name('energy-analytics.exportPdf');
 Route::get('/test-flask-connection', function() {

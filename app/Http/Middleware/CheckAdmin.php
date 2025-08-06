@@ -14,6 +14,6 @@ class CheckAdmin
             return $next($request);
         }
 
-        return redirect('/')->with('error', 'Anda tidak memiliki akses sebagai Admin');
+        return redirect('login')->with('error', 'Anda tidak memiliki akses sebagai Admin');
     }
 }
