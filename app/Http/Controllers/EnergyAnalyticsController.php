@@ -35,7 +35,7 @@ class EnergyAnalyticsController extends Controller
             ->latest('measured_at')
             ->first() ?? $this->createEmptyMonitoringReading();
 
-// dd($latestReading);
+dd($latestReading);
         $consumptionData = $this->getHourlyConsumption($device->device_id);
         $energyHistory = $this->getEnergyHistory($device->device_id);
         $metrics = $this->calculateMetrics($device->device_id);
