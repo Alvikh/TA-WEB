@@ -30,10 +30,11 @@ class EnergyAnalyticsController extends Controller
 
     protected function showMonitoringDevice($device)
     {
-        $latestReading = EnergyMeasurement::where('device_id', $device->device_id)
-            ->where('measured_at', '>=', now()->subMinutes(5))
-            ->latest('measured_at')
-            ->first() ?? $this->createEmptyMonitoringReading();
+        // $latestReading = EnergyMeasurement::where('device_id', $device->device_id)
+        //     ->where('measured_at', '>=', now()->subMinutes(5))
+        //     ->latest('measured_at')
+        //     ->first() ?? $this->createEmptyMonitoringReading();
+        $latestReading =  $this->createEmptyMonitoringReading();
 
 // dd($latestReading);
         $consumptionData = $this->getHourlyConsumption($device->device_id);
