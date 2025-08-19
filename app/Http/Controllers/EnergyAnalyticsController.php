@@ -41,7 +41,7 @@ class EnergyAnalyticsController extends Controller
         $energyHistory = $this->getEnergyHistory($device->device_id);
         $metrics = $this->calculateMetrics($device->device_id);
         $predictionData = $this->getPredictionData($device);
-        dd($predictionData);
+        // dd($predictionData);
 
         $data = [
             'device' => $device,
